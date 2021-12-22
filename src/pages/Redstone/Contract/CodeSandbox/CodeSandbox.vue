@@ -2,9 +2,7 @@
   <div>
     <div v-if="!iframeData">Loading Contract Data...</div>
 
-    <div v-else>
-      <iframe title="test" v-bind="iframeData"/>
-    </div>
+    <iframe v-else title="Contract Code" v-bind="iframeData"/>
   </div>
 </template>
 

@@ -13,7 +13,7 @@ const arweave = Arweave.init({
 const definitionLoader = new ContractDefinitionLoader(arweave);
 
 function generateIframeData(sandbox_id) {
-  const url = `https://codesandbox.io/embed/${sandbox_id}?codemirror=1&module=/src/contract.js&theme=dark&view=editor&editorsize=100`;
+  const url = `https://codesandbox.io/embed/${sandbox_id}?fontsize=12&module=/src/contract.js,/src/init-state.json,/src/index.ts`;
   return {
     src: url,
     style: {
