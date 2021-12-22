@@ -126,3 +126,13 @@ export default {
 </script>
 
 <style src="./Contracts.scss" lang="scss" scoped />
+
+<style scoped>
+tr > th:not(:first-of-type) {
+    text-align: right;
+}
+
+tr > td:not(:first-of-type) {
+    text-align: right;
+}
+</style>

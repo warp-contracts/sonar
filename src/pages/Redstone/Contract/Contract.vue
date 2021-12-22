@@ -1,6 +1,17 @@
 <template>
     <div class="providers-wrapper">
-        <div style="font-size: 30px; padding: 16px;">Contract Details TBA</div>
+        <div class="contract-header">Contract</div>
+        <div class="contract-details-wrapper">
+            <div>{{ contractId }}</div>
+            <div class="cell">
+                <div>Owner:</div>
+                <div>{{ owner }}</div>
+            </div>
+            <div class="cell">
+                <div>Total interactions:</div>
+                <div>{{ total }}</div>
+            </div>
+        </div>
         <div class="provider-tabs">
             <b-tabs>
                 <b-tab title="Transactions">
@@ -20,7 +31,14 @@
                             </template>
 
                             <template #cell(block_id)="data">
-                                {{ data.item.blockId | tx }}
+                                <a
+                                    :href="
+                                        `https://viewblock.io/arweave/block/${data.item.blockId}`
+                                    "
+                                    target="_blank"
+                                >
+                                    {{ data.item.blockId | tx }}
+                                </a>
                             </template>
 
                             <template #cell(block_height)="data">
@@ -49,7 +67,7 @@
 
                             <template slot="row-details" slot-scope="data">
                                 <json-viewer
-                                    :value="data.item.input"
+                                    :value="data.item.interaction"
                                     :expand-depth="1"
                                     copyable
                                     sort
@@ -79,6 +97,7 @@ import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
 import { TagsParser } from 'redstone-smartweave';
 import JsonViewer from 'vue-json-viewer';
+import Arweave from 'arweave';
 
 export default {
     name: 'Contract',
@@ -90,6 +109,7 @@ export default {
                 'transaction_id',
                 'block_id',
                 'block_height',
+                'input',
                 'function',
                 'status',
                 'confirmingPeers',
@@ -97,12 +117,22 @@ export default {
             ],
             interactions: null,
             currentPage: 1,
-            paging: null,
+            paging: 0,
+            owner: '',
+            arweave: null,
+            contractTx: '',
+            total: 0,
         };
     },
 
     mounted() {
+        this.arweave = Arweave.init({
+            host: 'arweave.net',
+            protocol: 'https',
+            port: 443,
+        });
         this.getInteractions(this.currentPage);
+        this.getContractTx();
     },
 
     created() {},
@@ -121,6 +151,14 @@ export default {
         rowClicked(record) {
             this.$set(record, '_showDetails', !record._showDetails);
         },
+        async getContractTx() {
+            this.contractTx = await this.arweave.transactions.get(
+                this.contractId
+            );
+            this.owner = await this.arweave.wallets.ownerToAddress(
+                this.contractTx.owner
+            );
+        },
         async onPageClicked(pageNumber) {
             this.currentPage = pageNumber;
             this.getContracts(this.currentPage);
@@ -134,6 +172,7 @@ export default {
 
                 .then(async (fetchedInteractions) => {
                     this.paging = fetchedInteractions.data.paging;
+                    this.total = fetchedInteractions.data.interactions.length;
                     fetchedInteractions.data.interactions.forEach((i) => {
                         const obj = {
                             cursor: '',
@@ -151,8 +190,12 @@ export default {
                                     .value
                             ).function,
                             status: i.status,
-                            input: tagsParser.getInputTag(obj, this.contractId),
+                            input: JSON.parse(
+                                tagsParser.getInputTag(obj, this.contractId)
+                                    .value
+                            ),
                             confirmingPeers: i.confirming_peers,
+                            interaction: i.interaction,
                         });
                     });
                 });
@@ -176,5 +219,24 @@ export default {
     .nav-tabs > .nav-item {
         flex: 0 0 124px;
     }
+}
+
+.contract-details-wrapper {
+    padding: 17px;
+    width: 50%;
+    font-size: 16px;
+    .cell {
+        display: flex;
+        margin-top: 10px;
+
+        div:first-of-type {
+            width: 200px;
+        }
+    }
+}
+
+.contract-header {
+    font-size: 30px;
+    padding-left: 17px;
 }
 </style>

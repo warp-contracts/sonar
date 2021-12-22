@@ -15,6 +15,9 @@ export default {
             this.$router.push('/app/contracts');
         }
     },
+    methods: {
+        ...mapActions('prefetch', ['prefetchAll']),
+    },
 };
 </script>
 

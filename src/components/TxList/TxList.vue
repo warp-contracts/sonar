@@ -7,6 +7,9 @@
             :per-page="perPage"
             aria-controls="my-table"
             @page-click="handleClick"
+            last-number
+            first-number
+            align="center"
         ></b-pagination>
     </div>
 </template>
@@ -116,5 +119,9 @@ export default {
 <style>
 .provider-manifests .manifest-list tr:not(.b-table-details) {
     cursor: pointer;
+}
+
+.pagination {
+    padding-top: 30px;
 }
 </style>
