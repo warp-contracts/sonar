@@ -84,7 +84,7 @@
                     </TxList>
                 </b-tab>
                 <b-tab title="Code">
-                    <div>Dla Pepe &hearts;</div>
+                  <CodeSandbox :contractId="contractId"></CodeSandbox>
                 </b-tab>
             </b-tabs>
         </div>
@@ -98,6 +98,7 @@ import TxList from '@/components/TxList/TxList';
 import { TagsParser } from 'redstone-smartweave';
 import JsonViewer from 'vue-json-viewer';
 import Arweave from 'arweave';
+import CodeSandbox from "./CodeSandbox/CodeSandbox";
 
 export default {
     name: 'Contract',
@@ -137,7 +138,7 @@ export default {
 
     created() {},
 
-    components: { TxList, JsonViewer },
+    components: {CodeSandbox, TxList, JsonViewer },
     computed: {
         contractId() {
             return this.$route.params.id;
