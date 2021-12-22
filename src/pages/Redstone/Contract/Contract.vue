@@ -1,8 +1,11 @@
 <template>
     <div class="providers-wrapper">
-        <div class="contract-header">Contract</div>
+        <div class="d-flex pl-3">
+            <div class="flaticon-file-signature m-0-auto"></div>
+            <div class="align-self-end contract-header">Contract</div>
+            <div class="align-self-end contract-id">{{ contractId }}</div>
+        </div>
         <div class="contract-details-wrapper">
-            <div>{{ contractId }}</div>
             <div class="cell">
                 <div>Owner:</div>
                 <div>{{ owner }}</div>
@@ -45,6 +48,10 @@
                                 {{ data.item.blockHeight }}
                             </template>
 
+                            <template #cell(owner)="data">
+                                {{ data.item.owner | tx }}
+                            </template>
+
                             <template #cell(function)="data">
                                 {{ data.item.function }}
                             </template>
@@ -66,12 +73,20 @@
                             </template>
 
                             <template slot="row-details" slot-scope="data">
-                                <json-viewer
-                                    :value="data.item.interaction"
-                                    :expand-depth="1"
-                                    copyable
-                                    sort
-                                ></json-viewer>
+                                <div>
+                                    <json-viewer
+                                        :value="data.item.tags"
+                                        :expand-depth="1"
+                                        copyable
+                                        sort
+                                    ></json-viewer>
+                                    <json-viewer
+                                        :value="data.item.interaction"
+                                        :expand-depth="1"
+                                        copyable
+                                        sort
+                                    ></json-viewer>
+                                </div>
                             </template>
                         </b-table>
                         <div v-if="!interactions">
@@ -84,7 +99,7 @@
                     </TxList>
                 </b-tab>
                 <b-tab title="Code">
-                  <CodeSandbox :contractId="contractId"></CodeSandbox>
+                    <CodeSandbox :contractId="contractId"></CodeSandbox>
                 </b-tab>
             </b-tabs>
         </div>
@@ -98,7 +113,7 @@ import TxList from '@/components/TxList/TxList';
 import { TagsParser } from 'redstone-smartweave';
 import JsonViewer from 'vue-json-viewer';
 import Arweave from 'arweave';
-import CodeSandbox from "./CodeSandbox/CodeSandbox";
+import CodeSandbox from './CodeSandbox/CodeSandbox';
 
 export default {
     name: 'Contract',
@@ -110,7 +125,7 @@ export default {
                 'transaction_id',
                 'block_id',
                 'block_height',
-                'input',
+                'owner',
                 'function',
                 'status',
                 'confirmingPeers',
@@ -138,7 +153,7 @@ export default {
 
     created() {},
 
-    components: {CodeSandbox, TxList, JsonViewer },
+    components: { CodeSandbox, TxList, JsonViewer },
     computed: {
         contractId() {
             return this.$route.params.id;
@@ -172,8 +187,9 @@ export default {
                 )
 
                 .then(async (fetchedInteractions) => {
+                    console.log(fetchedInteractions);
                     this.paging = fetchedInteractions.data.paging;
-                    this.total = fetchedInteractions.data.interactions.length;
+                    this.total = fetchedInteractions.data.paging.total;
                     fetchedInteractions.data.interactions.forEach((i) => {
                         const obj = {
                             cursor: '',
@@ -191,12 +207,10 @@ export default {
                                     .value
                             ).function,
                             status: i.status,
-                            input: JSON.parse(
-                                tagsParser.getInputTag(obj, this.contractId)
-                                    .value
-                            ),
+                            owner: i.interaction.owner.address,
                             confirmingPeers: i.confirming_peers,
                             interaction: i.interaction,
+                            tags: tagsParser.getInputTag(obj, this.contractId),
                         });
                     });
                 });
@@ -210,7 +224,7 @@ export default {
 };
 </script>
 
-<style src="./Contract.scss" lang="scss" scoped />
+<style src="./Contract.scss" lang="scss" scoped></style>
 <style lang="scss">
 .provider-tabs > .tabs > div:first-of-type {
     height: 44px;
@@ -238,6 +252,20 @@ export default {
 
 .contract-header {
     font-size: 30px;
-    padding-left: 17px;
+    line-height: 30px;
+    padding-left: 10px;
+}
+.flaticon-file-signature {
+    height: 25px;
+    width: 25px;
+}
+.contract-id {
+    font-size: 15px;
+    padding-left: 20px;
+}
+
+.json-header {
+    color: #6b6b6b;
+    font-weight: 500;
 }
 </style>

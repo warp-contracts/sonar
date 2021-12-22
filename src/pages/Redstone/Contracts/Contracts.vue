@@ -125,14 +125,19 @@ export default {
 };
 </script>
 
-<style src="./Contracts.scss" lang="scss" scoped />
+<style src="./Contracts.scss" lang="scss" scoped></style>
 
-<style scoped>
+<style lang="scss" scoped>
 tr > th:not(:first-of-type) {
     text-align: right;
 }
 
 tr > td:not(:first-of-type) {
     text-align: right;
+}
+
+.flaticon-file-signature {
+    height: 30px;
+    width: 30px;
 }
 </style>
