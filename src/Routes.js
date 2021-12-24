@@ -38,6 +38,9 @@ const router = new Router({
                     path: 'contract/:id',
                     name: 'Contract',
                     component: Contract,
+                    meta: {
+                        showSearchInputInNavbar: true,
+                    },
                 },
             ],
         },

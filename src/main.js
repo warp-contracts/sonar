@@ -10,6 +10,7 @@ import VueApexCharts from 'vue-apexcharts';
 import VueLoaders from 'vue-loaders';
 import VueTimers from 'vue-timers';
 import { ObserveVisibility } from 'vue-observe-visibility';
+import Clipboard from 'v-clipboard';
 
 import 'vue-loaders/dist/vue-loaders.css';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
@@ -34,6 +35,7 @@ Vue.mixin(utilsMixin);
 Vue.use(Toasted, { duration: 10000 });
 Vue.use(VueLoaders);
 Vue.use(VueTimers);
+Vue.use(Clipboard);
 
 Vue.config.productionTip = false;
 
