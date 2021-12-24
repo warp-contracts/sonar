@@ -1,16 +1,15 @@
 <template>
     <div class="manifest-list">
         <slot></slot>
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="rows"
-            :per-page="perPage"
-            aria-controls="my-table"
+        <b-pagination-nav
+            :link-gen="linkGen"
+            :number-of-pages="rows"
             @page-click="handleClick"
+            use-router
             last-number
             first-number
             align="center"
-        ></b-pagination>
+        ></b-pagination-nav>
     </div>
 </template>
 
@@ -32,12 +31,15 @@ export default {
             this.currentPage = pageNumber;
             this.$emit('page-clicked', this.currentPage);
         },
+        linkGen(pageNum) {
+            return pageNum === 1 ? '?' : `?page=${pageNum}`;
+        },
     },
 
     computed: {
         rows() {
             if (this.paging) {
-                return this.paging.total;
+                return this.paging.pages;
             }
         },
     },

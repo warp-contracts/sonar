@@ -1,144 +1,186 @@
 <template>
-  <div class="providers-wrapper">
-    <TxList :paging="pages" @page-clicked="onPageClicked">
-      <b-table
-          ref="table"
-          id="assets-table"
-          stacked="md"
-          hover
-          :items="contracts"
-          :fields="fields"
-          @row-clicked="rowClicked"
-      >
-        <template #cell(contractId)="data">
-          <a
-              @click="
+    <div class="providers-wrapper">
+        <TxList :paging="pages" @page-clicked="onPageClicked">
+            <b-table
+                ref="table"
+                id="assets-table"
+                stacked="md"
+                hover
+                :items="contracts"
+                :fields="fields"
+                @row-clicked="rowClicked"
+                :busy="!contractsLoaded"
+            >
+                <template #table-busy> </template>
+                <template #cell(contractId)="data">
+                    <a
+                        @click="
                             $router.push(
                                 '/app/contract/' + data.item.contractId
                             )
                         "
-              target="_blank"
-          >
-            {{ data.item.contractId | tx }}
-          </a>
-        </template>
+                        target="_blank"
+                    >
+                        {{ data.item.contractId | tx }}
+                    </a>
+                </template>
 
-        <template #cell(total)="data">
-          {{ data.item.total }}
-        </template>
+                <template #cell(owner)="data">
+                    <div>{{ data.item.owner | tx }}</div>
+                </template>
 
-        <template #cell(confirmed)="data">
-          {{ data.item.confirmed }}
-        </template>
+                <template #cell(total)="data">
+                    <div class="text-right">{{ data.item.total }}</div>
+                </template>
 
-        <template #cell(orphaned)="data">
-          {{ data.item.orphaned }}
-        </template>
+                <template #cell(confirmed)="data">
+                    <div class="text-right">{{ data.item.confirmed }}</div>
+                </template>
 
-        <template #cell(lastBlockHeight)="data">
-          {{ data.item.lastInteractionHeight }}
-        </template>
-      </b-table>
-      <div v-if="!contracts">
-        <div
-            v-for="n in 3"
-            :key="n"
-            class="preloader text-preloader manifest-preloader"
-        ></div>
-      </div>
-    </TxList>
-  </div>
+                <template #cell(corrupted)="data">
+                    <div class="text-right">{{ data.item.corrupted }}</div>
+                </template>
+
+                <template #cell(lastInteractionHeight)="data">
+                    <div class="text-right">
+                        {{ data.item.lastInteractionHeight }}
+                    </div>
+                </template>
+            </b-table>
+
+            <div v-if="!contractsLoaded">
+                <div
+                    v-for="n in 15"
+                    :key="n"
+                    class="preloader text-preloader manifest-preloader"
+                ></div>
+            </div>
+        </TxList>
+    </div>
 </template>
 
 <script>
 import _ from 'lodash';
 import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
+import Arweave from 'arweave';
 
 export default {
-  name: 'Contracts',
+    name: 'Contracts',
 
-  data() {
-    return {
-      fields: [
-        'contractId',
-        'total',
-        'confirmed',
-        'corrupted',
-        'lastInteractionHeight',
-      ],
-      contracts: null,
-      currentPage: 1,
-      paging: null,
-    };
-  },
-
-  mounted() {
-    this.getContracts(this.currentPage);
-  },
-
-  created() {
-  },
-
-  components: {TxList},
-  computed: {
-    pages() {
-      return this.paging ? this.paging : null;
+    data() {
+        return {
+            fields: [
+                'contractId',
+                'owner',
+                'total',
+                'confirmed',
+                'corrupted',
+                'lastInteractionHeight',
+            ],
+            contracts: null,
+            currentPage: 1,
+            paging: null,
+            contractTx: null,
+            arweave: null,
+            loaded: false,
+            limit: 15,
+        };
     },
-  },
 
-  methods: {
-    async onPageClicked(pageNumber) {
-      this.currentPage = pageNumber;
-      this.getContracts(this.currentPage);
+    mounted() {
+        this.arweave = Arweave.init({
+            host: 'arweave.net',
+            protocol: 'https',
+            port: 443,
+        });
+        this.getContracts(this.currentPage);
     },
-    async getContracts(page) {
-      this.contracts = [];
-      axios
-          .get(
-              `https://d1o5nlqr4okus2.cloudfront.net/gateway/contracts?limit=15&page=${page}`
-          )
 
-          .then(async (fetchedContracts) => {
-            this.paging = fetchedContracts.data.paging;
-            fetchedContracts.data.contracts.forEach((contract) => {
-              this.contracts.push({
-                id: contract.contract,
-                contractId: contract.contract,
-                total: contract.interactions,
-                confirmed: contract.confirmed,
-                corrupted: contract.corrupted,
-                lastInteractionHeight:
-                contract.last_interaction_height,
-              });
-            });
-          });
+    created() {},
+
+    components: { TxList },
+    computed: {
+        pages() {
+            return this.paging ? this.paging : null;
+        },
+        contractsLoaded() {
+            return (
+                this.contracts &&
+                this.contracts.length ==
+                    (this.paging.total > this.limit
+                        ? this.limit
+                        : this.paging.total)
+            );
+        },
     },
-    rowClicked(record) {
-      this.$set(record, '_showDetails', !record._showDetails);
+
+    methods: {
+        async onPageClicked(pageNumber) {
+            this.currentPage = pageNumber;
+            this.getContracts(this.currentPage);
+        },
+        async getContracts(page) {
+            this.contracts = [];
+            axios
+                .get(
+                    `https://gateway.redstone.finance/gateway/contracts?limit=${this.limit}&page=${page}`
+                )
+
+                .then(async (fetchedContracts) => {
+                    this.paging = fetchedContracts.data.paging;
+                    fetchedContracts.data.contracts.forEach(
+                        async (contract) => {
+                            this.contractTx = await this.arweave.transactions.get(
+                                contract.contract
+                            );
+                            let owner = await this.arweave.wallets.ownerToAddress(
+                                this.contractTx.owner
+                            );
+                            this.contracts.push({
+                                id: contract.contract,
+                                contractId: contract.contract,
+                                owner: owner,
+                                total: contract.interactions,
+                                confirmed: contract.confirmed,
+                                corrupted: contract.corrupted,
+                                lastInteractionHeight:
+                                    contract.last_interaction_height,
+                            });
+                        }
+                    );
+                });
+        },
+        rowClicked(record) {
+            this.$set(record, '_showDetails', !record._showDetails);
+        },
+        styleCategory(text, numberOfCategories, index) {
+            return (
+                _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '')
+            );
+        },
     },
-    styleCategory(text, numberOfCategories, index) {
-      return (
-          _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '')
-      );
-    },
-  },
 };
 </script>
 
 <style src="./Contracts.scss" lang="scss" scoped></style>
+<style lang="scss">
+.providers-wrapper #assets-table {
+    table-layout: fixed;
 
-<style lang="scss" scoped>
-tr > th:not(:first-of-type) {
-  text-align: right;
-}
+    th:nth-of-type(1) {
+        width: 20%;
+    }
 
-tr > td:not(:first-of-type) {
-  text-align: right;
-}
+    th:nth-of-type(1) {
+        width: 20%;
+    }
+    th:not(:nth-of-type(1)):not(:nth-of-type(1)) {
+        width: 15%;
+    }
 
-.flaticon-file-signature {
-  height: 30px;
-  width: 30px;
+    td .source-links {
+        overflow: hidden;
+    }
 }
 </style>

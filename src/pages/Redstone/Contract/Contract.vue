@@ -36,14 +36,17 @@
                     <TxList :paging="pages" @page-clicked="onPageClicked">
                         <b-table
                             ref="table"
-                            id="assets-table"
+                            id="interactions-table"
                             stacked="md"
                             hover
                             :sort-by="'id'"
                             :items="interactions"
                             :fields="fields"
                             @row-clicked="rowClicked"
+                            :busy="!interactionsLoaded"
                         >
+                            <template #table-busy> </template>
+
                             <template #cell(transaction_id)="data">
                                 {{ data.item.interactionId | tx }}
                             </template>
@@ -104,9 +107,9 @@
                                 </div>
                             </template>
                         </b-table>
-                        <div v-if="!interactions">
+                        <div v-if="!interactionsLoaded">
                             <div
-                                v-for="n in 3"
+                                v-for="n in 15"
                                 :key="n"
                                 class="preloader text-preloader manifest-preloader"
                             ></div>
@@ -150,6 +153,7 @@ export default {
             arweave: null,
             contractTx: '',
             total: 0,
+            limit: 15,
         };
     },
 
@@ -173,6 +177,15 @@ export default {
         pages() {
             return this.paging ? this.paging : null;
         },
+        interactionsLoaded() {
+            return (
+                this.interactions &&
+                this.interactions.length ==
+                    (this.paging.total > this.limit
+                        ? this.limit
+                        : this.paging.total)
+            );
+        },
     },
 
     methods: {
@@ -195,11 +208,10 @@ export default {
             this.interactions = [];
             axios
                 .get(
-                    `https://d1o5nlqr4okus2.cloudfront.net/gateway/interactions?contractId=${this.contractId}&limit=15&page=${page}`
+                    `https://gateway.redstone.finance/gateway/interactions?contractId=${this.contractId}&limit=${this.limit}&page=${page}`
                 )
 
                 .then(async (fetchedInteractions) => {
-                    console.log(fetchedInteractions);
                     this.paging = fetchedInteractions.data.paging;
                     this.total = fetchedInteractions.data.paging.total;
                     fetchedInteractions.data.interactions.forEach((i) => {
@@ -208,16 +220,15 @@ export default {
                             node: i.interaction,
                         };
                         const tagsParser = new TagsParser();
-
+                        let inputFunc = JSON.parse(
+                            tagsParser.getInputTag(obj, this.contractId).value
+                        ).function;
                         this.interactions.push({
                             id: i.interaction.id,
                             interactionId: i.interaction.id,
                             blockId: i.interaction.block.id,
                             blockHeight: i.interaction.block.height,
-                            function: JSON.parse(
-                                tagsParser.getInputTag(obj, this.contractId)
-                                    .value
-                            ).function,
+                            function: inputFunc ? inputFunc : '-',
                             status: i.status,
                             owner: i.interaction.owner.address,
                             confirmingPeers: i.confirming_peers,
