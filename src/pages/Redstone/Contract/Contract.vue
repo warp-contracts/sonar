@@ -28,93 +28,97 @@
             </div>
         </div>
         <div class="provider-tabs">
-            <b-tabs>
-                <b-tab title="Code">
-                    <CodeSandbox :contractId="contractId"></CodeSandbox>
-                </b-tab>
+            <b-tabs @input="onInput">
                 <b-tab title="Transactions">
-                    <TxList :paging="pages" @page-clicked="onPageClicked">
-                        <b-table
-                            ref="table"
-                            id="interactions-table"
-                            stacked="md"
-                            hover
-                            :sort-by="'id'"
-                            :items="interactions"
-                            :fields="fields"
-                            @row-clicked="rowClicked"
-                            :busy="!interactionsLoaded"
-                        >
-                            <template #table-busy> </template>
+                    <div v-if="visitedTabs.includes(0)">
+                        <TxList :paging="pages" @page-clicked="onPageClicked">
+                            <b-table
+                                ref="table"
+                                id="interactions-table"
+                                stacked="md"
+                                hover
+                                :sort-by="'id'"
+                                :items="interactions"
+                                :fields="fields"
+                                @row-clicked="rowClicked"
+                                :busy="!interactionsLoaded"
+                            >
+                                <template #table-busy> </template>
 
-                            <template #cell(transaction_id)="data">
-                                {{ data.item.interactionId | tx }}
-                            </template>
+                                <template #cell(transaction_id)="data">
+                                    {{ data.item.interactionId | tx }}
+                                </template>
 
-                            <template #cell(block_id)="data">
-                                <a
-                                    :href="
-                                        `https://viewblock.io/arweave/block/${data.item.blockId}`
-                                    "
-                                    target="_blank"
-                                >
-                                    {{ data.item.blockId | tx }}
-                                </a>
-                            </template>
+                                <template #cell(block_id)="data">
+                                    <a
+                                        :href="
+                                            `https://viewblock.io/arweave/block/${data.item.blockId}`
+                                        "
+                                        target="_blank"
+                                    >
+                                        {{ data.item.blockId | tx }}
+                                    </a>
+                                </template>
 
-                            <template #cell(block_height)="data">
-                                {{ data.item.blockHeight }}
-                            </template>
+                                <template #cell(block_height)="data">
+                                    {{ data.item.blockHeight }}
+                                </template>
 
-                            <template #cell(owner)="data">
-                                {{ data.item.owner | tx }}
-                            </template>
+                                <template #cell(owner)="data">
+                                    {{ data.item.owner | tx }}
+                                </template>
 
-                            <template #cell(function)="data">
-                                {{ data.item.function }}
-                            </template>
+                                <template #cell(function)="data">
+                                    {{ data.item.function }}
+                                </template>
 
-                            <template #cell(status)="data">
-                                {{ data.item.status }}
-                            </template>
+                                <template #cell(status)="data">
+                                    {{ data.item.status }}
+                                </template>
 
-                            <template #cell(confirmingPeers)="data">
-                                {{ data.item.confirmingPeers }}
-                            </template>
+                                <template #cell(confirmingPeers)="data">
+                                    {{ data.item.confirmingPeers }}
+                                </template>
 
-                            <template #cell(actions)="data">
-                                <i
-                                    v-if="!data.item._showDetails"
-                                    class="fa fa-chevron-down"
-                                />
-                                <i v-else class="fa fa-chevron-up" />
-                            </template>
+                                <template #cell(actions)="data">
+                                    <i
+                                        v-if="!data.item._showDetails"
+                                        class="fa fa-chevron-down"
+                                    />
+                                    <i v-else class="fa fa-chevron-up" />
+                                </template>
 
-                            <template slot="row-details" slot-scope="data">
-                                <div>
-                                    <json-viewer
-                                        :value="data.item.tags"
-                                        :expand-depth="1"
-                                        copyable
-                                        sort
-                                    ></json-viewer>
-                                    <json-viewer
-                                        :value="data.item.interaction"
-                                        :expand-depth="1"
-                                        copyable
-                                        sort
-                                    ></json-viewer>
-                                </div>
-                            </template>
-                        </b-table>
-                        <div v-if="!interactionsLoaded">
-                            <div
-                                v-for="n in 15"
-                                :key="n"
-                                class="preloader text-preloader manifest-preloader"
-                            ></div>
-                        </div>
-                    </TxList>
+                                <template slot="row-details" slot-scope="data">
+                                    <div>
+                                        <json-viewer
+                                            :value="data.item.tags"
+                                            :expand-depth="1"
+                                            copyable
+                                            sort
+                                        ></json-viewer>
+                                        <json-viewer
+                                            :value="data.item.interaction"
+                                            :expand-depth="1"
+                                            copyable
+                                            sort
+                                        ></json-viewer>
+                                    </div>
+                                </template>
+                            </b-table>
+                            <div v-if="!interactionsLoaded">
+                                <div
+                                    v-for="n in 15"
+                                    :key="n"
+                                    class="preloader text-preloader manifest-preloader"
+                                ></div>
+                            </div>
+                        </TxList>
+                    </div>
+                </b-tab>
+                <b-tab title="Code">
+                    <div v-if="visitedTabs.includes(1)">
+                        <CodeSandbox :contractId="contractId"></CodeSandbox>
+                    </div>
                 </b-tab>
             </b-tabs>
         </div>
@@ -135,6 +139,7 @@ export default {
 
     data() {
         return {
+            visitedTabs: [],
             info: null,
             fields: [
                 'transaction_id',
@@ -148,7 +153,7 @@ export default {
             ],
             interactions: null,
             currentPage: 1,
-            paging: 0,
+            paging: null,
             owner: '',
             arweave: null,
             contractTx: '',
@@ -180,15 +185,19 @@ export default {
         interactionsLoaded() {
             return (
                 this.interactions &&
+                this.total &&
                 this.interactions.length ==
-                    (this.paging.total > this.limit
-                        ? this.limit
-                        : this.paging.total)
+                    (this.total > this.limit ? this.limit : this.total)
             );
         },
     },
 
     methods: {
+        onInput(value) {
+            if (!this.visitedTabs.includes(value)) {
+                this.visitedTabs.push(value);
+            }
+        },
         rowClicked(record) {
             this.$set(record, '_showDetails', !record._showDetails);
         },
@@ -214,12 +223,13 @@ export default {
                 .then(async (fetchedInteractions) => {
                     this.paging = fetchedInteractions.data.paging;
                     this.total = fetchedInteractions.data.paging.total;
+                    const tagsParser = new TagsParser();
+
                     fetchedInteractions.data.interactions.forEach((i) => {
                         const obj = {
                             cursor: '',
                             node: i.interaction,
                         };
-                        const tagsParser = new TagsParser();
                         let inputFunc = JSON.parse(
                             tagsParser.getInputTag(obj, this.contractId).value
                         ).function;
@@ -256,6 +266,14 @@ export default {
 .provider-tabs {
     .nav-tabs > .nav-item {
         flex: 0 0 124px;
+    }
+}
+
+.jv-container {
+    .jv-code {
+        > .jv-node {
+            max-width: 90%;
+        }
     }
 }
 </style>

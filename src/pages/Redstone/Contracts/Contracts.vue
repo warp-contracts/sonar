@@ -12,7 +12,7 @@
                 :busy="!contractsLoaded"
             >
                 <template #table-busy> </template>
-                <template #cell(contractId)="data">
+                <template #cell(contractId)="data" class="text-right">
                     <a
                         @click="
                             $router.push(
@@ -73,10 +73,30 @@ export default {
             fields: [
                 'contractId',
                 'owner',
-                'total',
-                'confirmed',
-                'corrupted',
-                'lastInteractionHeight',
+                {
+                    key: 'total',
+                    label: 'total',
+                    thClass: 'text-right',
+                    tdClass: 'text-right',
+                },
+                {
+                    key: 'confirmed',
+                    label: 'confirmed',
+                    thClass: 'text-right',
+                    tdClass: 'text-right',
+                },
+                {
+                    key: 'corrupted',
+                    label: 'corrupted',
+                    thClass: 'text-right',
+                    tdClass: 'text-right',
+                },
+                {
+                    key: 'lastInteractionHeight',
+                    label: 'last interaction height',
+                    thClass: 'text-right',
+                    tdClass: 'text-right',
+                },
             ],
             contracts: null,
             currentPage: 1,
@@ -107,6 +127,7 @@ export default {
         contractsLoaded() {
             return (
                 this.contracts &&
+                this.paging &&
                 this.contracts.length ==
                     (this.paging.total > this.limit
                         ? this.limit
@@ -169,14 +190,14 @@ export default {
     table-layout: fixed;
 
     th:nth-of-type(1) {
-        width: 20%;
+        width: 18%;
     }
 
     th:nth-of-type(1) {
-        width: 20%;
+        width: 18%;
     }
-    th:not(:nth-of-type(1)):not(:nth-of-type(1)) {
-        width: 15%;
+    th:not(:nth-of-type(1)):not(:nth-of-type(2)) {
+        width: 16%;
     }
 
     td .source-links {
