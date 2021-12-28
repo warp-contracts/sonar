@@ -1,175 +1,174 @@
-@import '~@/styles/app';
+@import "~@/styles/app";
 
 .providers-wrapper {
-    background-color: $gray-100;
-    border-radius: 10px;
-    padding: 2rem;
-    box-shadow: var(--content-shadow);
+  background-color: $gray-100;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: var(--content-shadow);
 }
 
 .provider-card {
-    cursor: pointer;
-    transition: all 0.5s ease;
+  cursor: pointer;
+  transition: all 0.5s ease;
 
-    &:hover {
-        transform: scale(1.03);
-    }
+  &:hover {
+    transform: scale(1.03);
+  }
 }
 
 .provider-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: $gray-750;
+
+  label {
+    font-size: 12px;
+    border-bottom: none;
+    color: var(--sidebar-item-active);
+  }
+
+  .provider-name,
+  .provider-www {
+    margin-left: 10px;
+    margin-bottom: 0;
+  }
+
+  .provider-name {
+    font-weight: $font-weight-semi-bold;
+    font-size: $font-size-larger;
+    flex: 0 0 12%;
+    color: var(--redstone-dark-blue-color);
+  }
+
+  .provider-active-date {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: $gray-750;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    label {
-        font-size: 12px;
-        border-bottom: none;
-        color: var(--sidebar-item-active);
+  .provider-interval,
+  .provider-points,
+  .provider-stake {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .provider-www {
+    font-size: $font-size-larger;
+    flex: 0 0 5%;
+
+    .flaticon-www {
+      width: 27px;
+      height: 27px;
+      display: block;
+
+      &:hover {
+        transform: scale(1.1);
+      }
     }
+  }
 
-    .provider-name,
-    .provider-www {
-        margin-left: 10px;
-        margin-bottom: 0;
+  .provider-description {
+    margin-bottom: 0;
+    flex: 0 0 32%;
+    font-family: Poppins;
+    font-size: $font-size-mini;
+    font-weight: $font-weight-thin;
+    font-style: italic;
+  }
+
+  .provider-logo {
+    flex: 0 0 5%;
+
+    img {
+      width: 50px;
+    }
+  }
+
+  .btn-www {
+    background-color: white;
+    color: #f55767;
+    flex: 0 0 12%;
+    font-size: $font-size-base;
+  }
+
+  @media (max-width: breakpoint-max(sm)) {
+    flex-wrap: wrap;
+
+    .provider-logo {
+      flex: 0 0 20%;
     }
 
     .provider-name {
-        font-weight: $font-weight-semi-bold;
-        font-size: $font-size-larger;
-        flex: 0 0 12%;
-        color: var(--redstone-dark-blue-color);
-    }
-
-    .provider-active-date {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .provider-interval,
-    .provider-points,
-    .provider-stake {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-
-    .provider-www {
-        font-size: $font-size-larger;
-        flex: 0 0 5%;
-
-        .flaticon-www {
-            width: 27px;
-            height: 27px;
-            display: block;
-
-            &:hover {
-                transform: scale(1.1);
-            }
-        }
+      flex: 0 0 76%;
     }
 
     .provider-description {
-        margin-bottom: 0;
-        flex: 0 0 32%;
-        font-family: Poppins;
-        font-size: $font-size-mini;
-        font-weight: $font-weight-thin;
-        font-style: italic;
+      flex: 0 0 100%;
+      margin-top: 20px;
+      margin-bottom: 20px;
     }
-
-    .provider-logo {
-        flex: 0 0 5%;
-
-        img {
-            width: 50px;
-        }
-    }
-
-    .btn-www {
-        background-color: white;
-        color: #f55767;
-        flex: 0 0 12%;
-        font-size: $font-size-base;
-    }
-
-    @media (max-width: breakpoint-max(sm)) {
-        flex-wrap: wrap;
-
-        .provider-logo {
-            flex: 0 0 20%;
-        }
-
-        .provider-name {
-            flex: 0 0 76%;
-        }
-
-        .provider-description {
-            flex: 0 0 100%;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-    }
+  }
 }
 
 .provider-card-preloader {
-    height: 88px;
-    border-radius: $border-radius-sm;
-    margin-bottom: 40px;
+  height: 88px;
+  border-radius: $border-radius-sm;
+  margin-bottom: 40px;
 
-    @include preload-animation(2s, 100vw);
+  @include preload-animation(2s, 100vw);
 }
 
 .widget-col:not(:last-of-type) .widget-wrapper {
-    padding-bottom: 40px;
+  padding-bottom: 40px;
 }
 
 .contract-details-wrapper {
-    padding: 17px;
-    font-size: 16px;
+  padding: 17px;
+  font-size: 16px;
+
+  .cell {
+    width: 50%;
     display: flex;
+    flex-direction: column;
+    margin-top: 20px;
 
-    .cell {
-        width: 50%;
-        display: flex;
-        flex-direction: column;
-        margin-top: 10px;
-
-        .cell-header {
-            width: 200px;
-            font-weight: 500;
-        }
+    .cell-header {
+      width: 200px;
+      font-weight: 500;
     }
+  }
 }
 
 .contract-header {
-    font-size: 30px;
-    line-height: 30px;
-    padding-left: 10px;
+  font-size: 30px;
+  line-height: 30px;
+  padding-left: 10px;
 }
 
 .flaticon-file-signature {
-    height: 25px;
-    width: 25px;
+  height: 25px;
+  width: 25px;
 }
 
 .flaticon-copy-to-clipboard {
-    height: 15px;
-    width: 15px;
-    background-repeat: no-repeat;
-    align-self: end;
-    margin-bottom: 5px;
-    margin-left: 10px;
-    cursor: pointer;
+  height: 15px;
+  width: 15px;
+  background-repeat: no-repeat;
+  align-self: end;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  cursor: pointer;
 }
 
 .contract-id {
-    font-size: 15px;
-    padding-left: 20px;
+  font-size: 15px;
+  padding-left: 20px;
 }
 
 .json-header {
-    color: #6b6b6b;
-    font-weight: 500;
+  color: #6b6b6b;
+  font-weight: 500;
 }

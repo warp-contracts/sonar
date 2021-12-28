@@ -18,11 +18,11 @@ const arweave = Arweave.init({
   port: 1982,
   protocol: "http"
 });
-let wallet: JWKInterface;
+let wallet;
 
 const smartweave = SmartWeaveNodeFactory.memCached(arweave);
 
-async function addFunds(arweave: Arweave, wallet: JWKInterface) {
+async function addFunds(arweave, wallet) {
   const walletAddress = await arweave.wallets.getAddress(wallet);
   await arweave.api.get(\`/mint/\${walletAddress}/1000000000000000\`);
 }

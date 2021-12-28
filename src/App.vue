@@ -1,23 +1,25 @@
 <template>
-    <router-view />
+  <router-view />
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
-    name: 'App',
+  name: "App",
 
-    beforeMount() {
-        const currentPath = this.$router.history.current.path;
+  beforeMount() {
+    this.initArweave();
+    this.prefetchAll();
+    const currentPath = this.$router.history.current.path;
 
-        if (currentPath === '/' || currentPath === '/app') {
-            this.$router.push('/app/contracts');
-        }
-    },
-    methods: {
-        ...mapActions('prefetch', ['prefetchAll']),
-    },
+    if (currentPath === "/" || currentPath === "/app") {
+      this.$router.push("/app/contracts");
+    }
+  },
+  methods: {
+    ...mapActions("prefetch", ["prefetchAll", "initArweave"]),
+  },
 };
 </script>
 
