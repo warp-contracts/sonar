@@ -7,6 +7,7 @@ import VueTimers from "vue-timers";
 import { ObserveVisibility } from "vue-observe-visibility";
 import Clipboard from "v-clipboard";
 import "vue-loaders/dist/vue-loaders.css";
+import VueTouch from "vue-touch";
 
 import store from "./store";
 import router from "./Routes";
@@ -20,6 +21,8 @@ Vue.mixin(layoutMixin);
 Vue.use(VueLoaders);
 Vue.use(VueTimers);
 Vue.use(Clipboard);
+Vue.use(VueTouch);
+
 
 Vue.config.productionTip = false;
 

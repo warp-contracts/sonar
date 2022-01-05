@@ -80,14 +80,6 @@
   }
 }
 
-#confirmation-status-group {
-  .custom-control-input:checked ~ .custom-control-label:after {
-    background-color: var(--redstone-smartweave-blue-color) !important;
-    border-color: var(--redstone-smartweave-blue-color) !important;
-    border-radius: 50%;
-  }
-}
-
 #interactions-table {
   tbody {
     > tr {

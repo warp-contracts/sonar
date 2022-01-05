@@ -116,20 +116,22 @@
         </div>
         <div class="interaction-item">
           <div>Timestamp</div>
-          <div>{{ interaction.timestamp }}</div>
+          <div>
+            {{ interaction.timestamp }} ({{ interaction.timestampFormatted }})
+          </div>
         </div>
         <div class="interaction-item">
           <div>Fee</div>
-          <div>{{ interaction.interaction?.fee.winston }}</div>
+          <div>{{ interaction.fee }} (${{ interaction.feeInUsd }})</div>
         </div>
         <div class="interaction-item">
           <div>Quantity</div>
           <div>{{ interaction.interaction?.quantity.winston }}</div>
         </div>
       </div>
-      <div class="pl-3 col-lg-7 col-12" v-if="!loaded">
+      <div class="pl-3 col-lg-7 col-12" style="marginTop: 50px;" v-if="!loaded">
         <div
-          v-for="n in 10"
+          v-for="n in 11"
           :key="n"
           class="preloader text-preloader tx-preloader"
         ></div>
@@ -138,7 +140,7 @@
         <div>
           <p class="json-header">Interaction Tags</p>
           <json-viewer
-            :value="interaction.tags"
+            :value="interaction?.tags"
             :expand-depth="2"
             copyable
             sort
@@ -182,13 +184,22 @@ export default {
       copiedDisplay: false,
       copiedDisplayOwner: false,
       loaded: false,
+      USDRate: null,
+      feeToAR: 0.000000000001,
     };
   },
 
   mounted() {
-    this.getInteraction(
-      this.$route.query.page ? this.$route.query.page : this.currentPage
-    );
+    axios
+      .get(
+        `${constants.redstoneUrl}/prices/?symbol=AR&provider=redstone&limit=1`
+      )
+      .then((response) => {
+        this.USDRate = response.data[0].value;
+        this.getInteraction(
+          this.$route.query.page ? this.$route.query.page : this.currentPage
+        );
+      });
   },
 
   components: { JsonViewer },
@@ -255,7 +266,7 @@ export default {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
     },
-    async getInteraction(page, confirmationStatus) {
+    async getInteraction() {
       this.interactions = [];
       axios
         .get(
@@ -276,9 +287,16 @@ export default {
               : "-",
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
-            timestamp: dayjs.unix(
+            timestamp: fetchedInteractions.data.interaction.block.timestamp,
+            timestampFormatted: dayjs.unix(
               fetchedInteractions.data.interaction.block.timestamp
             ),
+            fee: fetchedInteractions.data.interaction.fee.winston,
+            feeInUsd: (
+              fetchedInteractions.data.interaction.fee.winston *
+              this.feeToAR *
+              this.USDRate
+            ).toFixed(2),
             recipient:
               fetchedInteractions.data.interaction.recipient == ""
                 ? "-"

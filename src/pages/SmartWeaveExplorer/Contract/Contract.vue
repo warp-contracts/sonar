@@ -474,4 +474,12 @@ export default {
 .contract-tabs > .tabs > div:first-of-type {
   height: 44px;
 }
+
+#confirmation-status-group {
+  .custom-control-input:checked ~ .custom-control-label:after {
+    background-color: var(--redstone-smartweave-blue-color) !important;
+    border-color: var(--redstone-smartweave-blue-color) !important;
+    border-radius: 50%;
+  }
+}
 </style>

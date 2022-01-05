@@ -24,6 +24,28 @@
     </div>
 
     <div class="contracts-wrapper">
+      <div class="d-block d-sm-flex justify-content-between">
+        <b-col lg="9" class="my-1 d-sm-flex py-3 px-0">
+          <p class="filter-header mr-4 ml-2">Contract Type</p>
+          <b-form-radio-group
+            id="contract-type-group"
+            name="contract-type-group"
+            @change="refreshData"
+            v-model="selected"
+            class="contract-type-group"
+          >
+            <div class="contract-type-item">
+              <b-form-radio value="all">All</b-form-radio>
+            </div>
+            <div class="contract-type-item">
+              <b-form-radio value="pst">PST</b-form-radio>
+            </div>
+            <div class="contract-type-item">
+              <b-form-radio value="other">Other</b-form-radio>
+            </div>
+          </b-form-radio-group>
+        </b-col>
+      </div>
       <TxList :paging="pages" @page-clicked="onPageClicked">
         <b-table
           ref="table"
@@ -58,6 +80,10 @@
             >
               {{ data.item.owner | tx }}</a
             >
+          </template>
+
+          <template #cell(type)="data">
+            <div class="text-uppercase">{{ data.item.type }}</div>
           </template>
 
           <template #cell(total)="data">
@@ -128,11 +154,12 @@ export default {
       color: "#5982f1",
       textColor: "#000",
       maskColor: "rgba(255, 255, 255, 0)",
-      showSpinner: true
+      showSpinner: true,
     },
   },
   data() {
     return {
+      selected: "all",
       chartLoading: true,
       loading: true,
       option: {
@@ -186,6 +213,7 @@ export default {
       fields: [
         "contractId",
         "owner",
+        "type",
         {
           key: "total",
           label: "total",
@@ -222,6 +250,7 @@ export default {
   },
 
   mounted() {
+    this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
     this.getContracts(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
@@ -244,16 +273,20 @@ export default {
   },
 
   methods: {
-    onReady() {
-      console.log("ready");
+    refreshData() {
+      if (this.currentPage > 1) {
+        this.$router.push({ query: {} });
+      }
+      this.currentPage = 1;
+      this.selected == "all"
+        ? this.getContracts(this.currentPage)
+        : this.getContracts(this.currentPage, this.selected);
     },
     async getStats() {
-      axios
-        .get(`${constants.gatewayUrl}/gateway/stats`)
-        .then((fetchedData) => {
-          this.totalContracts = fetchedData.data.total_contracts;
-          this.totalInteractions = fetchedData.data.total_interactions;
-        });
+      axios.get(`${constants.gatewayUrl}/gateway/stats`).then((fetchedData) => {
+        this.totalContracts = fetchedData.data.total_contracts;
+        this.totalInteractions = fetchedData.data.total_interactions;
+      });
     },
     async getStatsPerDay() {
       axios
@@ -280,13 +313,16 @@ export default {
     },
 
     async onPageClicked(pageNumber) {
-      this.contracts = [];
+      this.currentPage = pageNumber;
       this.getContracts(pageNumber);
     },
-    async getContracts(page) {
+    async getContracts(page, type) {
+      this.contracts = [];
       axios
         .get(
-          `${constants.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}`
+          `${constants.gatewayUrl}/gateway/contracts?limit=${
+            this.limit
+          }&page=${page}${type ? `&type=${type}` : ""}`
         )
 
         .then(async (fetchedContracts) => {
@@ -300,6 +336,7 @@ export default {
               confirmed: contract.confirmed,
               corrupted: contract.corrupted,
               lastInteractionHeight: contract.last_interaction_height,
+              type: contract.type,
             });
           }
         });
@@ -337,5 +374,13 @@ export default {
   position: absolute;
   left: -20px;
   bottom: 150px;
+}
+
+#contract-type-group {
+  .custom-control-input:checked ~ .custom-control-label:before {
+    background-color: var(--redstone-smartweave-blue-color) !important;
+    border-color: var(--redstone-smartweave-blue-color) !important;
+    border-radius: 50%;
+  }
 }
 </style>

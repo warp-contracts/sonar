@@ -35,25 +35,6 @@
   border-radius: 10px;
   padding: 2rem;
   box-shadow: var(--content-shadow);
-
-  #contracts-table {
-    table-layout: fixed;
-
-    th:nth-of-type(1) {
-      width: 28%;
-    }
-
-    th:nth-of-type(1) {
-      width: 18%;
-    }
-    th:not(:nth-of-type(1)):not(:nth-of-type(2)) {
-      width: 16%;
-    }
-
-    td .source-links {
-      overflow: hidden;
-    }
-  }
 }
 
 .provider-card {
@@ -80,4 +61,25 @@
 
 .chart {
   overflow: auto;
+}
+
+.filter-header {
+  font-weight: 500;
+}
+
+#contract-type-group {
+  display: block;
+
+  @media (min-width: breakpoint-min(md)) {
+    display: flex;
+  }
+
+  .contract-type-item {
+    margin-right: 1rem;
+    display: flex;
+  }
+
+  .custom-control-inline {
+    margin-right: 0 !important;
+  }
 }

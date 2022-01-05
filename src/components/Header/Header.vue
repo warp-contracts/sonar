@@ -52,10 +52,11 @@
                   }}</span>
 
                   <span class="" v-html="htmlText"></span>
-
-                  <span class="d-none d-md-block suggestion-type">{{
-                    data.type
-                  }}</span>
+                  <div style="width: 15%">
+                    <span class="d-none d-md-block suggestion-type mt-1">{{
+                      data.type
+                    }}</span>
+                  </div>
                 </div>
               </template>
             </vue-typeahead-bootstrap>
