@@ -266,10 +266,10 @@ import axios from "axios";
 import TxList from "@/components/TxList/TxList";
 import { TagsParser } from "redstone-smartweave";
 import JsonViewer from "vue-json-viewer";
-import Arweave from "arweave";
 import CodeSandbox from "./CodeSandbox/CodeSandbox";
 import { mapState } from "vuex";
 import dayjs from "dayjs";
+import constants from "@/constants";
 
 export default {
   name: "Contract",
@@ -414,7 +414,7 @@ export default {
       this.interactions = [];
       axios
         .get(
-          `https://gateway.redstone.finance/gateway/interactions?contractId=${
+          `${constants.gatewayUrl}/gateway/interactions?contractId=${
             this.contractId
           }&limit=${this.limit}&totalCount=true&page=${page}${
             confirmationStatus

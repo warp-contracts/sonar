@@ -154,6 +154,7 @@ import _ from "lodash";
 import axios from "axios";
 import JsonViewer from "vue-json-viewer";
 import dayjs from "dayjs";
+import constants from "@/constants";
 
 export default {
   name: "Contract",
@@ -258,7 +259,7 @@ export default {
       this.interactions = [];
       axios
         .get(
-          `https://gateway.redstone.finance/gateway/interactions/${this.interactionId}`
+          `${constants.gatewayUrl}/gateway/interactions/${this.interactionId}`
         )
 
         .then((fetchedInteractions) => {

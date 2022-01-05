@@ -106,8 +106,9 @@ import {
   GridComponent,
   DataZoomComponent,
 } from "echarts/components";
-import VChart, { THEME_KEY, LOADING_OPTIONS_KEY } from "vue-echarts";
+import VChart, { LOADING_OPTIONS_KEY } from "vue-echarts";
 import dayjs from "dayjs";
+import constants from "@/constants";
 
 use([
   CanvasRenderer,
@@ -127,14 +128,7 @@ export default {
       color: "#5982f1",
       textColor: "#000",
       maskColor: "rgba(255, 255, 255, 0)",
-      zlevel: 0,
-      // Font size. Available since `v4.8.0`.
-      // Show an animated "spinner" or not. Available since v4.8.0`.
-      showSpinner: true,
-      // Radius of the "spinner". Available since `v4.8.0`.
-      spinnerRadius: 15,
-      // Line width of the "spinner". Available since `v4.8.0`.
-      lineWidth: 5,
+      showSpinner: true
     },
   },
   data() {
@@ -255,7 +249,7 @@ export default {
     },
     async getStats() {
       axios
-        .get("https://gateway.redstone.finance/gateway/stats")
+        .get(`${constants.gatewayUrl}/gateway/stats`)
         .then((fetchedData) => {
           this.totalContracts = fetchedData.data.total_contracts;
           this.totalInteractions = fetchedData.data.total_interactions;
@@ -263,7 +257,7 @@ export default {
     },
     async getStatsPerDay() {
       axios
-        .get("https://gateway.redstone.finance/gateway/stats/per-day")
+        .get(`${constants.gatewayUrl}/gateway/stats/per-day`)
         .then((fetchedData) => {
           for (const options of fetchedData.data) {
             this.option.xAxis.data.push(
@@ -284,43 +278,6 @@ export default {
           this.loading = false;
         });
     },
-    updateData: function(timeline) {
-      this.selection = timeline;
-
-      switch (timeline) {
-        case "one_month":
-          this.$refs.chart.zoomX(
-            new Date("28 Jan 2013").getTime(),
-            new Date("27 Feb 2013").getTime()
-          );
-          break;
-        case "six_months":
-          this.$refs.chart.zoomX(
-            new Date("27 Sep 2012").getTime(),
-            new Date("27 Feb 2013").getTime()
-          );
-          break;
-        case "one_year":
-          this.$refs.chart.zoomX(
-            new Date("27 Feb 2012").getTime(),
-            new Date("27 Feb 2013").getTime()
-          );
-          break;
-        case "ytd":
-          this.$refs.chart.zoomX(
-            new Date("01 Jan 2013").getTime(),
-            new Date("27 Feb 2013").getTime()
-          );
-          break;
-        case "all":
-          this.$refs.chart.zoomX(
-            new Date("23 Jan 2012").getTime(),
-            new Date("27 Feb 2013").getTime()
-          );
-          break;
-        default:
-      }
-    },
 
     async onPageClicked(pageNumber) {
       this.contracts = [];
@@ -329,7 +286,7 @@ export default {
     async getContracts(page) {
       axios
         .get(
-          `https://gateway.redstone.finance/gateway/contracts?limit=${this.limit}&page=${page}`
+          `${constants.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}`
         )
 
         .then(async (fetchedContracts) => {
