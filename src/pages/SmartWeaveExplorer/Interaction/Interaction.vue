@@ -122,7 +122,7 @@
         </div>
         <div class="interaction-item">
           <div>Fee</div>
-          <div>{{ interaction.fee }} (${{ interaction.feeInUsd }})</div>
+          <div>{{ interaction.fee }} ({{ interaction.feeInAr }} AR)</div>
         </div>
         <div class="interaction-item">
           <div>Quantity</div>
@@ -137,10 +137,10 @@
         ></div>
       </div>
       <div class="col-lg-5 col-12 pt-4">
-        <div>
+        <div v-if="interaction">
           <p class="json-header">Interaction Tags</p>
           <json-viewer
-            :value="interaction?.tags"
+            :value="interaction.tags"
             :expand-depth="2"
             copyable
             sort
@@ -184,22 +184,14 @@ export default {
       copiedDisplay: false,
       copiedDisplayOwner: false,
       loaded: false,
-      USDRate: null,
-      feeToAR: 0.000000000001,
+      winstonToAR: 0.000000000001,
     };
   },
 
   mounted() {
-    axios
-      .get(
-        `${constants.redstoneUrl}/prices/?symbol=AR&provider=redstone&limit=1`
-      )
-      .then((response) => {
-        this.USDRate = response.data[0].value;
-        this.getInteraction(
-          this.$route.query.page ? this.$route.query.page : this.currentPage
-        );
-      });
+    this.getInteraction(
+      this.$route.query.page ? this.$route.query.page : this.currentPage
+    );
   },
 
   components: { JsonViewer },
@@ -292,11 +284,10 @@ export default {
               fetchedInteractions.data.interaction.block.timestamp
             ),
             fee: fetchedInteractions.data.interaction.fee.winston,
-            feeInUsd: (
+            feeInAr: (
               fetchedInteractions.data.interaction.fee.winston *
-              this.feeToAR *
-              this.USDRate
-            ).toFixed(2),
+              this.winstonToAR
+            ).toFixed(8),
             recipient:
               fetchedInteractions.data.interaction.recipient == ""
                 ? "-"
