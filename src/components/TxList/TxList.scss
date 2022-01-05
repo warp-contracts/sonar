@@ -1,0 +1,26 @@
+@import "~@/styles/app";
+
+.custom-select {
+  width: min-content;
+}
+
+.tx-preloader {
+  height: 35px;
+  margin-bottom: 20px;
+  @include preload-animation(2.5s, 100vw);
+}
+
+.provider-manifests .tx-list tr:not(.b-table-details) {
+  cursor: pointer;
+}
+
+.pagination {
+  padding-top: 30px;
+
+  .page-item.active {
+    .page-link {
+      background-color: #fff;
+      box-shadow: 0 0 0 0.2rem #a0b7f7;
+    }
+  }
+}

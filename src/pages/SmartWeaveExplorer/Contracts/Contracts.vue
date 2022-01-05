@@ -1,0 +1,384 @@
+<template>
+  <div>
+    <div class="contracts-wrapper d-lg-flex" style="marginBottom: 30px;">
+      <div class="d-none d-md-block pl-5 pl-xl-0 chart">
+        <div v-if="!loading" class="chart-title">Interactions</div>
+        <v-chart
+          class="chart"
+          :option="option"
+          :loading="loading"
+          resize="width: 80%, height: 500px"
+        />
+      </div>
+      <div class="stats-wrapper">
+        <div class="item-text">
+          <div>Total contracts</div>
+          <div>{{ totalContracts }}</div>
+        </div>
+        <hr style="width: 50%" />
+        <div class="item-text">
+          <div>Total interactions</div>
+          <div>{{ totalInteractions }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contracts-wrapper">
+      <TxList :paging="pages" @page-clicked="onPageClicked">
+        <b-table
+          ref="table"
+          id="contracts-table"
+          stacked="md"
+          hover
+          :items="contracts"
+          :fields="fields"
+          @row-clicked="rowClicked"
+          :busy="!contractsLoaded"
+        >
+          <template #table-busy> </template>
+          <template #cell(contractId)="data" class="text-right">
+            <a
+              @click="
+                $router.push({
+                  path: '/app/contract/' + data.item.contractId,
+                })
+              "
+              target="_blank"
+            >
+              {{ data.item.contractId | tx }}
+            </a>
+          </template>
+
+          <template #cell(owner)="data">
+            <a
+              :href="
+                `https://viewblock.io/arweave/address/${data.item.blockId}`
+              "
+              target="_blank"
+            >
+              {{ data.item.owner | tx }}</a
+            >
+          </template>
+
+          <template #cell(total)="data">
+            <div class="text-right">{{ data.item.total }}</div>
+          </template>
+
+          <template #cell(confirmed)="data">
+            <div class="text-right">{{ data.item.confirmed }}</div>
+          </template>
+
+          <template #cell(corrupted)="data">
+            <div class="text-right">{{ data.item.corrupted }}</div>
+          </template>
+
+          <template #cell(lastInteractionHeight)="data">
+            <div class="text-right">
+              {{ data.item.lastInteractionHeight }}
+            </div>
+          </template>
+        </b-table>
+
+        <div v-if="!contractsLoaded">
+          <div
+            v-for="n in 15"
+            :key="n"
+            class="preloader text-preloader tx-preloader"
+          ></div>
+        </div>
+      </TxList>
+    </div>
+  </div>
+</template>
+
+<script>
+import _ from "lodash";
+import axios from "axios";
+import TxList from "@/components/TxList/TxList";
+import { use } from "echarts/core";
+import { CanvasRenderer } from "echarts/renderers";
+import { LineChart } from "echarts/charts";
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  ToolboxComponent,
+  GridComponent,
+  DataZoomComponent,
+} from "echarts/components";
+import VChart, { THEME_KEY, LOADING_OPTIONS_KEY } from "vue-echarts";
+import dayjs from "dayjs";
+
+use([
+  CanvasRenderer,
+  LineChart,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  ToolboxComponent,
+  GridComponent,
+  DataZoomComponent,
+]);
+export default {
+  name: "Contracts",
+  provide: {
+    [LOADING_OPTIONS_KEY]: {
+      text: "",
+      color: "#5982f1",
+      textColor: "#000",
+      maskColor: "rgba(255, 255, 255, 0)",
+      zlevel: 0,
+      // Font size. Available since `v4.8.0`.
+      // Show an animated "spinner" or not. Available since v4.8.0`.
+      showSpinner: true,
+      // Radius of the "spinner". Available since `v4.8.0`.
+      spinnerRadius: 15,
+      // Line width of the "spinner". Available since `v4.8.0`.
+      lineWidth: 5,
+    },
+  },
+  data() {
+    return {
+      chartLoading: true,
+      loading: true,
+      option: {
+        tooltip: {
+          trigger: "axis",
+          position: function(pt) {
+            return [pt[0], "10%"];
+          },
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: [],
+        },
+        yAxis: {
+          type: "value",
+          boundaryGap: [0, "100%"],
+          min: 0,
+          max: 2500,
+        },
+        dataZoom: [
+          {
+            type: "slider",
+            start: "",
+            end: "",
+            dataBackground: {
+              lineStyle: {
+                color: "#5982f1",
+              },
+              areaStyle: {
+                color: "#5982f1",
+                shadowColor: "#5982f1",
+                opacity: 0.2,
+              },
+            },
+          },
+          {
+            start: "",
+            end: "",
+          },
+        ],
+        series: [
+          {
+            name: "Interactions",
+            type: "line",
+            data: [],
+            lineStyle: { color: "#5982f1" },
+          },
+        ],
+      },
+      fields: [
+        "contractId",
+        "owner",
+        {
+          key: "total",
+          label: "total",
+          thClass: "text-right",
+          tdClass: "text-right",
+        },
+        {
+          key: "confirmed",
+          label: "confirmed",
+          thClass: "text-right",
+          tdClass: "text-right",
+        },
+        {
+          key: "corrupted",
+          label: "corrupted",
+          thClass: "text-right",
+          tdClass: "text-right",
+        },
+        {
+          key: "lastInteractionHeight",
+          label: "last interaction height",
+          thClass: "text-right",
+          tdClass: "text-right",
+        },
+      ],
+      contracts: [],
+      currentPage: 1,
+      paging: null,
+      loaded: false,
+      limit: 15,
+      totalContracts: 0,
+      totalInteractions: 0,
+    };
+  },
+
+  mounted() {
+    this.getContracts(
+      this.$route.query.page ? this.$route.query.page : this.currentPage
+    );
+    this.getStatsPerDay();
+    this.getStats();
+  },
+  components: { TxList, VChart },
+  computed: {
+    pages() {
+      return this.paging ? this.paging : null;
+    },
+    contractsLoaded() {
+      return (
+        this.contracts &&
+        this.paging &&
+        this.contracts.length ==
+          (this.paging.items > this.limit ? this.limit : this.paging.items)
+      );
+    },
+  },
+
+  methods: {
+    onReady() {
+      console.log("ready");
+    },
+    async getStats() {
+      axios
+        .get("https://gateway.redstone.finance/gateway/stats")
+        .then((fetchedData) => {
+          this.totalContracts = fetchedData.data.total_contracts;
+          this.totalInteractions = fetchedData.data.total_interactions;
+        });
+    },
+    async getStatsPerDay() {
+      axios
+        .get("https://gateway.redstone.finance/gateway/stats/per-day")
+        .then((fetchedData) => {
+          for (const options of fetchedData.data) {
+            this.option.xAxis.data.push(
+              dayjs(options.date).format("DD-MM-YYYY")
+            );
+            this.option.series[0].data.push(options.per_day);
+          }
+          const end = 100;
+          const totalTime =
+            new Date(
+              fetchedData.data[fetchedData.data.length - 1].date
+            ).getTime() - new Date(fetchedData.data[0].date).getTime();
+          const start = 100 - (2592000000 / totalTime) * 100;
+          this.option.dataZoom[0].start = start;
+          this.option.dataZoom[0].end = end;
+          this.option.dataZoom[1].start = start;
+          this.option.dataZoom[1].end = end;
+          this.loading = false;
+        });
+    },
+    updateData: function(timeline) {
+      this.selection = timeline;
+
+      switch (timeline) {
+        case "one_month":
+          this.$refs.chart.zoomX(
+            new Date("28 Jan 2013").getTime(),
+            new Date("27 Feb 2013").getTime()
+          );
+          break;
+        case "six_months":
+          this.$refs.chart.zoomX(
+            new Date("27 Sep 2012").getTime(),
+            new Date("27 Feb 2013").getTime()
+          );
+          break;
+        case "one_year":
+          this.$refs.chart.zoomX(
+            new Date("27 Feb 2012").getTime(),
+            new Date("27 Feb 2013").getTime()
+          );
+          break;
+        case "ytd":
+          this.$refs.chart.zoomX(
+            new Date("01 Jan 2013").getTime(),
+            new Date("27 Feb 2013").getTime()
+          );
+          break;
+        case "all":
+          this.$refs.chart.zoomX(
+            new Date("23 Jan 2012").getTime(),
+            new Date("27 Feb 2013").getTime()
+          );
+          break;
+        default:
+      }
+    },
+
+    async onPageClicked(pageNumber) {
+      this.contracts = [];
+      this.getContracts(pageNumber);
+    },
+    async getContracts(page) {
+      axios
+        .get(
+          `https://gateway.redstone.finance/gateway/contracts?limit=${this.limit}&page=${page}`
+        )
+
+        .then(async (fetchedContracts) => {
+          this.paging = fetchedContracts.data.paging;
+          for (const contract of fetchedContracts.data.contracts) {
+            this.contracts.push({
+              id: contract.contract,
+              contractId: contract.contract,
+              owner: contract.owner,
+              total: contract.interactions,
+              confirmed: contract.confirmed,
+              corrupted: contract.corrupted,
+              lastInteractionHeight: contract.last_interaction_height,
+            });
+          }
+        });
+    },
+    rowClicked(record) {
+      this.$set(record, "_showDetails", !record._showDetails);
+    },
+    styleCategory(text, numberOfCategories, index) {
+      return _.startCase(text) + (index < numberOfCategories - 1 ? ", " : "");
+    },
+  },
+};
+</script>
+
+<style src="./Contracts.scss" lang="scss" scoped></style>
+<style lang="scss">
+.chart-wrapper {
+  width: 80%;
+  height: 300px;
+}
+.chart {
+  height: 300px;
+  width: 80%;
+  margin-top: -15px;
+  margin-left: -12px;
+  position: relative;
+
+  @media (min-width: breakpoint-max(lg)) {
+    width: 80%;
+  }
+}
+
+.chart-title {
+  transform: rotate(270deg);
+  position: absolute;
+  left: -20px;
+  bottom: 150px;
+}
+</style>

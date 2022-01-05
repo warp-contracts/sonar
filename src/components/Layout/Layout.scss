@@ -1,67 +1,41 @@
-@import '../../styles/app.scss';
+@import "../../styles/app.scss";
 
 .root {
-    height: 100%;
-    position: relative;
-    left: 0;
-    transition: left $sidebar-transition-time ease-in-out;
+  height: 100%;
+  position: relative;
+  left: 0;
+  transition: left $sidebar-transition-time ease-in-out;
 }
 
 .wrap {
-    position: relative;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    left: $sidebar-width-open;
-    right: 0;
-    transition: left $sidebar-transition-time ease-in-out,
-        margin-left $sidebar-transition-time ease-in-out;
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  left: $sidebar-width-open;
+  right: 0;
+  transition: left $sidebar-transition-time ease-in-out,
+    margin-left $sidebar-transition-time ease-in-out;
 }
 
 div.wrap {
-    left: 0;
-}
-
-.showSidebar div.wrap {
-    margin-left: 0;
+  left: 0;
 }
 
 .content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    padding: $content-padding $content-padding ($content-padding + 20px);
-    background-color: $body-bg;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: $content-padding $content-padding ($content-padding + 20px);
+  background-color: $body-bg;
 
-    @media (max-width: breakpoint-max(sm)) {
-        padding: 20px $content-padding-sm ($content-padding + 30px);
-    }
+  @media (max-width: breakpoint-max(sm)) {
+    padding: 20px $content-padding-sm ($content-padding + 30px);
+  }
 
-    // hammers disallows text selection, allowing it for large screens
-    @media (min-width: breakpoint-min(sm)) {
-        user-select: auto !important;
-    }
-}
-
-.contentFooter {
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    bottom: 15px;
-    color: #8c8c8c;
-
-    .links > a {
-        margin-right: 11px;
-
-        svg {
-            fill: $gray-550;
-        }
-
-        svg:hover {
-            fill: $gray-750;
-            transform: scale(1.1);
-            transition: 0.3s;
-        }
-    }
+  // hammers disallows text selection, allowing it for large screens
+  @media (min-width: breakpoint-min(sm)) {
+    user-select: auto !important;
+  }
 }

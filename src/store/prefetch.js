@@ -1,13 +1,9 @@
-const axios = require("axios");
 import constants from "@/constants";
 import Arweave from "arweave";
 import {
-  CacheableStateEvaluator,
   ContractDefinitionLoader,
   SmartWeaveWebFactory,
 } from "redstone-smartweave";
-import LocalStorageCache from "@/cache/cache";
-import LocalStorageBlockHeightCache from "@/cache/block-height-cache";
 import Vue from "vue";
 
 export default {

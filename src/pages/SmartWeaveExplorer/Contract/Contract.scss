@@ -1,0 +1,243 @@
+@import "~@/styles/app";
+
+.contract-wrapper {
+  background-color: #fcfcfc;
+  border-radius: 10px;
+  padding: 2rem;
+  -webkit-box-shadow: var(--content-shadow);
+  box-shadow: var(--content-shadow);
+}
+
+.contract-details-wrapper {
+  padding: 17px;
+  font-size: 16px;
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+
+    .cell-header {
+      font-weight: 600;
+    }
+  }
+}
+
+.filter-header {
+  font-weight: 500;
+}
+
+.json-header {
+  overflow: hidden;
+  padding: 20px 20px 10px 20px;
+  background: white;
+  margin-bottom: -10px;
+  font-size: 15px;
+  color: #6b6b6b;
+  font-weight: 500;
+}
+
+.contract-header-wrapper {
+  display: flex;
+}
+
+.contract-header {
+  font-size: 30px;
+  line-height: 30px;
+  padding-left: 10px;
+}
+
+.flaticon-file-signature {
+  height: 30px;
+  width: 30px;
+  background-repeat: no-repeat;
+  align-self: end;
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
+    brightness(95%) contrast(97%);
+}
+
+.flaticon-copy-to-clipboard {
+  height: 15px;
+  width: 15px;
+  background-repeat: no-repeat;
+  align-self: end;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
+    brightness(95%) contrast(97%);
+}
+
+.contract-id {
+  font-size: 15px;
+}
+
+.jv-container {
+  .jv-code {
+    > .jv-node {
+      max-width: 90%;
+    }
+  }
+}
+
+#confirmation-status-group {
+  .custom-control-input:checked ~ .custom-control-label:after {
+    background-color: var(--redstone-smartweave-blue-color) !important;
+    border-color: var(--redstone-smartweave-blue-color) !important;
+    border-radius: 50%;
+  }
+}
+
+#interactions-table {
+  tbody {
+    > tr {
+      cursor: pointer;
+    }
+  }
+}
+
+.clipboard-success {
+  align-self: end;
+  margin-bottom: 3px;
+  margin-left: 3px;
+  color: var(--redstone-smartweave-blue-color);
+  padding: 2px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 0.5s, opacity 0.5s linear;
+}
+
+.jv-container .jv-code {
+  padding: 20px 50px 30px 60px;
+}
+
+.contract-header {
+  display: flex;
+}
+
+.btn-refresh {
+  border-color: var(--redstone-smartweave-blue-color) !important;
+  color: var(--redstone-smartweave-blue-color) !important;
+  border: 1px solid !important;
+  background-color: white !important;
+  font-size: $font-size-mini;
+  border: 1px solid !important;
+  height: fit-content;
+
+  @media (min-width: breakpoint-min(md)) {
+    font-size: $font-size-larger;
+  }
+}
+
+.flaticon-question-tooltip {
+  width: 25px;
+  height: 25px;
+  transform: scale(0.6);
+  margin-top: -2px;
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
+    brightness(95%) contrast(97%);
+}
+
+#confirmation-status-group {
+  display: block;
+
+  @media (min-width: breakpoint-min(md)) {
+    display: flex;
+  }
+
+  .confirmation-status-item {
+    margin-right: 1rem;
+    display: flex;
+  }
+
+  .custom-control-inline {
+    margin-right: 0 !important;
+  }
+}
+
+.contract-tabs {
+  .tab-pane:nth-of-type(2) {
+    padding-left: 0;
+    padding-right: 0;
+
+    @media (min-width: breakpoint-min(md)) {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  .nav-tabs > .nav-item {
+    flex: 0 0 124px !important;
+  }
+}
+
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--redstone-smartweave-blue-color);
+  color: var(--redstone-smartweave-blue-color);
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+}
+
+.dot-flashing::before,
+.dot-flashing::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--redstone-smartweave-blue-color);
+  color: var(--redstone-smartweave-blue-color);
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--redstone-smartweave-blue-color);
+  color: var(--redstone-smartweave-blue-color);
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: var(--redstone-smartweave-blue-color);
+  }
+  50%,
+  100% {
+    background-color: #ebe6ff;
+  }
+}
+
+.tab-content > .tab-pane {
+  @media (min-width: breakpoint-min(lg)) {
+    padding: 0 !important;
+  }
+
+  @media (min-width: breakpoint-min(xl)) {
+    padding: 2rem !important;
+  }
+}

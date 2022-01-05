@@ -4,7 +4,7 @@ export default {
     colors: {
       sidebar: "#002B49",
       navbar: "#ffffff",
-      primary: "#005792",
+      primary: "#5982f1",
       secondary: "#798892",
       success: "#21AE8C",
       info: "#1A86D0",
@@ -12,10 +12,10 @@ export default {
       danger: "#FD5F00",
       inverse: "#0D2B47",
       textColor: "#495057",
-      gray: "#D7DFE6"
+      gray: "#D7DFE6",
     },
     chartColors: {
-      axisColor: '#8EA1AB'
-    }
-  }
+      axisColor: "#8EA1AB",
+    },
+  },
 };

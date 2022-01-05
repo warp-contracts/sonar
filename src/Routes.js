@@ -5,8 +5,9 @@ import Layout from "@/components/Layout/Layout";
 import ErrorPage from "@/pages/Error/Error";
 
 // Redstone
-import Contracts from "@/pages/Redstone/Contracts/Contracts";
-import Contract from "@/pages/Redstone/Contract/Contract";
+import Contracts from "@/pages/SmartWeaveExplorer/Contracts/Contracts";
+import Contract from "@/pages/SmartWeaveExplorer/Contract/Contract";
+import Interaction from "@/pages/SmartWeaveExplorer/Interaction/Interaction";
 
 // Store
 import store from "./store";
@@ -39,6 +40,15 @@ const router = new Router({
           name: "Contract",
           props: true,
           component: Contract,
+          meta: {
+            showSearchInputInNavbar: true,
+          },
+        },
+        {
+          path: "interaction/:id",
+          name: "Interaction",
+          props: true,
+          component: Interaction,
           meta: {
             showSearchInputInNavbar: true,
           },

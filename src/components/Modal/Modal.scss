@@ -1,0 +1,30 @@
+@import "../../styles/app";
+
+.btn-docs {
+  background-color: var(--redstone-smartweave-blue-color) !important;
+  color: white !important;
+  font-size: $font-size-mini;
+  border: none !important;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  @media (min-width: breakpoint-min(md)) {
+    font-size: $font-size-larger;
+  }
+}
+
+.info-colored {
+  color: var(--redstone-smartweave-blue-color) !important;
+}
+
+.intro {
+  @media (max-width: breakpoint-min(sm)) {
+    flex-direction: column;
+
+    div:first-of-type {
+      order: 1;
+    }
+  }
+}

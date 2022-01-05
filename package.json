@@ -5,10 +5,10 @@
   "scripts": {
     "serve": "vue-cli-service serve --port 3000",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "start": "node server.js"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@amcharts/amcharts4": "^4.10.23",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
     "animate.css": "^4.1.1",
     "apexcharts": "^3.22.2",
@@ -17,10 +17,11 @@
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "2.21.2",
     "cache-loader": "^4.1.0",
-    "chart.js": "2",
+    "chart.js": "^2.9.4",
     "css-loader": "^1.0.1",
     "dateformat": "^4.5.1",
-    "echarts": "^4.9.0",
+    "dayjs": "^1.10.7",
+    "echarts": "^5.2.2",
     "expose-loader": "^0.7.5",
     "font-awesome": "4.7.0",
     "glyphicons-halflings": "^1.9.1",
@@ -33,7 +34,7 @@
     "mini-css-extract-plugin": "^1.6.0",
     "node-sass": "^6.0.0",
     "npm": "^7.17.0",
-    "redstone-smartweave": "^0.4.10",
+    "redstone-smartweave": "0.3.10-alpha.12",
     "rickshaw": "1.7.1",
     "sass-loader": "^10",
     "ts-node": "^10.0.0",
@@ -42,7 +43,7 @@
     "vue": "^2.6.14",
     "vue-apexcharts": "^1.6.0",
     "vue-chartjs": "^3.5.1",
-    "vue-echarts": "^4.1.0",
+    "vue-echarts": "^6.0.0",
     "vue-json-viewer": "^2.2.19",
     "vue-loaders": "^4.1.4",
     "vue-multiselect": "^2.1.6",
@@ -67,6 +68,7 @@
     "@vue/cli-plugin-babel": "^3.12.0",
     "@vue/cli-plugin-eslint": "^3.12.0",
     "@vue/cli-service": "^4.5.13",
+    "@vue/composition-api": "^1.4.3",
     "moment": "^2.29.1",
     "vue-template-compiler": "^2.6.12"
   },
