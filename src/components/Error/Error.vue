@@ -1,7 +1,9 @@
 <template>
   <div class="contract-wrapper error-wrapper">
     Oops!
-    <div>Seems like the transaction you are searching for does not exist.</div>
+    <div>
+      Seems like we could not find the transaction you are searching for.
+    </div>
     <div class="flaticon-sad-error"></div>
   </div>
 </template>
