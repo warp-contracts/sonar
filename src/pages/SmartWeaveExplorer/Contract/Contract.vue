@@ -1,261 +1,268 @@
 <template>
-  <div class="contract-wrapper">
-    <div class="d-block d-md-flex pl-3">
-      <div class="contract-header-wrapper">
-        <div class="flaticon-file-signature m-0-auto"></div>
-        <div class="align-self-end contract-header"><span>Contract</span></div>
+  <div>
+    <div v-if="loadingInitialized && correct" class="contract-wrapper">
+      <div class="d-block d-md-flex pl-3">
+        <div class="contract-header-wrapper">
+          <div class="flaticon-file-signature m-0-auto"></div>
+          <div class="align-self-end contract-header">
+            <span>Contract</span>
+          </div>
+        </div>
+        <div class="align-self-end pl-md-3 pl-5 contract-id d-flex">
+          <span class="d-none d-sm-block">{{ contractId }}</span
+          ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
+          <div
+            class="flaticon-copy-to-clipboard"
+            v-clipboard="contractId"
+            v-clipboard:success="onCopy"
+            title="Copy to clipboard"
+          ></div>
+          <p
+            class="clipboard-success"
+            v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }"
+          >
+            Copied
+          </p>
+        </div>
       </div>
-      <div class="align-self-end pl-md-3 pl-5 contract-id d-flex">
-        <span class="d-none d-sm-block">{{ contractId }}</span
-        ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
-        <div
-          class="flaticon-copy-to-clipboard"
-          v-clipboard="contractId"
-          v-clipboard:success="onCopy"
-          title="Copy to clipboard"
-        ></div>
-        <p
-          class="clipboard-success"
-          v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }"
-        >
-          Copied
-        </p>
-      </div>
-    </div>
-    <div class="contract-details-wrapper">
-      <div class="d-block d-md-flex">
-        <div class="col-6 p-0">
-          <div class="cell">
-            <div class="cell-header">Owner</div>
-            <div class="d-flex">
-              <div v-if="owner" class="align-self-end d-flex">
-                <span class="d-none d-sm-block">{{ owner }}</span
-                ><span class="d-block d-sm-none">{{ owner | tx }}</span>
-                <div
-                  class="flaticon-copy-to-clipboard"
-                  v-clipboard="owner"
-                  v-clipboard:success="onCopyOwner"
-                  title="Copy to clipboard"
-                ></div>
-                <p
-                  class="clipboard-success"
-                  v-bind:class="{
-                    hidden: !copiedDisplayOwner,
-                    visible: copiedDisplayOwner,
-                  }"
-                >
-                  Copied
-                </p>
-              </div>
-              <div v-else class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
+      <div class="contract-details-wrapper">
+        <div class="d-block d-md-flex">
+          <div class="col-6 p-0">
+            <div class="cell">
+              <div class="cell-header">Owner</div>
+              <div class="d-flex">
+                <div v-if="owner" class="align-self-end d-flex">
+                  <span class="d-none d-sm-block">{{ owner }}</span
+                  ><span class="d-block d-sm-none">{{ owner | tx }}</span>
+                  <div
+                    class="flaticon-copy-to-clipboard"
+                    v-clipboard="owner"
+                    v-clipboard:success="onCopyOwner"
+                    title="Copy to clipboard"
+                  ></div>
+                  <p
+                    class="clipboard-success"
+                    v-bind:class="{
+                      hidden: !copiedDisplayOwner,
+                      visible: copiedDisplayOwner,
+                    }"
+                  >
+                    Copied
+                  </p>
+                </div>
+                <div v-else class="pl-3 pt-3">
+                  <div class="dot-flashing"></div>
+                </div>
               </div>
             </div>
+            <div class="cell">
+              <div class="cell-header">Total interactions</div>
+              <div>{{ total }}</div>
+            </div>
           </div>
-          <div class="cell">
-            <div class="cell-header">Total interactions</div>
-            <div>{{ total }}</div>
-          </div>
-        </div>
-        <div class="col-6 p-0">
-          <div class="cell">
-            <div class="cell-header">Confirmed interactions</div>
-            <div>{{ confirmed }}</div>
-          </div>
-          <div class="cell">
-            <div class="cell-header">Corrupted interactions</div>
-            <div>{{ corrupted }}</div>
+          <div class="col-6 p-0">
+            <div class="cell">
+              <div class="cell-header">Confirmed interactions</div>
+              <div>{{ confirmed }}</div>
+            </div>
+            <div class="cell">
+              <div class="cell-header">Corrupted interactions</div>
+              <div>{{ corrupted }}</div>
+            </div>
           </div>
         </div>
       </div>
+      <div>
+        <b-tabs class="contract-tabs" @input="onInput">
+          <b-tab title="Transactions">
+            <div class="d-block d-sm-flex justify-content-between">
+              <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
+                <p class="filter-header mr-4 ml-2">Confirmation Status</p>
+                <b-form-radio-group
+                  id="confirmation-status-group"
+                  name="confirmation-status-group"
+                  @change="refreshData"
+                  v-model="selected"
+                  class="confirmation-status-group"
+                >
+                  <div class="confirmation-status-item">
+                    <b-form-radio value="all">All</b-form-radio>
+                    <div
+                      v-b-tooltip.hover
+                      title="Show all contract interactions."
+                      class="flaticon-question-tooltip"
+                    />
+                  </div>
+                  <div class="confirmation-status-item">
+                    <b-form-radio value="confirmed">Confirmed</b-form-radio>
+                    <div
+                      v-b-tooltip.hover
+                      title="Show contract interactions which have been positively confirmed by at least three different nodes."
+                      class="flaticon-question-tooltip"
+                    />
+                  </div>
+                  <div class="confirmation-status-item">
+                    <b-form-radio value="corrupted">Corrupted</b-form-radio>
+                    <div
+                      v-b-tooltip.hover
+                      title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
+                      class="flaticon-question-tooltip"
+                    />
+                  </div>
+                  <div class="confirmation-status-item">
+                    <b-form-radio value="not_corrupted"
+                      >Not corrupted</b-form-radio
+                    >
+                    <div
+                      v-b-tooltip.hover
+                      title="Show both confirmed and not yet processed interactions."
+                      class="flaticon-question-tooltip"
+                    />
+                  </div>
+                </b-form-radio-group>
+              </b-col>
+
+              <b-button
+                class="btn btn-refresh rounded-pill mb-3 mb-sm-0"
+                @click="refreshData"
+                >Refresh data</b-button
+              >
+            </div>
+            <div v-if="visitedTabs.includes(0)">
+              <TxList :paging="pages" @page-clicked="onPageClicked">
+                <b-table
+                  ref="table"
+                  id="interactions-table"
+                  stacked="md"
+                  hover
+                  :items="interactions"
+                  :fields="fields"
+                  @row-clicked="rowClicked"
+                  :busy="!interactionsLoaded"
+                >
+                  <template #table-busy> </template>
+
+                  <template #cell(id)="data">
+                    <a :href="`/#/app/interaction/${data.item.interactionId}`">
+                      {{ data.item.interactionId | tx }}</a
+                    >
+                  </template>
+
+                  <template #cell(block_id)="data">
+                    <a
+                      :href="
+                        `https://viewblock.io/arweave/block/${data.item.blockId}`
+                      "
+                      target="_blank"
+                    >
+                      {{ data.item.blockId | tx }}
+                    </a>
+                  </template>
+
+                  <template #cell(block_height)="data">
+                    {{ data.item.blockHeight }}
+                  </template>
+
+                  <template #cell(owner)="data">
+                    <a
+                      :href="
+                        `https://viewblock.io/arweave/address/${data.item.owner}`
+                      "
+                      target="_blank"
+                    >
+                      {{ data.item.owner | tx }}</a
+                    >
+                  </template>
+
+                  <template #cell(function)="data">
+                    {{ data.item.function }}
+                  </template>
+
+                  <template #cell(status)="data">
+                    {{ data.item.status }}
+                  </template>
+
+                  <template #cell(confirmingPeers)="data">
+                    <div v-if="data.item.confirmingPeers[0] != '-'">
+                      <a
+                        :href="
+                          `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                        "
+                        target="_blank"
+                        class="mr-1"
+                      >
+                        {{ data.item.confirmingPeers[0] }}</a
+                      >
+                      <a
+                        :href="
+                          `http://${data.item.confirmingPeers[1]}:1984/tx/${data.item.interactionId}/status`
+                        "
+                        target="_blank"
+                        class="mr-1"
+                      >
+                        {{ data.item.confirmingPeers[1] }}</a
+                      >
+                      <a
+                        :href="
+                          `http://${data.item.confirmingPeers[2]}:1984/tx/${data.item.interactionId}/status`
+                        "
+                        target="_blank"
+                        class="mr-1"
+                      >
+                        {{ data.item.confirmingPeers[2] }}</a
+                      >
+                    </div>
+                    <div v-else>{{ data.item.confirmingPeers }}</div>
+                  </template>
+
+                  <template #cell(actions)="data">
+                    <div
+                      v-if="!data.item._showDetails"
+                      class="flaticon-chevron-down"
+                    />
+                    <div v-else class="flaticon-chevron-up" />
+                  </template>
+
+                  <template slot="row-details" slot-scope="data">
+                    <div>
+                      <p class="json-header">Contract Input:</p>
+                      <json-viewer
+                        :value="data.item.tags"
+                        :expand-depth="1"
+                        copyable
+                        sort
+                      ></json-viewer>
+                      <hr />
+                      <p class="json-header">Full transaction:</p>
+                      <json-viewer
+                        :value="data.item.interaction"
+                        :expand-depth="1"
+                        copyable
+                        sort
+                      ></json-viewer>
+                    </div>
+                  </template>
+                </b-table>
+                <div v-if="!interactionsLoaded">
+                  <div
+                    v-for="n in 15"
+                    :key="n"
+                    class="preloader text-preloader tx-preloader"
+                  ></div>
+                </div>
+              </TxList>
+            </div>
+          </b-tab>
+          <b-tab title="Code">
+            <div v-if="visitedTabs.includes(1)">
+              <CodeSandbox :contractId="contractId"></CodeSandbox>
+            </div>
+          </b-tab>
+        </b-tabs>
+      </div>
     </div>
-    <div>
-      <b-tabs class="contract-tabs" @input="onInput">
-        <b-tab title="Transactions">
-          <div class="d-block d-sm-flex justify-content-between">
-            <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-              <p class="filter-header mr-4 ml-2">Confirmation Status</p>
-              <b-form-radio-group
-                id="confirmation-status-group"
-                name="confirmation-status-group"
-                @change="refreshData"
-                v-model="selected"
-                class="confirmation-status-group"
-              >
-                <div class="confirmation-status-item">
-                  <b-form-radio value="all">All</b-form-radio>
-                  <div
-                    v-b-tooltip.hover
-                    title="Show all contract interactions."
-                    class="flaticon-question-tooltip"
-                  />
-                </div>
-                <div class="confirmation-status-item">
-                  <b-form-radio value="confirmed">Confirmed</b-form-radio>
-                  <div
-                    v-b-tooltip.hover
-                    title="Show contract interactions which have been positively confirmed by at least three different nodes."
-                    class="flaticon-question-tooltip"
-                  />
-                </div>
-                <div class="confirmation-status-item">
-                  <b-form-radio value="corrupted">Corrupted</b-form-radio>
-                  <div
-                    v-b-tooltip.hover
-                    title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
-                    class="flaticon-question-tooltip"
-                  />
-                </div>
-                <div class="confirmation-status-item">
-                  <b-form-radio value="not_corrupted"
-                    >Not corrupted</b-form-radio
-                  >
-                  <div
-                    v-b-tooltip.hover
-                    title="Show both confirmed and not yet processed interactions."
-                    class="flaticon-question-tooltip"
-                  />
-                </div>
-              </b-form-radio-group>
-            </b-col>
-
-            <b-button
-              class="btn btn-refresh rounded-pill mb-3 mb-sm-0"
-              @click="refreshData"
-              >Refresh data</b-button
-            >
-          </div>
-          <div v-if="visitedTabs.includes(0)">
-            <TxList :paging="pages" @page-clicked="onPageClicked">
-              <b-table
-                ref="table"
-                id="interactions-table"
-                stacked="md"
-                hover
-                :items="interactions"
-                :fields="fields"
-                @row-clicked="rowClicked"
-                :busy="!interactionsLoaded"
-              >
-                <template #table-busy> </template>
-
-                <template #cell(id)="data">
-                  <a :href="`/#/app/interaction/${data.item.interactionId}`">
-                    {{ data.item.interactionId | tx }}</a
-                  >
-                </template>
-
-                <template #cell(block_id)="data">
-                  <a
-                    :href="
-                      `https://viewblock.io/arweave/block/${data.item.blockId}`
-                    "
-                    target="_blank"
-                  >
-                    {{ data.item.blockId | tx }}
-                  </a>
-                </template>
-
-                <template #cell(block_height)="data">
-                  {{ data.item.blockHeight }}
-                </template>
-
-                <template #cell(owner)="data">
-                  <a
-                    :href="
-                      `https://viewblock.io/arweave/address/${data.item.owner}`
-                    "
-                    target="_blank"
-                  >
-                    {{ data.item.owner | tx }}</a
-                  >
-                </template>
-
-                <template #cell(function)="data">
-                  {{ data.item.function }}
-                </template>
-
-                <template #cell(status)="data">
-                  {{ data.item.status }}
-                </template>
-
-                <template #cell(confirmingPeers)="data">
-                  <div v-if="data.item.confirmingPeers[0] != '-'">
-                    <a
-                      :href="
-                        `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                      "
-                      target="_blank"
-                      class="mr-1"
-                    >
-                      {{ data.item.confirmingPeers[0] }}</a
-                    >
-                    <a
-                      :href="
-                        `http://${data.item.confirmingPeers[1]}:1984/tx/${data.item.interactionId}/status`
-                      "
-                      target="_blank"
-                      class="mr-1"
-                    >
-                      {{ data.item.confirmingPeers[1] }}</a
-                    >
-                    <a
-                      :href="
-                        `http://${data.item.confirmingPeers[2]}:1984/tx/${data.item.interactionId}/status`
-                      "
-                      target="_blank"
-                      class="mr-1"
-                    >
-                      {{ data.item.confirmingPeers[2] }}</a
-                    >
-                  </div>
-                  <div v-else>{{ data.item.confirmingPeers }}</div>
-                </template>
-
-                <template #cell(actions)="data">
-                  <i
-                    v-if="!data.item._showDetails"
-                    class="fa fa-chevron-down"
-                  />
-                  <i v-else class="fa fa-chevron-up" />
-                </template>
-
-                <template slot="row-details" slot-scope="data">
-                  <div>
-                    <p class="json-header">Contract Input:</p>
-                    <json-viewer
-                      :value="data.item.tags"
-                      :expand-depth="1"
-                      copyable
-                      sort
-                    ></json-viewer>
-                    <hr />
-                    <p class="json-header">Full transaction:</p>
-                    <json-viewer
-                      :value="data.item.interaction"
-                      :expand-depth="1"
-                      copyable
-                      sort
-                    ></json-viewer>
-                  </div>
-                </template>
-              </b-table>
-              <div v-if="!interactionsLoaded">
-                <div
-                  v-for="n in 15"
-                  :key="n"
-                  class="preloader text-preloader tx-preloader"
-                ></div>
-              </div>
-            </TxList>
-          </div>
-        </b-tab>
-        <b-tab title="Code">
-          <div v-if="visitedTabs.includes(1)">
-            <CodeSandbox :contractId="contractId"></CodeSandbox>
-          </div>
-        </b-tab>
-      </b-tabs>
+    <div v-if="loadingInitialized && !correct">
+      <Error />
     </div>
   </div>
 </template>
@@ -270,6 +277,7 @@ import CodeSandbox from "./CodeSandbox/CodeSandbox";
 import { mapState } from "vuex";
 import dayjs from "dayjs";
 import constants from "@/constants";
+import Error from "@/components/Error/Error";
 
 export default {
   name: "Contract",
@@ -307,16 +315,25 @@ export default {
       selected: "all",
       copiedDisplay: false,
       copiedDisplayOwner: false,
+      loadingInitialized: false,
+      correct: false,
     };
   },
 
   mounted() {
+    if (this.$route.params.id.length != 43) {
+      this.loadingInitialized = true;
+      this.correct = false;
+    } else {
+      this.loadingInitialized = true;
+      this.correct = true;
+    }
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
   },
 
-  components: { CodeSandbox, TxList, JsonViewer },
+  components: { CodeSandbox, TxList, JsonViewer, Error },
   computed: {
     contractId() {
       return this.$route.params.id;

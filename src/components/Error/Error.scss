@@ -1,0 +1,25 @@
+@import "~@/styles/app";
+
+.error-wrapper {
+  text-align: center;
+  height: 300px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  width: 90%;
+
+  @media (min-width: breakpoint-min(md)) {
+    width: 50%;
+  }
+}
+
+.flaticon-sad-error {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
+    brightness(95%) contrast(97%);
+}

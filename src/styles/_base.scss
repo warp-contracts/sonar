@@ -1,7 +1,10 @@
 body:after {
   content: url(../../src/assets/icons/search-2.svg)
-    url(../../src/assets/icons/file-signature-solid.svg)
-    url(../../src/assets/icons/interaction.svg)
+      url(../../src/assets/icons/file-signature-solid.svg)
+      url(../../src/assets/icons/interaction.svg),
+    url(../../src/assets/icons/sad-error.svg),
+    url(../../src/assets/icons/chevron-up.svg),
+    url(../../src/assets/icons/chevron-down.svg),
     url(../../src/assets/icons/question-tooltip.svg);
   display: none;
 }

@@ -10,7 +10,7 @@
   @include preload-animation(2.5s, 100vw);
 }
 
-.provider-manifests .tx-list tr:not(.b-table-details) {
+#interactions-table tr:not(.b-table-details) {
   cursor: pointer;
 }
 

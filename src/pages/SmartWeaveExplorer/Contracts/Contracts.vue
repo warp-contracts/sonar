@@ -14,6 +14,7 @@
         <div class="item-text">
           <div>Total contracts</div>
           <div>{{ totalContracts }}</div>
+          <div />
         </div>
         <hr style="width: 50%" />
         <div class="item-text">
