@@ -24,7 +24,6 @@
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.6.0",
     "node-sass": "^6.0.0",
-    "redstone-fetch-undici": "^1.0.8",
     "redstone-smartweave": "0.3.10-alpha.12",
     "sass-loader": "^10",
     "ts-node": "^10.0.0",
