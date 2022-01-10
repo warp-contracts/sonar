@@ -7567,6 +7567,13 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
+redstone-fetch-undici@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/redstone-fetch-undici/-/redstone-fetch-undici-1.0.8.tgz#178cc588b3e8af387cf8c16a43af3af75dd6a7d1"
+  integrity sha512-Wf1t3/HScX7pVPxJRxau0P8HXWZ6qxGcAB07AZ3pUrSecW0aPiCW5NkhLlgoWSLZeJTgJeHYyzEL0xfYP8pAdg==
+  dependencies:
+    undici "^4.12.1"
+
 redstone-smartweave@0.3.10-alpha.12:
   version "0.3.10-alpha.12"
   resolved "https://registry.yarnpkg.com/redstone-smartweave/-/redstone-smartweave-0.3.10-alpha.12.tgz#5fd182831c0631eefbd6c7a491fba007621fd679"
@@ -8979,6 +8986,11 @@ unbox-primitive@^1.0.1:
     has-bigints "^1.0.1"
     has-symbols "^1.0.2"
     which-boxed-primitive "^1.0.2"
+
+undici@^4.12.1:
+  version "4.12.1"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-4.12.1.tgz#3a7b5fb12f835a96a65397dd94578464b08d1c27"
+  integrity sha512-MSfap7YiQJqTPP12C11PFRs9raZuVicDbwsZHTjB0a8+SsCqt7KdUis54f373yf7ZFhJzAkGJLaKm0202OIxHg==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

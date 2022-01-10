@@ -13,13 +13,32 @@
       <div class="stats-wrapper">
         <div class="item-text">
           <div>Total contracts</div>
-          <div>{{ totalContracts }}</div>
-          <div />
+          <div class="d-flex justify-content-center">
+            <div v-if="totalContractsLoaded">
+              <div>{{ totalContracts }}</div>
+            </div>
+            <div v-else class="align-self-center mt-4">
+              <div class="dot-flashing"></div>
+            </div>
+            <div
+              v-if="totalContractsLoaded"
+              v-b-tooltip.hover
+              title="Calculating number of ."
+              class="flaticon-question-tooltip"
+            />
+          </div>
         </div>
         <hr style="width: 50%" />
         <div class="item-text">
           <div>Total interactions</div>
-          <div>{{ totalInteractions }}</div>
+          <div class="d-flex justify-content-center">
+            <div v-if="totalInteractionsLoaded">
+              <div>{{ totalInteractions }}</div>
+            </div>
+            <div v-else class="align-self-center mt-4">
+              <div class="dot-flashing"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -247,6 +266,8 @@ export default {
       limit: 15,
       totalContracts: 0,
       totalInteractions: 0,
+      totalContractsLoaded: false,
+      totalInteractionsLoaded: false,
     };
   },
 
@@ -287,6 +308,8 @@ export default {
       axios.get(`${constants.gatewayUrl}/gateway/stats`).then((fetchedData) => {
         this.totalContracts = fetchedData.data.total_contracts;
         this.totalInteractions = fetchedData.data.total_interactions;
+        this.totalContractsLoaded = true;
+        this.totalInteractionsLoaded = true;
       });
     },
     async getStatsPerDay() {
@@ -315,7 +338,7 @@ export default {
 
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
-      this.getContracts(pageNumber);
+      this.getContracts(pageNumber, this.selected);
     },
     async getContracts(page, type) {
       this.contracts = [];
