@@ -425,7 +425,11 @@ export default {
     },
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
-      this.getInteractions(this.currentPage);
+      if (this.selected == "all") {
+        this.getInteractions(this.currentPage);
+      } else {
+        this.getInteractions(this.currentPage, this.selected);
+      }
     },
     async getInteractions(page, confirmationStatus) {
       this.interactions = [];

@@ -338,7 +338,11 @@ export default {
 
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
-      this.getContracts(pageNumber, this.selected);
+      if (this.selected == "all") {
+        this.getContracts(this.currentPage);
+      } else {
+        this.getContracts(this.currentPage, this.selected);
+      }
     },
     async getContracts(page, type) {
       this.contracts = [];
