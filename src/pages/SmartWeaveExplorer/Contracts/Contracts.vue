@@ -23,7 +23,7 @@
             <div
               v-if="totalContractsLoaded"
               v-b-tooltip.hover
-              title="Calculating number of ."
+              title="Total number of contracts with at least one interaction."
               class="flaticon-question-tooltip"
             />
           </div>
