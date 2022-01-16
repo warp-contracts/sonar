@@ -258,6 +258,11 @@
               <CodeSandbox :contractId="contractId"></CodeSandbox>
             </div>
           </b-tab>
+          <b-tab title="State">
+            <div v-if="visitedTabs.includes(2)">
+              <ContractState :contractId="contractId"></ContractState>
+            </div>
+          </b-tab>
         </b-tabs>
       </div>
     </div>
@@ -278,6 +283,7 @@ import { mapState } from "vuex";
 import dayjs from "dayjs";
 import constants from "@/constants";
 import Error from "@/components/Error/Error";
+import ContractState from "./ContractState/ContractState";
 
 export default {
   name: "Contract",
@@ -333,7 +339,7 @@ export default {
     );
   },
 
-  components: { CodeSandbox, TxList, JsonViewer, Error },
+  components: {ContractState, CodeSandbox, TxList, JsonViewer, Error },
   computed: {
     contractId() {
       return this.$route.params.id;
