@@ -1,43 +1,43 @@
 <template>
-    <div>
-        <div class="iframe-loading" v-if="!iframeData">
-            Loading Contract Data...
-        </div>
-
-        <iframe v-else title="Contract Code" v-bind="iframeData" />
+  <div>
+    <div class="iframe-loading" v-if="!iframeData">
+      Loading Contract Code...
     </div>
+
+    <iframe v-else title="Contract Code" v-bind="iframeData" />
+  </div>
 </template>
 
 <script>
-import { createCodesandbox } from './createCodesandbox';
+import { createCodesandbox } from "./createCodesandbox";
 
 export default {
-    name: 'CodeSandbox',
+  name: "CodeSandbox",
 
-    props: {
-        contractId: String,
-    },
+  props: {
+    contractId: String,
+  },
 
-    data() {
-        return {
-            iframeData: null,
-        };
-    },
+  data() {
+    return {
+      iframeData: null,
+    };
+  },
 
-    async mounted() {
-        this.iframeData = await createCodesandbox(this.contractId);
-    },
+  async mounted() {
+    this.iframeData = await createCodesandbox(this.contractId);
+  },
 
-    created() {},
+  created() {},
 
-    components: {},
-    computed: {},
-    methods: {},
+  components: {},
+  computed: {},
+  methods: {},
 };
 </script>
 
 <style>
 .iframe-loading {
-    height: 600px;
+  height: 600px;
 }
 </style>

@@ -73,9 +73,41 @@
         </div>
       </div>
       <div>
-        <b-tabs class="contract-tabs" @input="onInput">
-          <b-tab title="Transactions">
-            <div class="d-block d-sm-flex justify-content-between">
+        <b-nav tabs class="contract-tabs" @changed="onInput">
+          <b-nav-item
+            to="#"
+            :active="$route.hash === '#' || $route.hash === ''"
+            @click="onInput($route.hash)"
+          >
+            Transactions
+          </b-nav-item>
+          <b-nav-item
+            to="#code"
+            :active="$route.hash === '#code'"
+            @click="onInput($route.hash)"
+          >
+            Code
+          </b-nav-item>
+          <b-nav-item
+            to="#state"
+            :active="$route.hash === '#state'"
+            @click="onInput($route.hash)"
+          >
+            State
+          </b-nav-item>
+        </b-nav>
+        <div class="tab-content">
+          <div
+            :class="[
+              'tab-pane',
+              { active: $route.hash === '#' || $route.hash === '' },
+            ]"
+            class="p-2"
+          >
+            <div
+              class="d-block d-sm-flex justify-content-between"
+              v-if="visitedTabs.includes('#')"
+            >
               <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
                 <p class="filter-header mr-4 ml-2">Confirmation Status</p>
                 <b-form-radio-group
@@ -128,7 +160,7 @@
                 >Refresh data</b-button
               >
             </div>
-            <div v-if="visitedTabs.includes(0)">
+            <div>
               <TxList :paging="pages" @page-clicked="onPageClicked">
                 <b-table
                   ref="table"
@@ -252,18 +284,24 @@
                 </div>
               </TxList>
             </div>
-          </b-tab>
-          <b-tab title="Code">
-            <div v-if="visitedTabs.includes(1)">
+          </div>
+          <div
+            :class="['tab-pane', { active: $route.hash === '#code' }]"
+            class="p-2"
+          >
+            <div v-if="visitedTabs.includes('#code')">
               <CodeSandbox :contractId="contractId"></CodeSandbox>
             </div>
-          </b-tab>
-          <b-tab title="State">
-            <div v-if="visitedTabs.includes(2)">
+          </div>
+          <div
+            :class="['tab-pane', { active: $route.hash === '#state' }]"
+            class="p-2"
+          >
+            <div>
               <ContractState :contractId="contractId"></ContractState>
             </div>
-          </b-tab>
-        </b-tabs>
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="loadingInitialized && !correct">
@@ -279,11 +317,11 @@ import TxList from "@/components/TxList/TxList";
 import { TagsParser } from "redstone-smartweave";
 import JsonViewer from "vue-json-viewer";
 import CodeSandbox from "./CodeSandbox/CodeSandbox";
+import ContractState from "./ContractState/ContractState";
 import { mapState } from "vuex";
 import dayjs from "dayjs";
 import constants from "@/constants";
 import Error from "@/components/Error/Error";
-import ContractState from "./ContractState/ContractState";
 
 export default {
   name: "Contract",
@@ -337,9 +375,10 @@ export default {
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
+    this.visitedTabs.push(this.$route.hash);
   },
 
-  components: {ContractState, CodeSandbox, TxList, JsonViewer, Error },
+  components: { CodeSandbox, TxList, JsonViewer, Error, ContractState },
   computed: {
     contractId() {
       return this.$route.params.id;
