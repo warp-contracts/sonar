@@ -39,19 +39,36 @@
               v-model="query"
               :ieCloseFix="false"
               :data="foundContracts"
-              :serializer="(item) => item.contract_id"
+              :serializer="
+                (item) =>
+                  item.type == 'pst'
+                    ? item.pst_ticker.substring(0, 3).toLowerCase() ==
+                      query.substring(0, 3).toLowerCase()
+                      ? item.pst_ticker
+                      : item.pst_token
+                    : item.contract_id
+              "
               @hit="goToContract"
               @input="lookupContracts"
               :placeholder="test"
+              :maxMatches="1000"
               class="input-search"
             >
               <template slot="suggestion" slot-scope="{ data, htmlText }">
                 <div class="d-block d-md-flex justify-content-between">
+                  <span v-if="data.type == 'pst'" class="d-none d-md-block">{{
+                    data.contract_id
+                  }}</span>
                   <span class="suggestion-type d-block d-md-none">{{
                     data.type
                   }}</span>
 
-                  <span class="" v-html="htmlText"></span>
+                  <span class="text-nowrap" v-html="htmlText"></span>
+                  <span
+                    v-if="data.type == 'pst'"
+                    class="d-block d-md-none text-nowrap"
+                    >{{ data.contract_id }}</span
+                  >
                   <div style="width: 15%">
                     <span class="d-none d-md-block suggestion-type mt-1">{{
                       data.type
@@ -86,6 +103,7 @@ import _ from "lodash";
 import { mapState, mapActions } from "vuex";
 import { debounce } from "lodash/function";
 import Modal from "@/components/Modal/Modal";
+import constants from "@/constants";
 
 export default {
   name: "Header",
@@ -106,7 +124,7 @@ export default {
     ...mapState("layout", ["showSearchInputInHeader"]),
     test() {
       return screen.width >= 768
-        ? "Search Contracts, Interactions..."
+        ? "Search PST, Contracts, Interactions..."
         : "Search...";
     },
     findMoreText() {
@@ -142,7 +160,7 @@ export default {
   methods: {
     ...mapActions("layout", ["updateSearchTerm"]),
     goToContract(data) {
-      if (data.type == "contract") {
+      if (data.type == "contract" || data.type == "pst") {
         this.$router.push(`/app/contract/${data.contract_id}`);
       } else {
         this.$router.push(`/app/interaction/${data.contract_id}`);
@@ -157,7 +175,7 @@ export default {
         this.foundContracts = [];
         return;
       }
-      fetch(`https://gateway.redstone.finance/gateway/search/${this.query}`)
+      fetch(`${constants.gatewayUrl}/gateway/search/${this.query}`)
         .then((response) => {
           return response.json();
         })

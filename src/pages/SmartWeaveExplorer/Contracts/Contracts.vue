@@ -78,17 +78,30 @@
           :busy="!contractsLoaded"
         >
           <template #table-busy> </template>
+
+          <!-- <template #cell(token)="data">
+            <div v-if="data.item.token">{{ data.item.token }}</div>
+            <div v-else>-</div>
+          </template> -->
           <template #cell(contractId)="data" class="text-right">
-            <a
-              @click="
-                $router.push({
-                  path: '/app/contract/' + data.item.contractId,
-                })
-              "
-              target="_blank"
-            >
-              {{ data.item.contractId | tx }}
-            </a>
+            <div>
+              <a
+                @click="
+                  $router.push({
+                    path: '/app/contract/' + data.item.contractId,
+                  })
+                "
+                target="_blank"
+              >
+                {{ data.item.contractId | tx }}
+              </a>
+              <span v-if="data.item.pst_ticker"
+                >{{ data.item.pst_ticker
+                }}<span v-if="data.item.pst_name">
+                  ({{ data.item.pst_name }})</span
+                ></span
+              >
+            </div>
           </template>
 
           <template #cell(owner)="data">
@@ -357,6 +370,8 @@ export default {
           this.paging = fetchedContracts.data.paging;
           for (const contract of fetchedContracts.data.contracts) {
             this.contracts.push({
+              pst_ticker: contract.pst_ticker,
+              pst_name: contract.pst_name,
               id: contract.contract,
               contractId: contract.contract,
               owner: contract.owner,

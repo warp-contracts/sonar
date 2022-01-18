@@ -59,6 +59,10 @@
               <div class="cell-header">Total interactions</div>
               <div>{{ total }}</div>
             </div>
+            <div v-if="pst_ticker" class="cell">
+              <div class="cell-header">PST Ticker</div>
+              <div>{{ pst_ticker }}</div>
+            </div>
           </div>
           <div class="col-6 p-0">
             <div class="cell">
@@ -69,13 +73,49 @@
               <div class="cell-header">Corrupted interactions</div>
               <div>{{ corrupted }}</div>
             </div>
+            <div v-if="pst_name" class="cell">
+              <div class="cell-header">PST Name</div>
+              <div>{{ pst_name }}</div>
+            </div>
           </div>
         </div>
       </div>
       <div>
-        <b-tabs class="contract-tabs" @input="onInput">
-          <b-tab title="Transactions">
-            <div class="d-block d-sm-flex justify-content-between">
+        <b-nav tabs class="contract-tabs" @changed="onInput">
+          <b-nav-item
+            to="#"
+            :active="$route.hash === '#' || $route.hash === ''"
+            @click="onInput($route.hash)"
+          >
+            Transactions
+          </b-nav-item>
+          <b-nav-item
+            to="#code"
+            :active="$route.hash === '#code'"
+            @click="onInput($route.hash)"
+          >
+            Code
+          </b-nav-item>
+          <b-nav-item
+            to="#state"
+            :active="$route.hash === '#state'"
+            @click="onInput($route.hash)"
+          >
+            State
+          </b-nav-item>
+        </b-nav>
+        <div class="tab-content">
+          <div
+            :class="[
+              'tab-pane',
+              { active: $route.hash === '#' || $route.hash === '' },
+            ]"
+            class="p-2"
+          >
+            <div
+              class="d-block d-sm-flex justify-content-between"
+              v-if="visitedTabs.includes('#')"
+            >
               <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
                 <p class="filter-header mr-4 ml-2">Confirmation Status</p>
                 <b-form-radio-group
@@ -128,7 +168,7 @@
                 >Refresh data</b-button
               >
             </div>
-            <div v-if="visitedTabs.includes(0)">
+            <div>
               <TxList :paging="pages" @page-clicked="onPageClicked">
                 <b-table
                   ref="table"
@@ -252,13 +292,24 @@
                 </div>
               </TxList>
             </div>
-          </b-tab>
-          <b-tab title="Code">
-            <div v-if="visitedTabs.includes(1)">
-              <CodeSandbox :contractId="contractId"></CodeSandbox>
+          </div>
+          <div
+            :class="['tab-pane', { active: $route.hash === '#code' }]"
+            class="p-2"
+          >
+            <div v-if="visitedTabs.includes('#code')">
+              <ContractCode :contractId="contractId"></ContractCode>
             </div>
-          </b-tab>
-        </b-tabs>
+          </div>
+          <div
+            :class="['tab-pane', { active: $route.hash === '#state' }]"
+            class="p-2"
+          >
+            <div>
+              <ContractState :contractId="contractId"></ContractState>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="loadingInitialized && !correct">
@@ -273,7 +324,8 @@ import axios from "axios";
 import TxList from "@/components/TxList/TxList";
 import { TagsParser } from "redstone-smartweave";
 import JsonViewer from "vue-json-viewer";
-import CodeSandbox from "./CodeSandbox/CodeSandbox";
+import ContractCode from "./ContractCode/ContractCode";
+import ContractState from "./ContractState/ContractState";
 import { mapState } from "vuex";
 import dayjs from "dayjs";
 import constants from "@/constants";
@@ -319,7 +371,11 @@ export default {
       correct: false,
     };
   },
-
+  watch: {
+    contractId: function() {
+      this.visitedTabs = [];
+    },
+  },
   mounted() {
     if (this.$route.params.id.length != 43) {
       this.loadingInitialized = true;
@@ -331,31 +387,21 @@ export default {
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
+    this.getContract();
+    this.visitedTabs.push(this.$route.hash);
   },
 
-  components: { CodeSandbox, TxList, JsonViewer, Error },
+  components: {
+    TxList,
+    JsonViewer,
+    Error,
+    ContractState,
+    ContractCode,
+  },
   computed: {
     contractId() {
       return this.$route.params.id;
     },
-    ...mapState("prefetch", {
-      smartweave: function(state) {
-        const { definitionLoader } = state.smartweave;
-        const tx = definitionLoader
-          .load(this.contractId)
-          .then((contractDefinition) => {
-            return contractDefinition;
-          })
-          .then((def) => {
-            this.owner = def.owner;
-            return def;
-          });
-        return tx;
-      },
-      arweave: (state) => {
-        return state.arweave;
-      },
-    }),
     pages() {
       return this.paging ? this.paging : null;
     },
@@ -369,7 +415,6 @@ export default {
     },
   },
 
-  watch: {},
   methods: {
     convertTZ(date, tzString) {
       return new Date(
@@ -431,6 +476,15 @@ export default {
         this.getInteractions(this.currentPage, this.selected);
       }
     },
+    async getContract() {
+      axios
+        .get(`${constants.gatewayUrl}/gateway/contracts/${this.contractId}`)
+        .then((fetchedContract) => {
+          this.owner = fetchedContract.data.owner;
+          this.pst_ticker = fetchedContract.data.pstTicker;
+          this.pst_name = fetchedContract.data.pstName;
+        });
+    },
     async getInteractions(page, confirmationStatus) {
       this.interactions = [];
       axios
@@ -445,7 +499,6 @@ export default {
         )
 
         .then((fetchedInteractions) => {
-          const smartweave = this.smartweave;
           this.confirmed = fetchedInteractions.data.total.confirmed;
           this.corrupted = fetchedInteractions.data.total.corrupted;
           this.paging = fetchedInteractions.data.paging;
