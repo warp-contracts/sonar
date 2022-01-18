@@ -41,7 +41,12 @@
               :data="foundContracts"
               :serializer="
                 (item) =>
-                  item.type == 'pst_contract' ? item.token : item.contract_id
+                  item.type == 'pst_contract'
+                    ? item.pst_ticker.substring(0, 3).toLowerCase() ==
+                      query.substring(0, 3).toLowerCase()
+                      ? item.pst_ticker
+                      : item.pst_token
+                    : item.contract_id
               "
               @hit="goToContract"
               @input="lookupContracts"
@@ -100,6 +105,7 @@ import _ from "lodash";
 import { mapState, mapActions } from "vuex";
 import { debounce } from "lodash/function";
 import Modal from "@/components/Modal/Modal";
+import constants from "@/constants";
 
 export default {
   name: "Header",
@@ -171,14 +177,12 @@ export default {
         this.foundContracts = [];
         return;
       }
-      fetch(`http://localhost:5666/gateway/search/${this.query}`)
+      fetch(`${constants.gatewayUrl}/gateway/search/${this.query}`)
         .then((response) => {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
           this.foundContracts = data;
-          this.foundContracts.forEach((i) => console.log(typeof i.interaction));
           this.searching = false;
         });
     }, 500),
