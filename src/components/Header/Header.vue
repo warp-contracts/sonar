@@ -41,7 +41,7 @@
               :data="foundContracts"
               :serializer="
                 (item) =>
-                  item.type == 'pst_contract'
+                  item.type == 'pst'
                     ? item.pst_ticker.substring(0, 3).toLowerCase() ==
                       query.substring(0, 3).toLowerCase()
                       ? item.pst_ticker
@@ -56,18 +56,16 @@
             >
               <template slot="suggestion" slot-scope="{ data, htmlText }">
                 <div class="d-block d-md-flex justify-content-between">
-                  <span
-                    v-if="data.type == 'pst_contract'"
-                    class="d-none d-md-block"
-                    >{{ data.contract_id }}</span
-                  >
+                  <span v-if="data.type == 'pst'" class="d-none d-md-block">{{
+                    data.contract_id
+                  }}</span>
                   <span class="suggestion-type d-block d-md-none">{{
                     data.type
                   }}</span>
 
                   <span class="text-nowrap" v-html="htmlText"></span>
                   <span
-                    v-if="data.type == 'pst_contract'"
+                    v-if="data.type == 'pst'"
                     class="d-block d-md-none text-nowrap"
                     >{{ data.contract_id }}</span
                   >
@@ -162,7 +160,7 @@ export default {
   methods: {
     ...mapActions("layout", ["updateSearchTerm"]),
     goToContract(data) {
-      if (data.type == "contract" || data.type == "pst_contract") {
+      if (data.type == "contract" || data.type == "pst") {
         this.$router.push(`/app/contract/${data.contract_id}`);
       } else {
         this.$router.push(`/app/interaction/${data.contract_id}`);

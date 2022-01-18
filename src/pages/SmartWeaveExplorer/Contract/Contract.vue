@@ -59,6 +59,10 @@
               <div class="cell-header">Total interactions</div>
               <div>{{ total }}</div>
             </div>
+            <div v-if="pst_ticker" class="cell">
+              <div class="cell-header">PST Ticker</div>
+              <div>{{ pst_ticker }}</div>
+            </div>
           </div>
           <div class="col-6 p-0">
             <div class="cell">
@@ -68,6 +72,10 @@
             <div class="cell">
               <div class="cell-header">Corrupted interactions</div>
               <div>{{ corrupted }}</div>
+            </div>
+            <div v-if="pst_name" class="cell">
+              <div class="cell-header">PST Name</div>
+              <div>{{ pst_name }}</div>
             </div>
           </div>
         </div>
@@ -379,6 +387,7 @@ export default {
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
+    this.getContract();
     this.visitedTabs.push(this.$route.hash);
   },
 
@@ -393,24 +402,6 @@ export default {
     contractId() {
       return this.$route.params.id;
     },
-    ...mapState("prefetch", {
-      smartweave: function(state) {
-        const { definitionLoader } = state.smartweave;
-        const tx = definitionLoader
-          .load(this.contractId)
-          .then((contractDefinition) => {
-            return contractDefinition;
-          })
-          .then((def) => {
-            this.owner = def.owner;
-            return def;
-          });
-        return tx;
-      },
-      arweave: (state) => {
-        return state.arweave;
-      },
-    }),
     pages() {
       return this.paging ? this.paging : null;
     },
@@ -485,6 +476,15 @@ export default {
         this.getInteractions(this.currentPage, this.selected);
       }
     },
+    async getContract() {
+      axios
+        .get(`${constants.gatewayUrl}/gateway/contracts/${this.contractId}`)
+        .then((fetchedContract) => {
+          this.owner = fetchedContract.data.owner;
+          this.pst_ticker = fetchedContract.data.pstTicker;
+          this.pst_name = fetchedContract.data.pstName;
+        });
+    },
     async getInteractions(page, confirmationStatus) {
       this.interactions = [];
       axios
@@ -499,7 +499,6 @@ export default {
         )
 
         .then((fetchedInteractions) => {
-          const smartweave = this.smartweave;
           this.confirmed = fetchedInteractions.data.total.confirmed;
           this.corrupted = fetchedInteractions.data.total.corrupted;
           this.paging = fetchedInteractions.data.paging;
