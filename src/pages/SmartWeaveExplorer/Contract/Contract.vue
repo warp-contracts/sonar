@@ -290,7 +290,7 @@
             class="p-2"
           >
             <div v-if="visitedTabs.includes('#code')">
-              <CodeSandbox :contractId="contractId"></CodeSandbox>
+              <ContractCode :contractId="contractId"></ContractCode>
             </div>
           </div>
           <div
@@ -316,7 +316,7 @@ import axios from "axios";
 import TxList from "@/components/TxList/TxList";
 import { TagsParser } from "redstone-smartweave";
 import JsonViewer from "vue-json-viewer";
-import CodeSandbox from "./CodeSandbox/CodeSandbox";
+import ContractCode from "./ContractCode/ContractCode";
 import ContractState from "./ContractState/ContractState";
 import { mapState } from "vuex";
 import dayjs from "dayjs";
@@ -363,7 +363,11 @@ export default {
       correct: false,
     };
   },
-
+  watch: {
+    contractId: function() {
+      this.visitedTabs = [];
+    },
+  },
   mounted() {
     if (this.$route.params.id.length != 43) {
       this.loadingInitialized = true;
@@ -378,7 +382,13 @@ export default {
     this.visitedTabs.push(this.$route.hash);
   },
 
-  components: { CodeSandbox, TxList, JsonViewer, Error, ContractState },
+  components: {
+    TxList,
+    JsonViewer,
+    Error,
+    ContractState,
+    ContractCode,
+  },
   computed: {
     contractId() {
       return this.$route.params.id;
@@ -414,7 +424,6 @@ export default {
     },
   },
 
-  watch: {},
   methods: {
     convertTZ(date, tzString) {
       return new Date(
