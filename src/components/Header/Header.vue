@@ -39,19 +39,33 @@
               v-model="query"
               :ieCloseFix="false"
               :data="foundContracts"
-              :serializer="(item) => item.contract_id"
+              :serializer="
+                (item) =>
+                  item.type == 'pst_contract' ? item.token : item.contract_id
+              "
               @hit="goToContract"
               @input="lookupContracts"
               :placeholder="test"
+              :maxMatches="1000"
               class="input-search"
             >
               <template slot="suggestion" slot-scope="{ data, htmlText }">
                 <div class="d-block d-md-flex justify-content-between">
+                  <span
+                    v-if="data.type == 'pst_contract'"
+                    class="d-none d-md-block"
+                    >{{ data.contract_id }}</span
+                  >
                   <span class="suggestion-type d-block d-md-none">{{
                     data.type
                   }}</span>
 
-                  <span class="" v-html="htmlText"></span>
+                  <span class="text-nowrap" v-html="htmlText"></span>
+                  <span
+                    v-if="data.type == 'pst_contract'"
+                    class="d-block d-md-none text-nowrap"
+                    >{{ data.contract_id }}</span
+                  >
                   <div style="width: 15%">
                     <span class="d-none d-md-block suggestion-type mt-1">{{
                       data.type
@@ -106,7 +120,7 @@ export default {
     ...mapState("layout", ["showSearchInputInHeader"]),
     test() {
       return screen.width >= 768
-        ? "Search Contracts, Interactions..."
+        ? "Search PST, Contracts, Interactions..."
         : "Search...";
     },
     findMoreText() {
@@ -142,7 +156,7 @@ export default {
   methods: {
     ...mapActions("layout", ["updateSearchTerm"]),
     goToContract(data) {
-      if (data.type == "contract") {
+      if (data.type == "contract" || data.type == "pst_contract") {
         this.$router.push(`/app/contract/${data.contract_id}`);
       } else {
         this.$router.push(`/app/interaction/${data.contract_id}`);
@@ -157,12 +171,14 @@ export default {
         this.foundContracts = [];
         return;
       }
-      fetch(`https://gateway.redstone.finance/gateway/search/${this.query}`)
+      fetch(`http://localhost:5666/gateway/search/${this.query}`)
         .then((response) => {
           return response.json();
         })
         .then((data) => {
+          console.log(data);
           this.foundContracts = data;
+          this.foundContracts.forEach((i) => console.log(typeof i.interaction));
           this.searching = false;
         });
     }, 500),

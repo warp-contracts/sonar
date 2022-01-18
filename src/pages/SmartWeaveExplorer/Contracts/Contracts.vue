@@ -78,6 +78,11 @@
           :busy="!contractsLoaded"
         >
           <template #table-busy> </template>
+
+          <template #cell(token)="data">
+            <div v-if="data.item.token">{{ data.item.token }}</div>
+            <div v-else>-</div>
+          </template>
           <template #cell(contractId)="data" class="text-right">
             <a
               @click="
@@ -231,6 +236,7 @@ export default {
         ],
       },
       fields: [
+        "token",
         "contractId",
         "owner",
         "type",
@@ -295,6 +301,9 @@ export default {
   },
 
   methods: {
+    getTokenUrl(token) {
+      return `https://cdn.redstone.finance/symbols/${token}.png`;
+    },
     refreshData() {
       if (this.currentPage > 1) {
         this.$router.push({ query: {} });
@@ -357,6 +366,7 @@ export default {
           this.paging = fetchedContracts.data.paging;
           for (const contract of fetchedContracts.data.contracts) {
             this.contracts.push({
+              token: contract.token,
               id: contract.contract,
               contractId: contract.contract,
               owner: contract.owner,
