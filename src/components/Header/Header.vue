@@ -45,7 +45,7 @@
                     ? item.pst_ticker.substring(0, 3).toLowerCase() ==
                       query.substring(0, 3).toLowerCase()
                       ? item.pst_ticker
-                      : item.pst_token
+                      : item.pst_name
                     : item.contract_id
               "
               @hit="goToContract"
@@ -56,20 +56,26 @@
             >
               <template slot="suggestion" slot-scope="{ data, htmlText }">
                 <div class="d-block d-md-flex justify-content-between">
-                  <span v-if="data.type == 'pst'" class="d-none d-md-block">{{
-                    data.contract_id
-                  }}</span>
+                  <span
+                    v-if="data.type == 'pst'"
+                    class="d-none d-md-block text-left"
+                    >{{ data.contract_id }}</span
+                  >
                   <span class="suggestion-type d-block d-md-none">{{
                     data.type
                   }}</span>
-
-                  <span class="text-nowrap" v-html="htmlText"></span>
                   <span
                     v-if="data.type == 'pst'"
-                    class="d-block d-md-none text-nowrap"
+                    class="text-nowrap pst-match"
+                    v-html="htmlText"
+                  ></span>
+                  <span v-else class="text-nowrap" v-html="htmlText"></span>
+                  <span
+                    v-if="data.type == 'pst'"
+                    class="d-block d-md-none text-nowrap text-left"
                     >{{ data.contract_id }}</span
                   >
-                  <div style="width: 15%">
+                  <div style="width: 12%">
                     <span class="d-none d-md-block suggestion-type mt-1">{{
                       data.type
                     }}</span>

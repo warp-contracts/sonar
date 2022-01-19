@@ -84,7 +84,7 @@
       }
 
       @media (min-width: breakpoint-min(xl)) {
-        width: 600px !important;
+        width: 630px !important;
       }
     }
 
@@ -144,7 +144,7 @@
   }
 
   @media (min-width: breakpoint-min(xl)) {
-    width: 600px !important;
+    width: 630px !important;
   }
 }
 
@@ -157,4 +157,20 @@
   text-transform: uppercase;
   color: var(--redstone-smartweave-blue-color);
   align-self: end;
+}
+
+.pst-match {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  width: 100%;
+
+  @media (min-width: breakpoint-min(lg)) {
+    width: 75px;
+  }
+
+  @media (min-width: breakpoint-min(xl)) {
+    width: 120px;
+  }
 }
