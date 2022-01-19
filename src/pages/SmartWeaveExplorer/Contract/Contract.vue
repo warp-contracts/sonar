@@ -369,6 +369,8 @@ export default {
       copiedDisplayOwner: false,
       loadingInitialized: false,
       correct: false,
+      pst_ticker: null,
+      pst_name: null,
     };
   },
   watch: {
