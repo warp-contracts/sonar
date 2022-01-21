@@ -306,7 +306,10 @@
             class="p-2"
           >
             <div>
-              <ContractState :contractId="contractId"></ContractState>
+              <ContractState
+                :key="contractId"
+                :contractId="contractId"
+              ></ContractState>
             </div>
           </div>
         </div>
