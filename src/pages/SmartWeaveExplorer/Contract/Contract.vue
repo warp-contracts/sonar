@@ -112,10 +112,7 @@
             ]"
             class="p-2"
           >
-            <div
-              class="d-block d-sm-flex justify-content-between"
-              v-if="visitedTabs.includes('#')"
-            >
+            <div class="d-block d-sm-flex justify-content-between">
               <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
                 <p class="filter-header mr-4 ml-2">Confirmation Status</p>
                 <b-form-radio-group
