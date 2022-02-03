@@ -132,7 +132,14 @@
           </div>
           <div class="interaction-item">
             <div>Fee</div>
-            <div>{{ interaction.fee }} ({{ interaction.feeInAr }} AR)</div>
+            <div>
+              {{ interaction.fee }} ({{ interaction.feeInAr }} AR /
+              <a
+                href="https://app.redstone.finance/#/app/token/AR"
+                target="_blank"
+                >${{ interaction.feeInUsd }}</a
+              >)
+            </div>
           </div>
           <div class="interaction-item">
             <div>Quantity</div>
@@ -170,27 +177,33 @@
 </template>
 
 <script>
-import _ from "lodash";
-import axios from "axios";
-import JsonViewer from "vue-json-viewer";
-import dayjs from "dayjs";
-import constants from "@/constants";
-import Error from "@/components/Error/Error";
+import _ from 'lodash';
+import axios from 'axios';
+import JsonViewer from 'vue-json-viewer';
+import dayjs from 'dayjs';
+import constants from '@/constants';
+import Error from '@/components/Error/Error';
+import redstone from 'redstone-api';
+import utc from 'dayjs/plugin/utc';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
+dayjs.extend(utc);
 
 export default {
-  name: "Contract",
+  name: 'Contract',
 
   data() {
     return {
       visitedTabs: [],
       interaction: {},
       epochs: [
-        ["year", 31536000],
-        ["month", 2592000],
-        ["day", 86400],
-        ["hour", 3600],
-        ["minute", 60],
-        ["second", 1],
+        ['year', 31536000],
+        ['month', 2592000],
+        ['day', 86400],
+        ['hour', 3600],
+        ['minute', 60],
+        ['second', 1],
       ],
       interactions: [],
       currentPage: 1,
@@ -199,21 +212,26 @@ export default {
       confirmed: 0,
       corrupted: 0,
       limit: 15,
-      selected: "all",
+      selected: 'all',
       copiedDisplay: false,
       copiedDisplayOwner: false,
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
       loadingInitialized: false,
+      usdPrice: 0,
     };
   },
 
-  mounted() {
+  async mounted() {
     if (this.$route.params.id.length != 43) {
       this.loadingInitialized = true;
       this.correct = false;
     }
+    const { symbols } = redstone;
+    const price = await redstone.getPrice(symbols.AR);
+    const { value } = price;
+    this.usdPrice = value;
     this.getInteraction(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
@@ -241,10 +259,10 @@ export default {
   methods: {
     convertTZ(date, tzString) {
       return new Date(
-        (typeof date === "string"
+        (typeof date === 'string'
           ? new Date(date)
           : date
-        ).toLocaleString("en-US", { timeZone: tzString })
+        ).toLocaleString('en-US', { timeZone: tzString })
       );
     },
     getDuration(timeAgoInSeconds) {
@@ -260,18 +278,18 @@ export default {
     },
     timeAgo(date) {
       const timeAgoInSeconds = Math.floor(
-        (this.convertTZ(new Date(), "Europe/Berlin") -
-          this.convertTZ(new Date(date), "Europe/London")) /
+        (this.convertTZ(new Date(), 'Europe/Berlin') -
+          this.convertTZ(new Date(date), 'Europe/London')) /
           1000
       );
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
-      const suffix = interval === 1 ? "" : "s";
+      const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
     },
     refreshData() {
       this.currentPage = 1;
       this.$router.push({ query: {} });
-      this.selected == "all"
+      this.selected == 'all'
         ? this.getInteractions(this.currentPage)
         : this.getInteractions(this.currentPage, this.selected);
     },
@@ -302,29 +320,37 @@ export default {
             func: fetchedInteractions.data.function,
             confirmationStatus: fetchedInteractions.data.confirmationstatus,
             confirmingPeer: fetchedInteractions.data.confirmingpeer
-              ? fetchedInteractions.data.confirmingpeer.split(",")
-              : "-",
+              ? fetchedInteractions.data.confirmingpeer.split(',')
+              : '-',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
             timestamp: fetchedInteractions.data.interaction.block.timestamp,
-            timestampFormatted: dayjs.unix(
-              fetchedInteractions.data.interaction.block.timestamp
-            ),
+            timestampFormatted: dayjs
+              .utc(
+                dayjs.unix(fetchedInteractions.data.interaction.block.timestamp)
+              )
+              .local()
+              .format('ddd, DD MMM YYYY, HH:mm:ss ZZ'),
             fee: fetchedInteractions.data.interaction.fee.winston,
             feeInAr: (
               fetchedInteractions.data.interaction.fee.winston *
               this.winstonToAR
             ).toFixed(8),
+            feeInUsd: (
+              fetchedInteractions.data.interaction.fee.winston *
+              this.winstonToAR *
+              this.usdPrice
+            ).toFixed(4),
             recipient:
-              fetchedInteractions.data.interaction.recipient == ""
-                ? "-"
+              fetchedInteractions.data.interaction.recipient == ''
+                ? '-'
                 : fetchedInteractions.data.interaction.recipient,
           };
           this.loaded = true;
         });
     },
     styleCategory(text, numberOfCategories, index) {
-      return _.startCase(text) + (index < numberOfCategories - 1 ? ", " : "");
+      return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
   },
 };

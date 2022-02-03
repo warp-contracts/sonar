@@ -1,5 +1,5 @@
 <template>
-  <div :key="contractId">
+  <div>
     <div v-if="loadingInitialized && correct" class="contract-wrapper">
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
@@ -111,7 +111,6 @@
               { active: $route.hash === '#' || $route.hash === '' },
             ]"
             class="p-2"
-            
           >
             <div class="d-block d-sm-flex justify-content-between">
               <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
@@ -224,7 +223,11 @@
                     <div v-if="data.item.confirmingPeers[0] != '-'">
                       <a
                         :href="
-                          `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                          `${
+                            data.item.source && data.item.source == 'arweave'
+                              ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                              : `https://node1.bundlr.network`
+                          }`
                         "
                         target="_blank"
                         class="mr-1"
@@ -233,7 +236,11 @@
                       >
                       <a
                         :href="
-                          `http://${data.item.confirmingPeers[1]}:1984/tx/${data.item.interactionId}/status`
+                          `${
+                            data.itemsource && data.item.source == 'arweave'
+                              ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                              : `https://node1.bundlr.network`
+                          }`
                         "
                         target="_blank"
                         class="mr-1"
@@ -242,7 +249,11 @@
                       >
                       <a
                         :href="
-                          `http://${data.item.confirmingPeers[2]}:1984/tx/${data.item.interactionId}/status`
+                          `${
+                            data.item.source && data.item.source == 'arweave'
+                              ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                              : `https://node1.bundlr.network`
+                          }`
                         "
                         target="_blank"
                         class="mr-1"
@@ -296,7 +307,7 @@
             class="p-2"
           >
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode :contractId="contractId" :key="contractId"></ContractCode>
+              <ContractCode :contractId="contractId"></ContractCode>
             </div>
           </div>
           <div
@@ -304,10 +315,7 @@
             class="p-2"
           >
             <div>
-              <ContractState
-                :key="contractId"
-                :contractId="contractId"
-              ></ContractState>
+              <ContractState :contractId="contractId"></ContractState>
             </div>
           </div>
         </div>
@@ -320,53 +328,51 @@
 </template>
 
 <script>
-import _ from "lodash";
-import axios from "axios";
-import TxList from "@/components/TxList/TxList";
-import { TagsParser } from "redstone-smartweave";
-import JsonViewer from "vue-json-viewer";
-import ContractCode from "./ContractCode/ContractCode";
-import ContractState from "./ContractState/ContractState";
-import { mapState } from "vuex";
-import dayjs from "dayjs";
-import constants from "@/constants";
-import Error from "@/components/Error/Error";
-import Vue from "vue";
+import _ from 'lodash';
+import axios from 'axios';
+import TxList from '@/components/TxList/TxList';
+import { TagsParser } from 'redstone-smartweave';
+import JsonViewer from 'vue-json-viewer';
+import ContractCode from './ContractCode/ContractCode';
+import ContractState from './ContractState/ContractState';
+import dayjs from 'dayjs';
+import constants from '@/constants';
+import Error from '@/components/Error/Error';
 
 export default {
-  name: "Contract",
+  name: 'Contract',
 
   data() {
     return {
       visitedTabs: [],
       epochs: [
-        ["year", 31536000],
-        ["month", 2592000],
-        ["day", 86400],
-        ["hour", 3600],
-        ["minute", 60],
-        ["second", 1],
+        ['year', 31536000],
+        ['month', 2592000],
+        ['day', 86400],
+        ['hour', 3600],
+        ['minute', 60],
+        ['second', 1],
       ],
       fields: [
-        "id",
-        "block_id",
-        "block_height",
-        "age",
-        "owner",
-        "function",
-        "status",
-        "confirmingPeers",
-        { key: "actions", label: "" },
+        'id',
+        'block_id',
+        'block_height',
+        'age',
+        'owner',
+        'function',
+        'status',
+        'confirmingPeers',
+        { key: 'actions', label: '' },
       ],
       interactions: [],
       currentPage: 1,
       paging: null,
-      owner: "",
+      owner: '',
       total: 0,
       confirmed: 0,
       corrupted: 0,
       limit: 15,
-      selected: "all",
+      selected: 'all',
       copiedDisplay: false,
       copiedDisplayOwner: false,
       loadingInitialized: false,
@@ -378,7 +384,7 @@ export default {
   watch: {
     contractId: function() {
       this.$router.go(0);
-    }
+    },
   },
   mounted() {
     if (this.$route.params.id.length != 43) {
@@ -422,10 +428,10 @@ export default {
   methods: {
     convertTZ(date, tzString) {
       return new Date(
-        (typeof date === "string"
+        (typeof date === 'string'
           ? new Date(date)
           : date
-        ).toLocaleString("en-US", { timeZone: tzString })
+        ).toLocaleString('en-US', { timeZone: tzString })
       );
     },
     getDuration(timeAgoInSeconds) {
@@ -439,20 +445,23 @@ export default {
         }
       }
     },
-    timeAgo(date) {
+    timeAgo(date, source) {
       const timeAgoInSeconds = Math.floor(
-        (this.convertTZ(new Date(), "Europe/Berlin") -
-          this.convertTZ(new Date(date), "Europe/London")) /
+        (this.convertTZ(new Date(), 'Europe/Berlin') -
+          this.convertTZ(
+            new Date(date),
+            source ? 'Europe/Berlin' : 'Europe/London'
+          )) /
           1000
       );
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
-      const suffix = interval === 1 ? "" : "s";
+      const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
     },
     refreshData() {
       this.currentPage = 1;
       this.$router.push({ query: {} });
-      this.selected == "all"
+      this.selected == 'all'
         ? this.getInteractions(this.currentPage)
         : this.getInteractions(this.currentPage, this.selected);
     },
@@ -470,11 +479,11 @@ export default {
       }
     },
     rowClicked(record) {
-      this.$set(record, "_showDetails", !record._showDetails);
+      this.$set(record, '_showDetails', !record._showDetails);
     },
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
-      if (this.selected == "all") {
+      if (this.selected == 'all') {
         this.getInteractions(this.currentPage);
       } else {
         this.getInteractions(this.currentPage, this.selected);
@@ -498,7 +507,7 @@ export default {
           }&limit=${this.limit}&totalCount=true&page=${page}${
             confirmationStatus
               ? `&confirmationStatus=${confirmationStatus}`
-              : ""
+              : ''
           }`
         )
 
@@ -506,13 +515,13 @@ export default {
           this.confirmed = fetchedInteractions.data.total.confirmed;
           this.corrupted = fetchedInteractions.data.total.corrupted;
           this.paging = fetchedInteractions.data.paging;
-          if (this.selected == "all") {
+          if (this.selected == 'all') {
             this.total = fetchedInteractions.data.paging.total;
           }
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
             const interactionInterface = {
-              cursor: "",
+              cursor: '',
               node: i.interaction,
             };
             const inputFunc = JSON.parse(
@@ -524,13 +533,20 @@ export default {
               interactionId: i.interaction.id,
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,
-              age: this.timeAgo(dayjs.unix(i.interaction.block.timestamp)),
-              function: inputFunc ? inputFunc : "-",
+              age: this.timeAgo(
+                dayjs.unix(i.interaction.block.timestamp),
+                i.confirming_peers == 'https://node1.bundlr.network'
+              ),
+              function: inputFunc ? inputFunc : '-',
               status: i.status,
               owner: i.interaction.owner.address,
               confirmingPeers: i.confirming_peers
-                ? i.confirming_peers.split(",")
-                : "-",
+                ? i.confirming_peers.split(',')
+                : '-',
+              source:
+                i.confirming_peers == 'https://node1.bundlr.network'
+                  ? 'sequencer'
+                  : 'arweave',
               interaction: i.interaction,
               tags: tagsParser.getInputTag(
                 interactionInterface,
@@ -541,7 +557,7 @@ export default {
         });
     },
     styleCategory(text, numberOfCategories, index) {
-      return _.startCase(text) + (index < numberOfCategories - 1 ? ", " : "");
+      return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
   },
 };
