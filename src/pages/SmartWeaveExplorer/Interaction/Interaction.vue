@@ -59,7 +59,11 @@
             >
               <a
                 :href="
-                  `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.id}/status`
+                  `${
+                    interaction.source && interaction.source == 'arweave'
+                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                      : `https://node1.bundlr.network`
+                  }`
                 "
                 target="_blank"
                 class="mr-1"
@@ -68,7 +72,11 @@
               >
               <a
                 :href="
-                  `http://${interaction.confirmingPeer[1]}:1984/tx/${interaction.id}/status`
+                  `${
+                    interaction.source && interaction.source == 'arweave'
+                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                      : `https://node1.bundlr.network`
+                  }`
                 "
                 target="_blank"
                 class="mr-1"
@@ -77,7 +85,11 @@
               >
               <a
                 :href="
-                  `http://${interaction.confirmingPeer[2]}:1984/tx/${interaction.id}/status`
+                  `${
+                    interaction.source && interaction.source == 'arweave'
+                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                      : `https://node1.bundlr.network`
+                  }`
                 "
                 target="_blank"
                 class="mr-1"
@@ -322,6 +334,11 @@ export default {
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
               : '-',
+            source:
+              fetchedInteractions.data.confirmingpeer ==
+              'https://node1.bundlr.network'
+                ? 'sequencer'
+                : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
             timestamp: fetchedInteractions.data.interaction.block.timestamp,

@@ -237,7 +237,7 @@
                       <a
                         :href="
                           `${
-                            data.itemsource && data.item.source == 'arweave'
+                            data.item.source && data.item.source == 'arweave'
                               ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
                               : `https://node1.bundlr.network`
                           }`
