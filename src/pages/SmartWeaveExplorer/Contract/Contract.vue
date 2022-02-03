@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :key="contractId">
     <div v-if="loadingInitialized && correct" class="contract-wrapper">
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
@@ -111,6 +111,7 @@
               { active: $route.hash === '#' || $route.hash === '' },
             ]"
             class="p-2"
+            
           >
             <div class="d-block d-sm-flex justify-content-between">
               <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
@@ -295,7 +296,7 @@
             class="p-2"
           >
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode :contractId="contractId"></ContractCode>
+              <ContractCode :contractId="contractId" :key="contractId"></ContractCode>
             </div>
           </div>
           <div
@@ -330,6 +331,7 @@ import { mapState } from "vuex";
 import dayjs from "dayjs";
 import constants from "@/constants";
 import Error from "@/components/Error/Error";
+import Vue from "vue";
 
 export default {
   name: "Contract",
@@ -375,8 +377,8 @@ export default {
   },
   watch: {
     contractId: function() {
-      this.visitedTabs = [];
-    },
+      this.$router.go(0);
+    }
   },
   mounted() {
     if (this.$route.params.id.length != 43) {
