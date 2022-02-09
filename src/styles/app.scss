@@ -8,3 +8,9 @@
 @import '~bootstrap/scss/mixins';
 @import 'mixins';
 
+
+.tx-preloader {
+  height: 35px;
+  margin-bottom: 20px;
+  @include preload-animation(2.5s, 100vw);
+}

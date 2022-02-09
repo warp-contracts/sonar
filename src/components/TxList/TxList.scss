@@ -4,12 +4,6 @@
   width: min-content;
 }
 
-.tx-preloader {
-  height: 35px;
-  margin-bottom: 20px;
-  @include preload-animation(2.5s, 100vw);
-}
-
 #interactions-table tr:not(.b-table-details) {
   cursor: pointer;
 }
