@@ -1,5 +1,6 @@
 export default {
-  arweaveUrl: "arweave.net",
-  gatewayUrl: "https://gateway.redstone.finance",
-  redstoneUrl: "https://api.redstone.finance",
+  arweaveUrl: 'arweave.net',
+  redstoneUrl: 'https://api.redstone.finance',
+  gatewayProdUrl: 'https://gateway.redstone.finance',
+  gatewayTestUrl: 'https://d2v8ja5p4ag05d.cloudfront.net',
 };

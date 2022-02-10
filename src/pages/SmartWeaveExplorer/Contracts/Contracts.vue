@@ -1,10 +1,9 @@
 <template>
   <div>
     <div class="contracts-wrapper d-lg-flex" style="marginBottom: 30px;">
-      <div class="d-none d-md-block pl-5 pl-xl-0 chart">
+      <div :key="gatewayUrl" class="d-none d-md-block pl-5 pl-xl-0 chart">
         <div v-if="!loading" class="chart-title">Interactions</div>
         <v-chart
-          class="chart"
           :option="option"
           :loading="loading"
           resize="width: 80%, height: 500px"
@@ -72,17 +71,13 @@
           :busy="!contractsLoaded"
         >
           <template #table-busy> </template>
-
-          <!-- <template #cell(token)="data">
-            <div v-if="data.item.token">{{ data.item.token }}</div>
-            <div v-else>-</div>
-          </template> -->
           <template #cell(contractId)="data" class="text-right">
             <div>
               <a
                 @click="
                   $router.push({
                     path: '/app/contract/' + data.item.contractId,
+                    query: isTestnet ? { network: 'testnet' } : '',
                   })
                 "
                 target="_blank"
@@ -145,12 +140,12 @@
 </template>
 
 <script>
-import _ from "lodash";
-import axios from "axios";
-import TxList from "@/components/TxList/TxList";
-import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { LineChart } from "echarts/charts";
+import _ from 'lodash';
+import axios from 'axios';
+import TxList from '@/components/TxList/TxList';
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { LineChart } from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
@@ -158,10 +153,11 @@ import {
   ToolboxComponent,
   GridComponent,
   DataZoomComponent,
-} from "echarts/components";
-import VChart, { LOADING_OPTIONS_KEY } from "vue-echarts";
-import dayjs from "dayjs";
-import constants from "@/constants";
+} from 'echarts/components';
+import VChart, { LOADING_OPTIONS_KEY } from 'vue-echarts';
+import dayjs from 'dayjs';
+import { mapState } from 'vuex';
+import constants from '@/constants';
 
 use([
   CanvasRenderer,
@@ -174,96 +170,96 @@ use([
   DataZoomComponent,
 ]);
 export default {
-  name: "Contracts",
+  name: 'Contracts',
   provide: {
     [LOADING_OPTIONS_KEY]: {
-      text: "",
-      color: "#5982f1",
-      textColor: "#000",
-      maskColor: "rgba(255, 255, 255, 0)",
+      text: '',
+      color: '#5982f1',
+      textColor: '#000',
+      maskColor: 'rgba(255, 255, 255, 0)',
       showSpinner: true,
     },
   },
   data() {
     return {
-      selected: "all",
+      selected: 'all',
       chartLoading: true,
       loading: true,
       option: {
         tooltip: {
-          trigger: "axis",
+          trigger: 'axis',
           position: function(pt) {
-            return [pt[0], "10%"];
+            return [pt[0], '10%'];
           },
         },
         xAxis: {
-          type: "category",
+          type: 'category',
           boundaryGap: false,
           data: [],
         },
         yAxis: {
-          type: "value",
-          boundaryGap: [0, "100%"],
+          type: 'value',
+          boundaryGap: [0, '100%'],
           min: 0,
-          max: 2500,
+          max: null,
         },
         dataZoom: [
           {
-            type: "slider",
-            start: "",
-            end: "",
+            type: 'slider',
+            start: '',
+            end: '',
             dataBackground: {
               lineStyle: {
-                color: "#5982f1",
+                color: '#5982f1',
               },
               areaStyle: {
-                color: "#5982f1",
-                shadowColor: "#5982f1",
+                color: '#5982f1',
+                shadowColor: '#5982f1',
                 opacity: 0.2,
               },
             },
           },
           {
-            start: "",
-            end: "",
+            start: '',
+            end: '',
           },
         ],
         series: [
           {
-            name: "Interactions",
-            type: "line",
+            name: 'Interactions',
+            type: 'line',
             data: [],
-            lineStyle: { color: "#5982f1" },
+            lineStyle: { color: '#5982f1' },
           },
         ],
       },
       fields: [
-        "contractId",
-        "owner",
-        "type",
+        'contractId',
+        'owner',
+        'type',
         {
-          key: "total",
-          label: "total",
-          thClass: "text-right",
-          tdClass: "text-right",
+          key: 'total',
+          label: 'total',
+          thClass: 'text-right',
+          tdClass: 'text-right',
         },
         {
-          key: "confirmed",
-          label: "confirmed",
-          thClass: "text-right",
-          tdClass: "text-right",
+          key: 'confirmed',
+          label: 'confirmed',
+          thClass: 'text-right',
+          tdClass: 'text-right',
         },
         {
-          key: "corrupted",
-          label: "corrupted",
-          thClass: "text-right",
-          tdClass: "text-right",
+          key: 'corrupted',
+          label: 'corrupted',
+          thClass: 'text-right',
+          tdClass: 'text-right',
         },
         {
-          key: "lastInteractionHeight",
-          label: "last interaction height",
-          thClass: "text-right",
-          tdClass: "text-right",
+          key: 'lastInteractionHeight',
+          label: 'last interaction height',
+          thClass: 'text-right',
+          tdClass: 'text-right',
         },
       ],
       contracts: [],
@@ -283,11 +279,17 @@ export default {
     this.getContracts(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
-    this.getStatsPerDay();
-    this.getStats();
+    this.loadStats();
   },
   components: { TxList, VChart },
+  watch: {
+    gatewayUrl() {
+      this.refreshData();
+      this.loadStats();
+    },
+  },
   computed: {
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     pages() {
       return this.paging ? this.paging : null;
     },
@@ -307,12 +309,12 @@ export default {
         this.$router.push({ query: {} });
       }
       this.currentPage = 1;
-      this.selected == "all"
+      this.selected == 'all'
         ? this.getContracts(this.currentPage)
         : this.getContracts(this.currentPage, this.selected);
     },
     async getStats() {
-      axios.get(`${constants.gatewayUrl}/gateway/stats`).then((fetchedData) => {
+      axios.get(`${this.gatewayUrl}/gateway/stats`).then((fetchedData) => {
         this.totalContracts = fetchedData.data.total_contracts;
         this.totalInteractions = fetchedData.data.total_interactions;
         this.totalContractsLoaded = true;
@@ -321,11 +323,11 @@ export default {
     },
     async getStatsPerDay() {
       axios
-        .get(`${constants.gatewayUrl}/gateway/stats/per-day`)
+        .get(`${this.gatewayUrl}/gateway/stats/per-day`)
         .then((fetchedData) => {
           for (const options of fetchedData.data) {
             this.option.xAxis.data.push(
-              dayjs(options.date).format("DD-MM-YYYY")
+              dayjs(options.date).format('DD-MM-YYYY')
             );
             this.option.series[0].data.push(options.per_day);
           }
@@ -342,10 +344,18 @@ export default {
           this.loading = false;
         });
     },
-
+    loadStats() {
+      this.loading = true;
+      this.option.xAxis.data = [];
+      this.option.series[0].data = [];
+      this.option.yAxis.max =
+        this.gatewayUrl == constants.gatewayProdUrl ? 2500 : 150;
+      this.getStatsPerDay();
+      this.getStats();
+    },
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
-      if (this.selected == "all") {
+      if (this.selected == 'all') {
         this.getContracts(this.currentPage);
       } else {
         this.getContracts(this.currentPage, this.selected);
@@ -355,9 +365,9 @@ export default {
       this.contracts = [];
       axios
         .get(
-          `${constants.gatewayUrl}/gateway/contracts?limit=${
+          `${this.gatewayUrl}/gateway/contracts?limit=${
             this.limit
-          }&page=${page}${type ? `&type=${type}` : ""}`
+          }&page=${page}${type ? `&type=${type}` : ''}`
         )
 
         .then(async (fetchedContracts) => {
@@ -379,10 +389,10 @@ export default {
         });
     },
     rowClicked(record) {
-      this.$set(record, "_showDetails", !record._showDetails);
+      this.$set(record, '_showDetails', !record._showDetails);
     },
     styleCategory(text, numberOfCategories, index) {
-      return _.startCase(text) + (index < numberOfCategories - 1 ? ", " : "");
+      return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
   },
 };
@@ -390,29 +400,6 @@ export default {
 
 <style src="./Contracts.scss" lang="scss" scoped></style>
 <style lang="scss">
-.chart-wrapper {
-  width: 80%;
-  height: 300px;
-}
-.chart {
-  height: 300px;
-  width: 80%;
-  margin-top: -15px;
-  margin-left: -12px;
-  position: relative;
-
-  @media (min-width: breakpoint-max(lg)) {
-    width: 80%;
-  }
-}
-
-.chart-title {
-  transform: rotate(270deg);
-  position: absolute;
-  left: -20px;
-  bottom: 150px;
-}
-
 #contract-type-group {
   .custom-control-input:checked ~ .custom-control-label:before {
     background-color: var(--redstone-smartweave-blue-color) !important;

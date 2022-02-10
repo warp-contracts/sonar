@@ -1,16 +1,18 @@
-import constants from "@/constants";
-import Arweave from "arweave";
+import constants from '@/constants';
+import Arweave from 'arweave';
 import {
   ContractDefinitionLoader,
   SmartWeaveWebFactory,
-} from "redstone-smartweave";
-import Vue from "vue";
+} from 'redstone-smartweave';
 
 export default {
   namespaced: true,
   state: {
     arweave: null,
     smartweave: null,
+    gatewayUrl: null,
+    switchText: null,
+    isTestnet: null,
   },
   mutations: {
     setArweave(state, arweave) {
@@ -21,22 +23,32 @@ export default {
     setSmartweave(state, client) {
       state.smartweave = client;
     },
+    setGatewayUrl(state, gatewayUrl) {
+      state.gatewayUrl = gatewayUrl;
+    },
+    setIsTestnet(state, isTestnet) {
+      state.isTestnet = isTestnet;
+    },
   },
   getters: {},
   actions: {
+    loadGateway({ commit }, payload) {
+      commit('setGatewayUrl', payload);
+      commit('setIsTestnet', payload == constants.gatewayTestUrl);
+    },
     async prefetchAll({ dispatch }) {
-      dispatch("initArweave").then(() => {
-        dispatch("smartweave");
+      dispatch('initArweave').then(() => {
+        dispatch('smartweave');
       });
     },
     initArweave({ commit }) {
       const arweaveObject = Arweave.init({
         host: constants.arweaveUrl,
-        protocol: "https",
+        protocol: 'https',
         port: 443,
       });
 
-      commit("setArweave", arweaveObject);
+      commit('setArweave', arweaveObject);
     },
     smartweave({ commit, state }) {
       const arweave = state.arweave;
@@ -48,7 +60,7 @@ export default {
         .setDefinitionLoader(contractDefinitionLoader)
         .build();
 
-      commit("setSmartweave", smartweave);
+      commit('setSmartweave', smartweave);
     },
   },
 };

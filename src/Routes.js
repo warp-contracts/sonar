@@ -1,43 +1,43 @@
-import Vue from "vue";
-import Router from "vue-router";
+import Vue from 'vue';
+import Router from 'vue-router';
 
-import Layout from "@/components/Layout/Layout";
-import ErrorPage from "@/pages/Error/Error";
+import Layout from '@/components/Layout/Layout';
+import ErrorPage from '@/pages/Error/Error';
 
 // Redstone
-import Contracts from "@/pages/SmartWeaveExplorer/Contracts/Contracts";
-import Contract from "@/pages/SmartWeaveExplorer/Contract/Contract";
-import Interaction from "@/pages/SmartWeaveExplorer/Interaction/Interaction";
+import Contracts from '@/pages/SmartWeaveExplorer/Contracts/Contracts';
+import Contract from '@/pages/SmartWeaveExplorer/Contract/Contract';
+import Interaction from '@/pages/SmartWeaveExplorer/Interaction/Interaction';
 
 // Store
-import store from "./store";
+import store from './store';
 
 Vue.use(Router);
 
 const router = new Router({
   routes: [
     {
-      path: "/error",
-      name: "Error",
+      path: '/error',
+      name: 'Error',
       component: ErrorPage,
     },
 
     {
-      path: "/app",
-      name: "Layout",
+      path: '/app',
+      name: 'Layout',
       component: Layout,
       children: [
         {
-          path: "contracts",
-          name: "Contracts",
+          path: 'contracts',
+          name: 'Contracts',
           component: Contracts,
           meta: {
             showSearchInputInNavbar: true,
           },
         },
         {
-          path: "contract/:id",
-          name: "Contract",
+          path: 'contract/:id',
+          name: 'Contract',
           props: true,
           component: Contract,
           meta: {
@@ -45,8 +45,8 @@ const router = new Router({
           },
         },
         {
-          path: "interaction/:id",
-          name: "Interaction",
+          path: 'interaction/:id',
+          name: 'Interaction',
           props: true,
           component: Interaction,
           meta: {
@@ -57,15 +57,15 @@ const router = new Router({
     },
   ],
   scrollBehavior: () => {
-    document.getElementsByClassName("sing-dashboard")[0].scrollIntoView();
+    document.getElementsByClassName('sing-dashboard')[0].scrollIntoView();
   },
 });
 
 router.beforeEach((to, from, next) => {
   if (to.meta.showSearchInputInNavbar) {
-    store.dispatch("layout/setSearchInputVisibilityInHeader", true);
+    store.dispatch('layout/setSearchInputVisibilityInHeader', true);
   } else {
-    store.dispatch("layout/setSearchInputVisibilityInHeader", false);
+    store.dispatch('layout/setSearchInputVisibilityInHeader', false);
   }
   next();
 });
