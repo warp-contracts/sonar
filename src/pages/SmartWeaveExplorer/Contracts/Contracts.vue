@@ -20,12 +20,6 @@
             <div v-else class="align-self-center mt-4">
               <div class="dot-flashing"></div>
             </div>
-            <div
-              v-if="totalContractsLoaded"
-              v-b-tooltip.hover
-              title="Total number of contracts with at least one interaction."
-              class="flaticon-question-tooltip"
-            />
           </div>
         </div>
         <hr style="width: 50%" />
