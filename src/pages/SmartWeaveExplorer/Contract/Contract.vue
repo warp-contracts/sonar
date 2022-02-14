@@ -12,14 +12,14 @@
           <span class="d-none d-sm-block">{{ contractId }}</span
           ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
           <div
-              class="flaticon-copy-to-clipboard"
-              v-clipboard="contractId"
-              v-clipboard:success="onCopy"
-              title="Copy to clipboard"
+            class="flaticon-copy-to-clipboard"
+            v-clipboard="contractId"
+            v-clipboard:success="onCopy"
+            title="Copy to clipboard"
           ></div>
           <p
-              class="clipboard-success"
-              v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }"
+            class="clipboard-success"
+            v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }"
           >
             Copied
           </p>
@@ -35,14 +35,14 @@
                   <span class="d-none d-sm-block">{{ owner }}</span
                   ><span class="d-block d-sm-none">{{ owner | tx }}</span>
                   <div
-                      class="flaticon-copy-to-clipboard"
-                      v-clipboard="owner"
-                      v-clipboard:success="onCopyOwner"
-                      title="Copy to clipboard"
+                    class="flaticon-copy-to-clipboard"
+                    v-clipboard="owner"
+                    v-clipboard:success="onCopyOwner"
+                    title="Copy to clipboard"
                   ></div>
                   <p
-                      class="clipboard-success"
-                      v-bind:class="{
+                    class="clipboard-success"
+                    v-bind:class="{
                       hidden: !copiedDisplayOwner,
                       visible: copiedDisplayOwner,
                     }"
@@ -83,93 +83,99 @@
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
           <b-nav-item
-              to="#"
-              :active="$route.hash === '#' || $route.hash === ''"
-              @click="onInput($route.hash)"
+            :to="`${isTestnet ? '?network=testnet' : ''}#`"
+            :active="$route.hash === '#' || $route.hash === ''"
+            @click="onInput($route.hash)"
           >
             Transactions
           </b-nav-item>
           <b-nav-item
-              to="#code"
-              :active="$route.hash === '#code'"
-              @click="onInput($route.hash)"
+            :to="`${isTestnet ? '?network=testnet' : ''}#code`"
+            :active="$route.hash === '#code'"
+            @click="onInput($route.hash)"
           >
             Code
           </b-nav-item>
           <b-nav-item
-              to="#state"
-              :active="$route.hash === '#state'"
-              @click="onInput($route.hash)"
+            :to="`${isTestnet ? '?network=testnet' : ''}#state`"
+            :active="$route.hash === '#state'"
+            @click="onInput($route.hash)"
           >
             State
           </b-nav-item>
         </b-nav>
         <div class="tab-content">
           <div
-              :class="[
+            :class="[
               'tab-pane',
               { active: $route.hash === '#' || $route.hash === '' },
             ]"
-              class="p-2"
+            class="p-2"
           >
-            <div class="d-block d-sm-flex justify-content-between">
-              <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                <p class="filter-header mr-4 ml-2">Confirmation Status</p>
-                <b-form-radio-group
+            <div v-if="!noInteractionsDetected">
+              <div class="d-block d-sm-flex justify-content-between">
+                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
+                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">
+                    Confirmation Status
+                  </p>
+                  <b-form-radio-group
                     id="confirmation-status-group"
                     name="confirmation-status-group"
                     @change="refreshData"
                     v-model="selected"
                     class="confirmation-status-group"
-                >
-                  <div class="confirmation-status-item">
-                    <b-form-radio value="all">All</b-form-radio>
-                    <div
+                    v-if="!isTestnet"
+                  >
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="all">All</b-form-radio>
+                      <div
                         v-b-tooltip.hover
                         title="Show all contract interactions."
                         class="flaticon-question-tooltip"
-                    />
-                  </div>
-                  <div class="confirmation-status-item">
-                    <b-form-radio value="confirmed">Confirmed</b-form-radio>
-                    <div
+                      />
+                    </div>
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="confirmed">Confirmed</b-form-radio>
+                      <div
                         v-b-tooltip.hover
                         title="Show contract interactions which have been positively confirmed by at least three different nodes."
                         class="flaticon-question-tooltip"
-                    />
-                  </div>
-                  <div class="confirmation-status-item">
-                    <b-form-radio value="corrupted">Corrupted</b-form-radio>
-                    <div
+                      />
+                    </div>
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="corrupted">Corrupted</b-form-radio>
+                      <div
                         v-b-tooltip.hover
                         title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
                         class="flaticon-question-tooltip"
-                    />
-                  </div>
-                  <div class="confirmation-status-item">
-                    <b-form-radio value="not_corrupted"
-                    >Not corrupted
-                    </b-form-radio
-                    >
-                    <div
+                      />
+                    </div>
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="not_corrupted"
+                        >Not corrupted
+                      </b-form-radio>
+                      <div
                         v-b-tooltip.hover
                         title="Show both confirmed and not yet processed interactions."
                         class="flaticon-question-tooltip"
-                    />
-                  </div>
-                </b-form-radio-group>
-              </b-col>
+                      />
+                    </div>
+                  </b-form-radio-group>
+                </b-col>
 
-              <b-button
+                <b-button
                   class="btn btn-refresh rounded-pill mb-3 mb-sm-0"
                   @click="refreshData"
-              >Refresh data
-              </b-button
-              >
-            </div>
-            <div>
-              <TxList :paging="pages" v-if="interactionsLoaded" @page-clicked="onPageClicked">
-                <b-table
+                  >Refresh data
+                </b-button>
+              </div>
+              <div>
+                <TxList
+                  :paging="pages"
+                  v-if="interactionsLoaded"
+                  @page-clicked="onPageClicked"
+                >
+                  <b-table
                     v-if="interactions?.length > 0"
                     ref="table"
                     id="interactions-table"
@@ -179,143 +185,153 @@
                     :fields="fields"
                     @row-clicked="rowClicked"
                     :busy="!interactionsLoaded"
-                >
-                  <template #table-busy></template>
+                  >
+                    <template #table-busy></template>
 
-                  <template #cell(id)="data">
-                    <a :href="`/#/app/interaction/${data.item.interactionId}`">
-                      {{ data.item.interactionId | tx }}</a
-                    >
-                  </template>
-
-                  <template #cell(block_id)="data">
-                    <a
+                    <template #cell(id)="data">
+                      <a
                         :href="
-                        `https://viewblock.io/arweave/block/${data.item.blockId}`
-                      "
-                        target="_blank"
-                    >
-                      {{ data.item.blockId | tx }}
-                    </a>
-                  </template>
+                          `/#/app/interaction/${data.item.interactionId}${
+                            isTestnet ? '?network=testnet' : ''
+                          }`
+                        "
+                      >
+                        {{ data.item.interactionId | tx }}</a
+                      >
+                    </template>
 
-                  <template #cell(block_height)="data">
-                    {{ data.item.blockHeight }}
-                  </template>
-
-                  <template #cell(owner)="data">
-                    <a
+                    <template #cell(block_id)="data">
+                      <a
                         :href="
-                        `https://viewblock.io/arweave/address/${data.item.owner}`
-                      "
+                          `https://viewblock.io/arweave/block/${data.item.blockId}`
+                        "
                         target="_blank"
-                    >
-                      {{ data.item.owner | tx }}</a
-                    >
-                  </template>
+                      >
+                        {{ data.item.blockId | tx }}
+                      </a>
+                    </template>
 
-                  <template #cell(function)="data">
-                    {{ data.item.function }}
-                  </template>
+                    <template #cell(block_height)="data">
+                      {{ data.item.blockHeight }}
+                    </template>
 
-                  <template #cell(status)="data">
-                    {{ data.item.status }}
-                  </template>
-
-                  <template #cell(confirmingPeers)="data">
-                    <div v-if="data.item.confirmingPeers[0] != '-'">
+                    <template #cell(owner)="data">
                       <a
-                          :href="
-                          `${
-                            data.item.source && data.item.source == 'arweave'
-                              ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                              : `https://node1.bundlr.network`
-                          }`
+                        :href="
+                          `https://viewblock.io/arweave/address/${data.item.owner}`
                         "
+                        target="_blank"
+                      >
+                        {{ data.item.owner | tx }}</a
+                      >
+                    </template>
+
+                    <template #cell(function)="data">
+                      {{ data.item.function }}
+                    </template>
+
+                    <template #cell(status)="data">
+                      {{ data.item.status }}
+                    </template>
+
+                    <template #cell(confirmingPeers)="data">
+                      <div v-if="data.item.confirmingPeers[0] != '-'">
+                        <a
+                          :href="
+                            `${
+                              data.item.source && data.item.source == 'arweave'
+                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                                : `https://node1.bundlr.network`
+                            }`
+                          "
                           target="_blank"
                           class="mr-1"
-                      >
-                        {{ data.item.confirmingPeers[0] }}</a
-                      >
-                      <a
+                        >
+                          {{ data.item.confirmingPeers[0] }}</a
+                        >
+                        <a
                           :href="
-                          `${
-                            data.item.source && data.item.source == 'arweave'
-                              ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                              : `https://node1.bundlr.network`
-                          }`
-                        "
+                            `${
+                              data.item.source && data.item.source == 'arweave'
+                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                                : `https://node1.bundlr.network`
+                            }`
+                          "
                           target="_blank"
                           class="mr-1"
-                      >
-                        {{ data.item.confirmingPeers[1] }}</a
-                      >
-                      <a
+                        >
+                          {{ data.item.confirmingPeers[1] }}</a
+                        >
+                        <a
                           :href="
-                          `${
-                            data.item.source && data.item.source == 'arweave'
-                              ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                              : `https://node1.bundlr.network`
-                          }`
-                        "
+                            `${
+                              data.item.source && data.item.source == 'arweave'
+                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
+                                : `https://node1.bundlr.network`
+                            }`
+                          "
                           target="_blank"
                           class="mr-1"
-                      >
-                        {{ data.item.confirmingPeers[2] }}</a
-                      >
-                    </div>
-                    <div v-else>{{ data.item.confirmingPeers }}</div>
-                  </template>
+                        >
+                          {{ data.item.confirmingPeers[2] }}</a
+                        >
+                      </div>
+                      <div v-else>{{ data.item.confirmingPeers }}</div>
+                    </template>
 
-                  <template #cell(actions)="data">
-                    <div
+                    <template #cell(actions)="data">
+                      <div
                         v-if="!data.item._showDetails"
                         class="flaticon-chevron-down"
-                    />
-                    <div v-else class="flaticon-chevron-up"/>
-                  </template>
+                      />
+                      <div v-else class="flaticon-chevron-up" />
+                    </template>
 
-                  <template slot="row-details" slot-scope="data">
-                    <div>
-                      <p class="json-header">Contract Input:</p>
-                      <json-viewer
+                    <template slot="row-details" slot-scope="data">
+                      <div>
+                        <p class="json-header">Contract Input:</p>
+                        <json-viewer
                           :value="data.item.tags"
                           :expand-depth="1"
                           copyable
                           sort
-                      ></json-viewer>
-                      <hr/>
-                      <p class="json-header">Full transaction:</p>
-                      <json-viewer
+                        ></json-viewer>
+                        <hr />
+                        <p class="json-header">Full transaction:</p>
+                        <json-viewer
                           :value="data.item.interaction"
                           :expand-depth="1"
                           copyable
                           sort
-                      ></json-viewer>
-                    </div>
-                  </template>
-                </b-table>
-              </TxList>
-              <div v-if="!interactionsLoaded">
-                <div
+                        ></json-viewer>
+                      </div>
+                    </template>
+                  </b-table>
+                </TxList>
+                <div v-if="!interactionsLoaded">
+                  <div
                     v-for="n in 15"
                     :key="n"
                     class="preloader text-preloader tx-preloader"
-                ></div>
+                  ></div>
+                </div>
               </div>
+            </div>
+            <div v-else class="interactions-wrapper">
+              Contract has no interactions!
             </div>
           </div>
           <div
-              :class="['tab-pane', { active: $route.hash === '#code' }]"
-              class="p-2"
+            :class="['tab-pane', { active: $route.hash === '#code' }]"
+            class="p-2"
           >
             <div v-if="visitedTabs.includes('#code')">
               <ContractCode :contractId="contractId"></ContractCode>
             </div>
           </div>
           <div
-              :class="['tab-pane', { active: $route.hash === '#state' }]"
-              class="p-2"
+            :class="['tab-pane', { active: $route.hash === '#state' }]"
+            class="p-2"
           >
             <div>
               <ContractState :contractId="contractId"></ContractState>
@@ -325,7 +341,7 @@
       </div>
     </div>
     <div v-if="loadingInitialized && !correct">
-      <Error/>
+      <Error />
     </div>
   </div>
 </template>
@@ -334,13 +350,13 @@
 import _ from 'lodash';
 import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
-import {TagsParser} from 'redstone-smartweave';
+import { TagsParser } from 'redstone-smartweave';
 import JsonViewer from 'vue-json-viewer';
 import ContractCode from './ContractCode/ContractCode';
 import ContractState from './ContractState/ContractState';
 import dayjs from 'dayjs';
-import constants from '@/constants';
 import Error from '@/components/Error/Error';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Contract',
@@ -365,7 +381,7 @@ export default {
         'function',
         'status',
         'confirmingPeers',
-        {key: 'actions', label: ''},
+        { key: 'actions', label: '' },
       ],
       interactions: null,
       currentPage: 1,
@@ -382,10 +398,11 @@ export default {
       correct: false,
       pst_ticker: null,
       pst_name: null,
+      noInteractionsDetected: false,
     };
   },
   watch: {
-    contractId: function () {
+    contractId: function() {
       this.$router.go(0);
     },
   },
@@ -398,7 +415,7 @@ export default {
       this.correct = true;
     }
     this.getInteractions(
-        this.$route.query.page ? this.$route.query.page : this.currentPage
+      this.$route.query.page ? this.$route.query.page : this.currentPage
     );
     this.getContract();
     this.visitedTabs.push(this.$route.hash);
@@ -412,6 +429,7 @@ export default {
     ContractCode,
   },
   computed: {
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     contractId() {
       return this.$route.params.id;
     },
@@ -419,20 +437,17 @@ export default {
       return this.paging ? this.paging : null;
     },
     interactionsLoaded() {
-      return (
-          this.interactions !== null &&
-          this.total !== null
-      );
+      return this.interactions !== null && this.total !== null;
     },
   },
 
   methods: {
     convertTZ(date, tzString) {
       return new Date(
-          (typeof date === 'string'
-                  ? new Date(date)
-                  : date
-          ).toLocaleString('en-US', {timeZone: tzString})
+        (typeof date === 'string'
+          ? new Date(date)
+          : date
+        ).toLocaleString('en-US', { timeZone: tzString })
       );
     },
     getDuration(timeAgoInSeconds) {
@@ -448,23 +463,23 @@ export default {
     },
     timeAgo(date, source) {
       const timeAgoInSeconds = Math.floor(
-          (this.convertTZ(new Date(), 'Europe/Berlin') -
-              this.convertTZ(
-                  new Date(date),
-                  source ? 'Europe/Berlin' : 'Europe/London'
-              )) /
+        (this.convertTZ(new Date(), 'Europe/Berlin') -
+          this.convertTZ(
+            new Date(date),
+            source ? 'Europe/Berlin' : 'Europe/London'
+          )) /
           1000
       );
-      const {interval, epoch} = this.getDuration(timeAgoInSeconds);
+      const { interval, epoch } = this.getDuration(timeAgoInSeconds);
       const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
     },
     refreshData() {
       this.currentPage = 1;
-      this.$router.push({query: {}});
+      this.$router.push({ query: {} });
       this.selected == 'all'
-          ? this.getInteractions(this.currentPage)
-          : this.getInteractions(this.currentPage, this.selected);
+        ? this.getInteractions(this.currentPage)
+        : this.getInteractions(this.currentPage, this.selected);
     },
     onCopy() {
       this.copiedDisplay = true;
@@ -492,77 +507,80 @@ export default {
     },
     async getContract() {
       axios
-          .get(`${constants.gatewayUrl}/gateway/contracts/${this.contractId}`)
-          .then((fetchedContract) => {
-            this.owner = fetchedContract.data.owner;
-            this.pst_ticker = fetchedContract.data.pstTicker;
-            this.pst_name = fetchedContract.data.pstName;
-          });
+        .get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`)
+        .then((fetchedContract) => {
+          this.owner = fetchedContract.data.owner;
+          this.pst_ticker = fetchedContract.data.pstTicker;
+          this.pst_name = fetchedContract.data.pstName;
+        });
     },
     async getInteractions(page, confirmationStatus) {
       this.interactions = null;
       this.total = null;
 
       axios
-          .get(
-              `${constants.gatewayUrl}/gateway/interactions?contractId=${
-                  this.contractId
-              }&limit=${this.limit}&totalCount=true&page=${page}${
-                  confirmationStatus
-                      ? `&confirmationStatus=${confirmationStatus}`
-                      : ''
-              }`
-          )
+        .get(
+          `${this.gatewayUrl}/gateway/interactions?contractId=${
+            this.contractId
+          }&limit=${this.limit}&totalCount=true&page=${page}${
+            confirmationStatus
+              ? `&confirmationStatus=${confirmationStatus}`
+              : ''
+          }`
+        )
 
-          .then((fetchedInteractions) => {
-            this.confirmed = fetchedInteractions.data.total.confirmed;
-            this.corrupted = fetchedInteractions.data.total.corrupted;
-            this.paging = fetchedInteractions.data.paging;
-            if (this.interactions === null) {
-              this.interactions = [];
-            }
-            if (this.selected == 'all') {
-              this.total = fetchedInteractions.data.paging.total;
-            } else {
-              this.total = 0;
-            }
-            const tagsParser = new TagsParser();
-            for (const i of fetchedInteractions.data.interactions) {
-              const interactionInterface = {
-                cursor: '',
-                node: i.interaction,
-              };
-              const inputFunc = JSON.parse(
-                  tagsParser.getInputTag(interactionInterface, this.contractId)
-                      .value
-              ).function;
-              this.interactions.push({
-                id: i.interaction.id,
-                interactionId: i.interaction.id,
-                blockId: i.interaction.block.id,
-                blockHeight: i.interaction.block.height,
-                age: this.timeAgo(
-                    dayjs.unix(i.interaction.block.timestamp),
-                    i.confirming_peers == 'https://node1.bundlr.network'
-                ),
-                function: inputFunc ? inputFunc : '-',
-                status: i.status,
-                owner: i.interaction.owner.address,
-                confirmingPeers: i.confirming_peers
-                    ? i.confirming_peers.split(',')
-                    : '-',
-                source:
-                    i.confirming_peers == 'https://node1.bundlr.network'
-                        ? 'sequencer'
-                        : 'arweave',
-                interaction: i.interaction,
-                tags: tagsParser.getInputTag(
-                    interactionInterface,
-                    this.contractId
-                ),
-              });
-            }
-          });
+        .then((fetchedInteractions) => {
+          if (fetchedInteractions.data.interactions.length == 0) {
+            this.noInteractionsDetected = true;
+          }
+          this.confirmed = fetchedInteractions.data.total.confirmed;
+          this.corrupted = fetchedInteractions.data.total.corrupted;
+          this.paging = fetchedInteractions.data.paging;
+          if (this.interactions === null) {
+            this.interactions = [];
+          }
+          if (this.selected == 'all') {
+            this.total = fetchedInteractions.data.paging.total;
+          } else {
+            this.total = 0;
+          }
+          const tagsParser = new TagsParser();
+          for (const i of fetchedInteractions.data.interactions) {
+            const interactionInterface = {
+              cursor: '',
+              node: i.interaction,
+            };
+            const inputFunc = JSON.parse(
+              tagsParser.getInputTag(interactionInterface, this.contractId)
+                .value
+            ).function;
+            this.interactions.push({
+              id: i.interaction.id,
+              interactionId: i.interaction.id,
+              blockId: i.interaction.block.id,
+              blockHeight: i.interaction.block.height,
+              age: this.timeAgo(
+                dayjs.unix(i.interaction.block.timestamp),
+                i.confirming_peers == 'https://node1.bundlr.network'
+              ),
+              function: inputFunc ? inputFunc : '-',
+              status: i.status,
+              owner: i.interaction.owner.address,
+              confirmingPeers: i.confirming_peers
+                ? i.confirming_peers.split(',')
+                : '-',
+              source:
+                i.confirming_peers == 'https://node1.bundlr.network'
+                  ? 'sequencer'
+                  : 'arweave',
+              interaction: i.interaction,
+              tags: tagsParser.getInputTag(
+                interactionInterface,
+                this.contractId
+              ),
+            });
+          }
+        });
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');

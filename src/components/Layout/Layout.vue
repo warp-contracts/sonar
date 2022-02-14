@@ -79,18 +79,18 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapActions } = createNamespacedHelpers("layout");
+import { createNamespacedHelpers } from 'vuex';
+const { mapActions } = createNamespacedHelpers('layout');
 
-import Header from "@/components/Header/Header";
+import Header from '@/components/Header/Header';
 
-import "./Layout.scss";
+import './Layout.scss';
 
 export default {
-  name: "Layout",
+  name: 'Layout',
   components: { Header },
   methods: {
-    ...mapActions(["handleSwipe"]),
+    ...mapActions(['handleSwipe']),
   },
 };
 </script>

@@ -1,4 +1,4 @@
-@import "~@/styles/app";
+@import '~@/styles/app';
 
 .stats-wrapper {
   align-self: center;
@@ -91,4 +91,27 @@
   margin-top: 8px;
   filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
     brightness(95%) contrast(97%);
+}
+
+.chart-wrapper {
+  width: 80%;
+  height: 300px;
+}
+.chart {
+  height: 300px;
+  width: 100%;
+  margin-top: -15px;
+  margin-left: -12px;
+  position: relative;
+
+  @media (min-width: breakpoint-min(lg)) {
+    width: 80%;
+  }
+}
+
+.chart-title {
+  transform: rotate(270deg);
+  position: absolute;
+  left: -20px;
+  bottom: 150px;
 }

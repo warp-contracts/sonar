@@ -193,11 +193,11 @@ import _ from 'lodash';
 import axios from 'axios';
 import JsonViewer from 'vue-json-viewer';
 import dayjs from 'dayjs';
-import constants from '@/constants';
 import Error from '@/components/Error/Error';
 import redstone from 'redstone-api';
 import utc from 'dayjs/plugin/utc';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { mapState } from 'vuex';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
@@ -251,6 +251,7 @@ export default {
 
   components: { JsonViewer, Error },
   computed: {
+    ...mapState('prefetch', ['gatewayUrl']),
     interactionId() {
       return this.$route.params.id;
     },
@@ -267,7 +268,6 @@ export default {
     },
   },
 
-  watch: {},
   methods: {
     convertTZ(date, tzString) {
       return new Date(
@@ -316,9 +316,7 @@ export default {
     async getInteraction() {
       this.interactions = [];
       axios
-        .get(
-          `${constants.gatewayUrl}/gateway/interactions/${this.interactionId}`
-        )
+        .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
         .then((fetchedInteractions) => {
           this.loadingInitialized = true;

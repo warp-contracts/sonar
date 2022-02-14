@@ -2,7 +2,7 @@
   <b-navbar class="header d-print-none app-header">
     <b-nav>
       <div class="logo-container align-self-center">
-        <a href="/">
+        <a :href="logoUrl">
           <div class="logo-image-container">
             <img
               class="d-none d-md-block logo-image first"
@@ -50,7 +50,7 @@
               "
               @hit="goToContract"
               @input="lookupContracts"
-              :placeholder="test"
+              :placeholder="searchBarText"
               :maxMatches="1000"
               class="input-search"
             >
@@ -92,6 +92,14 @@
     </b-nav>
     <b-nav></b-nav>
     <b-nav class="align-items-center flex-grow-1 justify-content-end">
+      <div
+        class="text-uppercase mr-4 switch-link"
+        role="button"
+        @click="toggleGateway"
+      >
+        {{ switchNetworkText }}
+      </div>
+
       <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{
         findMoreText
       }}</b-button>
@@ -104,39 +112,51 @@
 </template>
 
 <script>
-import VueTypeaheadBootstrap from "vue-typeahead-bootstrap";
-import _ from "lodash";
-import { mapState, mapActions } from "vuex";
-import { debounce } from "lodash/function";
-import Modal from "@/components/Modal/Modal";
-import constants from "@/constants";
+import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
+import _ from 'lodash';
+import { mapState, mapActions } from 'vuex';
+import { debounce } from 'lodash/function';
+import Modal from '@/components/Modal/Modal';
+import constants from '@/constants';
 
 export default {
-  name: "Header",
+  name: 'Header',
   components: {
     VueTypeaheadBootstrap,
     Modal,
   },
   data() {
     return {
-      query: "",
+      query: '',
       search: this.$route.query.search,
       selectedContract: null,
       foundContracts: [],
       searching: false,
+      switchNetworkText: null,
     };
   },
+  mounted() {
+    this.switchNetworkText =
+      this.gatewayUrl == constants.gatewayProdUrl
+        ? 'Switch to Testnet'
+        : 'Switch to Mainnet';
+  },
   computed: {
-    ...mapState("layout", ["showSearchInputInHeader"]),
-    test() {
-      return screen.width >= 768
-        ? "Search PST, Contracts, Interactions..."
-        : "Search...";
+    ...mapState('prefetch', ['gatewayUrl']),
+    ...mapState('layout', ['showSearchInputInHeader']),
+    searchBarText() {
+      return screen.width >= 1024
+        ? 'Search PST, Contracts, Interactions...'
+        : 'Search...';
+    },
+    logoUrl() {
+      return this.gatewayUrl == constants.gatewayProdUrl
+        ? '/'
+        : '/#/app/contracts?network=testnet';
     },
     findMoreText() {
-      return screen.width >= 768 ? "Find out more" : "More";
+      return screen.width >= 768 ? 'Find out more' : 'More';
     },
-
     searchTerm: {
       get() {
         return this.$store.state.layout.searchTerm;
@@ -152,7 +172,7 @@ export default {
             },
           });
         } else {
-          const queryWithoutSearchInput = _.omit(this.$route.query, ["search"]);
+          const queryWithoutSearchInput = _.omit(this.$route.query, ['search']);
           this.$router.push({ query: queryWithoutSearchInput });
         }
       },
@@ -162,17 +182,28 @@ export default {
   created() {
     this.updateSearchTerm(this.$route.query.search);
   },
-
   methods: {
-    ...mapActions("layout", ["updateSearchTerm"]),
+    ...mapActions('layout', ['updateSearchTerm']),
+    ...mapActions('prefetch', ['loadGateway']),
+    toggleGateway() {
+      if (this.gatewayUrl == constants.gatewayProdUrl) {
+        this.loadGateway(constants.gatewayTestUrl);
+        this.switchNetworkText = 'Switch to Mainnet';
+        this.$router.push('/app/contracts?network=testnet');
+      } else {
+        this.loadGateway(constants.gatewayProdUrl);
+        this.switchNetworkText = 'Switch to Testnet';
+        this.$router.push('/app/contracts');
+      }
+    },
     goToContract(data) {
-      if (data.type == "contract" || data.type == "pst") {
+      if (data.type == 'contract' || data.type == 'pst') {
         this.$router.push(`/app/contract/${data.contract_id}`);
       } else {
         this.$router.push(`/app/interaction/${data.contract_id}`);
       }
       this.foundContracts = [];
-      this.query = "";
+      this.query = '';
     },
     lookupContracts: debounce(function() {
       this.searching = true;
@@ -181,7 +212,7 @@ export default {
         this.foundContracts = [];
         return;
       }
-      fetch(`${constants.gatewayUrl}/gateway/search/${this.query}`)
+      fetch(`${this.gatewayUrl}/gateway/search/${this.query}`)
         .then((response) => {
           return response.json();
         })

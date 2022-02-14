@@ -1,4 +1,4 @@
-@import "../../styles/app";
+@import '../../styles/app';
 
 .app-header.navbar {
   height: $navbar-height;
@@ -16,6 +16,11 @@
 
   @media (min-width: breakpoint-min(md)) {
     padding: 0 1.85rem 0;
+  }
+
+  @media (max-width: breakpoint-max(lg)) {
+    height: 80px;
+    padding-bottom: 20px;
   }
 
   .nav {
@@ -76,7 +81,7 @@
       }
 
       @media (min-width: breakpoint-min(sm)) {
-        width: 400px !important;
+        width: 300px !important;
       }
 
       @media (min-width: breakpoint-min(lg)) {
@@ -134,7 +139,7 @@
   }
 
   @media (min-width: breakpoint-min(sm)) {
-    width: 400px !important;
+    width: 300px !important;
     right: auto;
     top: auto;
   }
@@ -173,4 +178,28 @@
   @media (min-width: breakpoint-min(xl)) {
     width: 120px;
   }
+}
+
+.switch-link {
+  display: inline-block;
+  text-decoration: none;
+
+  @media (max-width: breakpoint-max(lg)) {
+    position: absolute;
+    bottom: 5px;
+  }
+}
+
+.switch-link::after {
+  padding-top: 2px;
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  background: var(--redstone-smartweave-blue-color);
+  transition: width 0.3s;
+}
+
+.switch-link:hover::after {
+  width: 100%;
 }
