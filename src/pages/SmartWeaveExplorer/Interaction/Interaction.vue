@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :key="interactionId">
     <div v-if="loadingInitialized && correct" class="contract-wrapper">
       <div class="d-block d-sm-flex pl-2">
         <div class="contract-header-wrapper">
@@ -236,19 +236,13 @@ export default {
   },
 
   async mounted() {
-    if (this.$route.params.id.length != 43) {
-      this.loadingInitialized = true;
-      this.correct = false;
-    }
-    const { symbols } = redstone;
-    const price = await redstone.getPrice(symbols.AR);
-    const { value } = price;
-    this.usdPrice = value;
-    this.getInteraction(
-      this.$route.query.page ? this.$route.query.page : this.currentPage
-    );
+    await this.loadInteractionData();
   },
-
+  watch: {
+    interactionId: function() {
+      this.loadInteractionData();
+    },
+  },
   components: { JsonViewer, Error },
   computed: {
     ...mapState('prefetch', ['gatewayUrl']),
@@ -269,6 +263,19 @@ export default {
   },
 
   methods: {
+    async loadInteractionData() {
+      if (this.$route.params.id.length != 43) {
+        this.loadingInitialized = true;
+        this.correct = false;
+      }
+      const { symbols } = redstone;
+      const price = await redstone.getPrice(symbols.AR);
+      const { value } = price;
+      this.usdPrice = value;
+      this.getInteraction(
+        this.$route.query.page ? this.$route.query.page : this.currentPage
+      );
+    },
     convertTZ(date, tzString) {
       return new Date(
         (typeof date === 'string'
@@ -297,13 +304,6 @@ export default {
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
       const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
-    },
-    refreshData() {
-      this.currentPage = 1;
-      this.$router.push({ query: {} });
-      this.selected == 'all'
-        ? this.getInteractions(this.currentPage)
-        : this.getInteractions(this.currentPage, this.selected);
     },
     onCopy() {
       this.copiedDisplay = true;
