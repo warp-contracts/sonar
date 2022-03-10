@@ -114,6 +114,10 @@
             <div>Function</div>
             <div>{{ interaction.func }}</div>
           </div>
+          <div class="interaction-item" v-if="interaction.pstQty">
+            <div>PST transfer qty</div>
+            <div>{{ interaction.pstQty }}</div>
+          </div>
           <div class="interaction-item">
             <div>Block height</div>
             <div>{{ interaction.blockHeight }}</div>
@@ -232,6 +236,7 @@ export default {
       correct: false,
       loadingInitialized: false,
       usdPrice: 0,
+      qty: 0,
     };
   },
 
@@ -328,6 +333,11 @@ export default {
             blockHeight: fetchedInteractions.data.blockheight,
             contractId: fetchedInteractions.data.contractid,
             func: fetchedInteractions.data.function,
+            pstQty: JSON.parse(
+              fetchedInteractions.data.interaction.tags.find(
+                (t) => t.name == 'Input'
+              ).value
+            ).qty,
             confirmationStatus: fetchedInteractions.data.confirmationstatus,
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
