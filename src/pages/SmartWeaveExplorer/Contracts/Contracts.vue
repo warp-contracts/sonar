@@ -37,15 +37,39 @@
     </div>
 
     <div class="contracts-wrapper">
-      <div class="d-block d-sm-flex justify-content-between">
-        <b-col lg="9" class="my-1 d-sm-flex py-3 px-0">
+      <div class="d-block py-3">
+        <b-col lg="9" class="my-1 d-sm-flex px-0">
+          <p class="filter-header mr-4 ml-2">Contract Source Type</p>
+          <b-form-radio-group
+            id="contract-source-type-group"
+            name="contract-source-type-group"
+            @change="refreshData"
+            v-model="selectedSource"
+            class="radio-group"
+            stacked
+          >
+            <div class="contract-type-item">
+              <b-form-radio value="all">All</b-form-radio>
+            </div>
+            <div class="contract-type-item">
+              <b-form-radio value="application/javascript"
+                >JavaScript</b-form-radio
+              >
+            </div>
+            <div class="contract-type-item">
+              <b-form-radio value="application/wasm">WASM</b-form-radio>
+            </div>
+          </b-form-radio-group>
+        </b-col>
+        <b-col lg="9" class="my-1 d-sm-flex px-0">
           <p class="filter-header mr-4 ml-2">Contract Type</p>
           <b-form-radio-group
             id="contract-type-group"
             name="contract-type-group"
             @change="refreshData"
             v-model="selected"
-            class="contract-type-group"
+            class="radio-group"
+            stacked
           >
             <div class="contract-type-item">
               <b-form-radio value="all">All</b-form-radio>
@@ -59,7 +83,11 @@
           </b-form-radio-group>
         </b-col>
       </div>
-      <TxList :paging="pages" @page-clicked="onPageClicked">
+      <TxList
+        :paging="pages"
+        @page-clicked="onPageClicked"
+        v-if="!noContractsDetected"
+      >
         <b-table
           ref="table"
           id="contracts-table"
@@ -108,6 +136,10 @@
             <div class="text-uppercase">{{ data.item.type }}</div>
           </template>
 
+          <template #cell(lang)="data">
+            <div class="text-uppercase">{{ data.item.lang }}</div>
+          </template>
+
           <template #cell(total)="data">
             <div class="text-right">{{ data.item.total }}</div>
           </template>
@@ -135,6 +167,9 @@
           ></div>
         </div>
       </TxList>
+      <div v-else class="no-contracts-wrapper ml-2">
+        No contracts for specified requirements!
+      </div>
     </div>
   </div>
 </template>
@@ -183,6 +218,7 @@ export default {
   data() {
     return {
       selected: 'all',
+      selectedSource: 'all',
       chartLoading: true,
       loading: true,
       option: {
@@ -238,6 +274,10 @@ export default {
         'owner',
         'type',
         {
+          key: 'lang',
+          label: 'Wasm Lang',
+        },
+        {
           key: 'total',
           label: 'total',
           thClass: 'text-right',
@@ -271,6 +311,12 @@ export default {
       totalInteractions: 0,
       totalContractsLoaded: false,
       totalInteractionsLoaded: false,
+      filterList: [
+        { value: 'all', label: 'All' },
+        { value: 'pst', label: 'PST' },
+        { value: 'other', label: 'Other' },
+      ],
+      noContractsDetected: false,
     };
   },
 
@@ -309,9 +355,11 @@ export default {
         this.$router.push({ query: {} });
       }
       this.currentPage = 1;
-      this.selected == 'all'
-        ? this.getContracts(this.currentPage)
-        : this.getContracts(this.currentPage, this.selected);
+      this.getContracts(
+        this.currentPage,
+        this.selected == 'all' ? null : this.selected,
+        this.selectedSource == 'all' ? null : this.selectedSource
+      );
     },
     async getStats() {
       axios.get(`${this.gatewayUrl}/gateway/stats`).then((fetchedData) => {
@@ -355,22 +403,26 @@ export default {
     },
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
-      if (this.selected == 'all') {
-        this.getContracts(this.currentPage);
-      } else {
-        this.getContracts(this.currentPage, this.selected);
-      }
+      this.getContracts(
+        this.currentPage,
+        this.selected == 'all' ? null : this.selected,
+        this.selectedSource == 'all' ? null : this.selectedSource
+      );
     },
-    async getContracts(page, type) {
+    async getContracts(page, type, sourceType) {
       this.contracts = [];
       axios
         .get(
           `${this.gatewayUrl}/gateway/contracts?limit=${
             this.limit
-          }&page=${page}${type ? `&type=${type}` : ''}`
+          }&page=${page}${type != null ? `&contractType=${type}` : ''}${
+            sourceType != null ? `&sourceType=${sourceType}` : ''
+          }`
         )
 
         .then(async (fetchedContracts) => {
+          this.noContractsDetected =
+            fetchedContracts.data.contracts.length == 0;
           this.paging = fetchedContracts.data.paging;
           for (const contract of fetchedContracts.data.contracts) {
             this.contracts.push({
@@ -383,7 +435,8 @@ export default {
               confirmed: contract.confirmed,
               corrupted: contract.corrupted,
               lastInteractionHeight: contract.last_interaction_height,
-              type: contract.type,
+              type: contract.contract_type,
+              lang: contract.src_wasm_lang,
             });
           }
         });
@@ -399,12 +452,3 @@ export default {
 </script>
 
 <style src="./Contracts.scss" lang="scss" scoped></style>
-<style lang="scss">
-#contract-type-group {
-  .custom-control-input:checked ~ .custom-control-label:before {
-    background-color: var(--redstone-smartweave-blue-color) !important;
-    border-color: var(--redstone-smartweave-blue-color) !important;
-    border-radius: 50%;
-  }
-}
-</style>

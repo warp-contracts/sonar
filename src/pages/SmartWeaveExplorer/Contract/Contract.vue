@@ -63,6 +63,10 @@
               <div class="cell-header">PST Ticker</div>
               <div>{{ pst_ticker }}</div>
             </div>
+            <div v-if="wasmLang" class="cell">
+              <div class="cell-header">WASM</div>
+              <div>{{ wasmLang }}</div>
+            </div>
           </div>
           <div class="col-6 p-0">
             <div class="cell">
@@ -90,6 +94,7 @@
             Transactions
           </b-nav-item>
           <b-nav-item
+            v-if="!wasmLang"
             :to="`${isTestnet ? '?network=testnet' : ''}#code`"
             :active="$route.hash === '#code'"
             @click="onInput($route.hash)"
@@ -399,6 +404,7 @@ export default {
       pst_ticker: null,
       pst_name: null,
       noInteractionsDetected: false,
+      wasmLang: null,
     };
   },
   watch: {
@@ -512,6 +518,7 @@ export default {
           this.owner = fetchedContract.data.owner;
           this.pst_ticker = fetchedContract.data.pstTicker;
           this.pst_name = fetchedContract.data.pstName;
+          this.wasmLang = fetchedContract.data.srcWasmLang;
         });
     },
     async getInteractions(page, confirmationStatus) {
