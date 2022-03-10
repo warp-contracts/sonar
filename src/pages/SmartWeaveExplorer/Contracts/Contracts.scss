@@ -67,7 +67,7 @@
   font-weight: 500;
 }
 
-#contract-type-group {
+.radio-group {
   display: block;
 
   @media (min-width: breakpoint-min(md)) {
@@ -114,4 +114,8 @@
   position: absolute;
   left: -20px;
   bottom: 150px;
+}
+
+.no-contracts-wrapper {
+  height: 250px;
 }
