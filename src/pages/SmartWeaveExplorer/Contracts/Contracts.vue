@@ -37,8 +37,8 @@
     </div>
 
     <div class="contracts-wrapper">
-      <div class="d-block py-3">
-        <b-col lg="9" class="my-1 d-sm-flex px-0">
+      <div class="d-block py-3 d-sm-flex">
+        <div class="my-1 d-sm-flex px-0 pr-5">
           <p class="filter-header mr-4 ml-2">Contract Source Type</p>
           <b-form-radio-group
             id="contract-source-type-group"
@@ -60,8 +60,8 @@
               <b-form-radio value="application/wasm">WASM</b-form-radio>
             </div>
           </b-form-radio-group>
-        </b-col>
-        <b-col lg="9" class="my-1 d-sm-flex px-0">
+        </div>
+        <div class="my-1 d-sm-flex px-0">
           <p class="filter-header mr-4 ml-2">Contract Type</p>
           <b-form-radio-group
             id="contract-type-group"
@@ -81,7 +81,7 @@
               <b-form-radio value="other">Other</b-form-radio>
             </div>
           </b-form-radio-group>
-        </b-col>
+        </div>
       </div>
       <TxList
         :paging="pages"
@@ -94,7 +94,7 @@
           stacked="md"
           hover
           :items="contracts"
-          :fields="fields"
+          :fields="computedFields"
           @row-clicked="rowClicked"
           :busy="!contractsLoaded"
         >
@@ -347,8 +347,12 @@ export default {
           (this.paging.items > this.limit ? this.limit : this.paging.items)
       );
     },
+    computedFields() {
+      return this.selectedSource == 'application/wasm'
+        ? this.fields
+        : this.fields.filter((field) => field.key != 'lang');
+    },
   },
-
   methods: {
     refreshData() {
       if (this.currentPage > 1) {
