@@ -187,7 +187,7 @@
                     stacked="md"
                     hover
                     :items="interactions"
-                    :fields="fields"
+                    :fields="computedFields"
                     @row-clicked="rowClicked"
                     :busy="!interactionsLoaded"
                   >
@@ -203,6 +203,21 @@
                       >
                         {{ data.item.interactionId | tx }}</a
                       >
+                    </template>
+
+                    <template #cell(validity)="data">
+                      <div
+                        v-show="data.item.validity == true"
+                        class="
+                          flaticon-check
+                        "
+                      />
+                      <div
+                        v-show="data.item.validity == false"
+                        class="
+                          flaticon-cross
+                        "
+                      />
                     </template>
 
                     <template #cell(block_id)="data">
@@ -368,6 +383,7 @@ export default {
 
   data() {
     return {
+      testLoading: false,
       visitedTabs: [],
       epochs: [
         ['year', 31536000],
@@ -379,6 +395,11 @@ export default {
       ],
       fields: [
         'id',
+        {
+          key: 'validity',
+          label: 'validity',
+          thClass: 'text-center',
+        },
         'block_id',
         'block_height',
         'age',
@@ -412,7 +433,7 @@ export default {
       this.$router.go(0);
     },
   },
-  mounted() {
+  async mounted() {
     if (this.$route.params.id.length != 43) {
       this.loadingInitialized = true;
       this.correct = false;
@@ -420,10 +441,12 @@ export default {
       this.loadingInitialized = true;
       this.correct = true;
     }
+    this.validity = await this.getInteractionValidity();
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
     this.getContract();
+
     this.visitedTabs.push(this.$route.hash);
   },
 
@@ -444,6 +467,11 @@ export default {
     },
     interactionsLoaded() {
       return this.interactions !== null && this.total !== null;
+    },
+    computedFields() {
+      return this.validity
+        ? this.fields
+        : this.fields.filter((field) => field.key != 'validity');
     },
   },
 
@@ -535,8 +563,7 @@ export default {
               : ''
           }`
         )
-
-        .then((fetchedInteractions) => {
+        .then(async (fetchedInteractions) => {
           if (fetchedInteractions.data.interactions.length == 0) {
             this.noInteractionsDetected = true;
           }
@@ -563,6 +590,13 @@ export default {
             ).function;
             this.interactions.push({
               id: i.interaction.id,
+              validity: this.validity
+                ? this.validity[
+                    Object.keys(this.validity).find(
+                      (v) => v == i.interaction.id
+                    )
+                  ]
+                : null,
               interactionId: i.interaction.id,
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,
@@ -588,6 +622,21 @@ export default {
             });
           }
         });
+    },
+    async getInteractionValidity() {
+      const validity = fetch(
+        `https://cache.redstone.tools/${
+          this.isTestnet ? 'testnet/' : ''
+        }cache/state/${this.contractId}`
+      ).then(async (res) => {
+        if (res.status == 404) {
+          return null;
+        } else {
+          const data = await res.json();
+          return data.validity;
+        }
+      });
+      return validity;
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
