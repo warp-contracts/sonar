@@ -223,7 +223,11 @@
                     <template #cell(block_id)="data">
                       <a
                         :href="
-                          `https://viewblock.io/arweave/block/${data.item.blockId}`
+                          `${
+                            isTestnet
+                              ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
+                              : `https://viewblock.io/arweave/block/${data.item.blockId}`
+                          }`
                         "
                         target="_blank"
                       >
@@ -237,6 +241,7 @@
 
                     <template #cell(owner)="data">
                       <a
+                        v-if="!isTestnet"
                         :href="
                           `https://viewblock.io/arweave/address/${data.item.owner}`
                         "
@@ -244,6 +249,7 @@
                       >
                         {{ data.item.owner | tx }}</a
                       >
+                      <span v-else> {{ data.item.owner | tx }}</span>
                     </template>
 
                     <template #cell(function)="data">

@@ -123,6 +123,7 @@
 
           <template #cell(owner)="data">
             <a
+              v-if="!isTestnet"
               :href="
                 `https://viewblock.io/arweave/address/${data.item.blockId}`
               "
@@ -130,6 +131,7 @@
             >
               {{ data.item.owner | tx }}</a
             >
+            <span v-else>{{ data.item.owner | tx }}</span>
           </template>
 
           <template #cell(type)="data">

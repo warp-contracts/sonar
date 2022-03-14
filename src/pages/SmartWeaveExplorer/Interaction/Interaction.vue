@@ -32,6 +32,7 @@
           <div class="interaction-item">
             <div>Owner</div>
             <a
+              v-if="!isTestnet"
               :href="
                 `https://viewblock.io/arweave/address/${interaction.interaction?.owner.address}`
               "
@@ -44,6 +45,14 @@
                 interaction.interaction?.owner.address | tx
               }}</span>
             </a>
+            <div v-else>
+              <span class="d-none d-sm-block">{{
+                interaction.interaction?.owner.address
+              }}</span
+              ><span class="d-block d-sm-none">{{
+                interaction.interaction?.owner.address | tx
+              }}</span>
+            </div>
           </div>
           <div class="interaction-item">
             <div>Confirmation status</div>
@@ -126,7 +135,11 @@
             <div>Block id</div>
             <a
               :href="
-                `https://viewblock.io/arweave/block/${interaction.blockId}`
+                `${
+                  isTestnet
+                    ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
+                    : `https://viewblock.io/arweave/block/${interaction.blockId}`
+                }`
               "
               target="_blank"
             >
@@ -250,7 +263,7 @@ export default {
   },
   components: { JsonViewer, Error },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl']),
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     interactionId() {
       return this.$route.params.id;
     },
