@@ -25,17 +25,8 @@
       >
       </json-viewer>
     </div>
-    <div v-if="loaded && contractInitialState">
-      <p class="json-header">Initial State:</p>
-
-      <json-viewer
-        v-if="contractInitialState"
-        :value="contractInitialState"
-        :expand-depth="1"
-        copyable
-        sort
-      >
-      </json-viewer>
+    <div v-if="!state.ok && state.data" class="state-container">
+      {{ state.data }}
     </div>
   </div>
 </template>
@@ -43,8 +34,6 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import { mapState } from 'vuex';
-import constants from '@/constants';
-import axios from 'axios';
 
 export default {
   name: 'ContractState',
@@ -57,7 +46,6 @@ export default {
     return {
       state: { ok: null, data: null },
       loaded: false,
-      contractInitialState: false,
     };
   },
 
@@ -66,15 +54,11 @@ export default {
   },
   methods: {
     async created() {
-      if (this.isTestnet) {
-        this.getInitialState();
-      } else {
-        fetch(`https://cache.redstone.tools/cache/state/${this.contractId}`)
+        fetch(`https://cache.redstone.tools/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`)
           .then((response) => {
             if (response.status == 404) {
-              this.getInitialState();
-              // this.state.ok = false;
-              // return response.text();
+              this.state.ok = false;
+              return response.text();
             } else if (response.status == 200) {
               this.state.ok = true;
               return response.json();
@@ -86,15 +70,6 @@ export default {
             this.state.data = data;
             this.loaded = true;
           });
-      }
-    },
-    async getInitialState() {
-      axios
-        .get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`)
-        .then((fetchedContract) => {
-          this.contractInitialState = fetchedContract.data.initState;
-          this.loaded = true;
-        });
     },
   },
 
