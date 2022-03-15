@@ -321,6 +321,7 @@
                           :expand-depth="1"
                           copyable
                           sort
+                          theme="json-theme"
                         ></json-viewer>
                         <hr />
                         <p class="json-header">Full transaction:</p>
@@ -329,6 +330,7 @@
                           :expand-depth="1"
                           copyable
                           sort
+                          theme="json-theme"
                         ></json-viewer>
                       </div>
                     </template>
@@ -447,6 +449,7 @@ export default {
       this.loadingInitialized = true;
       this.correct = true;
     }
+
     this.validity = await this.getInteractionValidity();
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
@@ -596,13 +599,7 @@ export default {
             ).function;
             this.interactions.push({
               id: i.interaction.id,
-              validity: this.validity
-                ? this.validity[
-                    Object.keys(this.validity).find(
-                      (v) => v == i.interaction.id
-                    )
-                  ]
-                : null,
+              validity: this.validity && this.validity[i.interaction.id],
               interactionId: i.interaction.id,
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,

@@ -194,6 +194,7 @@
               :expand-depth="2"
               copyable
               sort
+              theme="json-theme"
             ></json-viewer>
           </div>
         </div>

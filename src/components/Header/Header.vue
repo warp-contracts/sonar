@@ -92,6 +92,15 @@
     </b-nav>
     <b-nav></b-nav>
     <b-nav class="align-items-center flex-grow-1 justify-content-end">
+      <div class="text-uppercase">
+        <div class="d-flex flex-column p-1">
+          <span class="pr-2" style="borderRight: solid 2px #5982f1"
+            >height</span
+          >
+        </div>
+      </div>
+      <span class="pr-5 pl-2">{{ networkHeight }}</span>
+
       <div
         class="text-uppercase mr-4 switch-link"
         role="button"
@@ -133,16 +142,20 @@ export default {
       foundContracts: [],
       searching: false,
       switchNetworkText: null,
+      networkHeight: null,
     };
   },
-  mounted() {
+  async mounted() {
     this.switchNetworkText =
       this.gatewayUrl == constants.gatewayProdUrl
         ? 'Switch to Testnet'
         : 'Switch to Mainnet';
+
+    const info = await this.arweave.network.getInfo();
+    this.networkHeight = info.height;
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl']),
+    ...mapState('prefetch', ['gatewayUrl', 'arweave']),
     ...mapState('layout', ['showSearchInputInHeader']),
     searchBarText() {
       return screen.width >= 1024
