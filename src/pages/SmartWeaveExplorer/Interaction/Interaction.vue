@@ -123,6 +123,16 @@
             <div>Function</div>
             <div>{{ interaction.func }}</div>
           </div>
+          <div v-if="interaction">
+            <p class="json-header">Input Value</p>
+            <json-viewer
+              :value="interaction.interactionValue"
+              :expand-depth="2"
+              copyable
+              sort
+              theme="json-theme"
+            ></json-viewer>
+          </div>
           <div class="interaction-item" v-if="interaction.pstQty">
             <div>PST transfer qty</div>
             <div>{{ interaction.pstQty }}</div>
@@ -173,16 +183,6 @@
           <div class="interaction-item">
             <div>Quantity</div>
             <div>{{ interaction.interaction?.quantity.winston }}</div>
-          </div>
-          <div v-if="interaction">
-            <p class="json-header">Input Value</p>
-            <json-viewer
-              :value="interaction.interactionValue"
-              :expand-depth="2"
-              copyable
-              sort
-              theme="json-theme"
-            ></json-viewer>
           </div>
         </div>
         <div
@@ -380,9 +380,9 @@ export default {
                 : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
-            interactionValue: tagsParser.getInputTag(
-              interactionInterface,
-              this.contractId
+            interactionValue: JSON.parse(
+              tagsParser.getInputTag(interactionInterface, this.contractId)
+                .value
             ),
             timestamp: fetchedInteractions.data.interaction.block.timestamp,
             timestampFormatted: dayjs
