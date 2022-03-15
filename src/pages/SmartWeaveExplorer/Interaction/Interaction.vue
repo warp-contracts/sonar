@@ -174,6 +174,16 @@
             <div>Quantity</div>
             <div>{{ interaction.interaction?.quantity.winston }}</div>
           </div>
+          <div v-if="interaction">
+            <p class="json-header">Input Value</p>
+            <json-viewer
+              :value="interaction.interactionValue"
+              :expand-depth="2"
+              copyable
+              sort
+              theme="json-theme"
+            ></json-viewer>
+          </div>
         </div>
         <div
           class="pl-3 col-lg-7 col-12"
@@ -216,6 +226,7 @@ import redstone from 'redstone-api';
 import utc from 'dayjs/plugin/utc';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { mapState } from 'vuex';
+import { TagsParser } from 'redstone-smartweave';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
@@ -338,6 +349,12 @@ export default {
         .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
         .then((fetchedInteractions) => {
+          const tagsParser = new TagsParser();
+
+          const interactionInterface = {
+            cursor: '',
+            node: fetchedInteractions.data.interaction,
+          };
           this.loadingInitialized = true;
           this.correct = !_.isEmpty(fetchedInteractions.data);
           this.interaction = {
@@ -363,6 +380,10 @@ export default {
                 : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
+            interactionValue: tagsParser.getInputTag(
+              interactionInterface,
+              this.contractId
+            ),
             timestamp: fetchedInteractions.data.interaction.block.timestamp,
             timestampFormatted: dayjs
               .utc(
