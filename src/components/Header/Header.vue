@@ -94,7 +94,7 @@
     <b-nav class="align-items-center flex-grow-1 justify-content-end">
       <div class="text-uppercase">
         <div class="d-flex flex-column p-1">
-          <span class="pr-2 height-text">height</span>
+          <span>height</span>
         </div>
       </div>
       <span class="pr-5 pl-2 height">{{ networkHeight }}</span>
