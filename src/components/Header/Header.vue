@@ -94,12 +94,10 @@
     <b-nav class="align-items-center flex-grow-1 justify-content-end">
       <div class="text-uppercase">
         <div class="d-flex flex-column p-1">
-          <span class="pr-2" style="borderRight: solid 2px #5982f1"
-            >height</span
-          >
+          <span class="pr-2 height-text">height</span>
         </div>
       </div>
-      <span class="pr-5 pl-2">{{ networkHeight }}</span>
+      <span class="pr-5 pl-2 height">{{ networkHeight }}</span>
 
       <div
         class="text-uppercase mr-4 switch-link"
@@ -150,12 +148,10 @@ export default {
       this.gatewayUrl == constants.gatewayProdUrl
         ? 'Switch to Testnet'
         : 'Switch to Mainnet';
-
-    const info = await this.arweave.network.getInfo();
-    this.networkHeight = info.height;
+    await this.getNetworkHeight();
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'arweave']),
+    ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
     searchBarText() {
       return screen.width >= 1024
@@ -198,15 +194,31 @@ export default {
   methods: {
     ...mapActions('layout', ['updateSearchTerm']),
     ...mapActions('prefetch', ['loadGateway']),
-    toggleGateway() {
+    async toggleGateway() {
       if (this.gatewayUrl == constants.gatewayProdUrl) {
         this.loadGateway(constants.gatewayTestUrl);
         this.switchNetworkText = 'Switch to Mainnet';
         this.$router.push('/app/contracts?network=testnet');
+        await this.getNetworkHeight();
       } else {
         this.loadGateway(constants.gatewayProdUrl);
         this.switchNetworkText = 'Switch to Testnet';
         this.$router.push('/app/contracts');
+        await this.getNetworkHeight();
+      }
+    },
+    async getNetworkHeight() {
+      if (this.isTestnet) {
+        fetch(constants.testnetUrl)
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            this.networkHeight = data.height;
+          });
+      } else {
+        const info = await this.arweave.network.getInfo();
+        this.networkHeight = info.height;
       }
     },
     goToContract(data) {
