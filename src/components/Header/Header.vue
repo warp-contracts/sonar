@@ -223,9 +223,17 @@ export default {
     },
     goToContract(data) {
       if (data.type == 'contract' || data.type == 'pst') {
-        this.$router.push(`/app/contract/${data.contract_id}`);
+        this.$router.push(
+          `/app/contract/${data.contract_id}${
+            this.isTestnet ? '?network=testnet' : ''
+          }`
+        );
       } else {
-        this.$router.push(`/app/interaction/${data.contract_id}`);
+        this.$router.push(
+          `/app/interaction/${data.contract_id}${
+            this.isTestnet ? '?network=testnet' : ''
+          }`
+        );
       }
       this.foundContracts = [];
       this.query = '';
