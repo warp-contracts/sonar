@@ -6,7 +6,8 @@
         <v-chart
           :option="option"
           :loading="loading"
-          resize="width: 80%, height: 500px"
+          resize="width: 75%; height: 500px"
+          autoresize="true"
         />
       </div>
       <div class="stats-wrapper">
