@@ -4,29 +4,10 @@
       Loading Contract State...
     </div>
 
-    <div v-if="state.ok && state.data">
+    <div v-if="state">
       <p class="json-header">Contract state:</p>
-      <json-viewer
-        v-if="state.data.state"
-        :value="state.data?.state"
-        :expand-depth="1"
-        copyable
-        sort
-      >
+      <json-viewer v-if="state" :value="state" :expand-depth="1" copyable sort>
       </json-viewer>
-      <hr />
-      <p class="json-header">Interactions validity:</p>
-      <json-viewer
-        v-if="state.data.validity"
-        :value="state.data?.validity"
-        :expand-depth="1"
-        copyable
-        sort
-      >
-      </json-viewer>
-    </div>
-    <div v-if="!state.ok && state.data" class="state-container">
-      {{ state.data }}
     </div>
   </div>
 </template>
@@ -40,11 +21,12 @@ export default {
 
   props: {
     contractId: String,
+    initState: Object,
   },
 
   data() {
     return {
-      state: { ok: null, data: null },
+      state: null,
       loaded: false,
     };
   },
@@ -54,22 +36,21 @@ export default {
   },
   methods: {
     async created() {
-        fetch(`https://cache.redstone.tools/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`)
-          .then((response) => {
-            if (response.status == 404) {
-              this.state.ok = false;
-              return response.text();
-            } else if (response.status == 200) {
-              this.state.ok = true;
-              return response.json();
-            } else {
-              return response.json();
-            }
-          })
-          .then((data) => {
-            this.state.data = data;
+      fetch(
+        `https://cache.redstone.tools/${
+          this.isTestnet ? 'testnet/' : ''
+        }cache/state/${this.contractId}`
+      ).then((response) => {
+        if (response.status == 404) {
+          this.loaded = true;
+          this.state = this.initState;
+        } else if (response.status == 200) {
+          return response.json().then((data) => {
+            this.state = data;
             this.loaded = true;
           });
+        }
+      });
     },
   },
 

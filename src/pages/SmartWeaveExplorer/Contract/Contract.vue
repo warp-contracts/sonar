@@ -362,7 +362,11 @@
             class="p-2"
           >
             <div>
-              <ContractState :contractId="contractId"></ContractState>
+              <ContractState
+                v-if="initState"
+                :contractId="contractId"
+                :initState="initState"
+              ></ContractState>
             </div>
           </div>
         </div>
@@ -434,6 +438,7 @@ export default {
       pst_name: null,
       noInteractionsDetected: false,
       wasmLang: null,
+      initState: null,
     };
   },
   watch: {
@@ -556,6 +561,7 @@ export default {
           this.pst_ticker = fetchedContract.data.pstTicker;
           this.pst_name = fetchedContract.data.pstName;
           this.wasmLang = fetchedContract.data.srcWasmLang;
+          this.initState = fetchedContract.data.initState;
         });
     },
     async getInteractions(page, confirmationStatus) {
