@@ -17,10 +17,7 @@
             v-clipboard:success="onCopy"
             title="Copy to clipboard"
           ></div>
-          <p
-            class="clipboard-success"
-            v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }"
-          >
+          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">
             Copied
           </p>
         </div>
@@ -110,13 +107,7 @@
           </b-nav-item>
         </b-nav>
         <div class="tab-content">
-          <div
-            :class="[
-              'tab-pane',
-              { active: $route.hash === '#' || $route.hash === '' },
-            ]"
-            class="p-2"
-          >
+          <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noInteractionsDetected">
               <div class="d-block d-sm-flex justify-content-between">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
@@ -156,9 +147,7 @@
                       />
                     </div>
                     <div class="confirmation-status-item">
-                      <b-form-radio value="not_corrupted"
-                        >Not corrupted
-                      </b-form-radio>
+                      <b-form-radio value="not_corrupted">Not corrupted </b-form-radio>
                       <div
                         v-b-tooltip.hover
                         title="Show both confirmed and not yet processed interactions."
@@ -168,18 +157,12 @@
                   </b-form-radio-group>
                 </b-col>
 
-                <b-button
-                  class="btn btn-refresh rounded-pill mb-3 mb-sm-0"
-                  @click="refreshData"
+                <b-button class="btn btn-refresh rounded-pill mb-3 mb-sm-0" @click="refreshData"
                   >Refresh data
                 </b-button>
               </div>
               <div>
-                <TxList
-                  :paging="pages"
-                  v-if="interactionsLoaded"
-                  @page-clicked="onPageClicked"
-                >
+                <TxList :paging="pages" v-if="interactionsLoaded" @page-clicked="onPageClicked">
                   <b-table
                     v-if="interactions?.length > 0"
                     ref="table"
@@ -194,13 +177,7 @@
                     <template #table-busy></template>
 
                     <template #cell(id)="data">
-                      <a
-                        :href="
-                          `/#/app/interaction/${data.item.interactionId}${
-                            isTestnet ? '?network=testnet' : ''
-                          }`
-                        "
-                      >
+                      <a :href="`/#/app/interaction/${data.item.interactionId}${isTestnet ? '?network=testnet' : ''}`">
                         {{ data.item.interactionId | tx }}</a
                       >
                     </template>
@@ -218,6 +195,8 @@
                           flaticon-cross
                         "
                       />
+                      <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
+                      <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>
 
                     <template #cell(block_id)="data">
@@ -242,9 +221,7 @@
                     <template #cell(owner)="data">
                       <a
                         v-if="!isTestnet"
-                        :href="
-                          `https://viewblock.io/arweave/address/${data.item.owner}`
-                        "
+                        :href="`https://viewblock.io/arweave/address/${data.item.owner}`"
                         target="_blank"
                       >
                         {{ data.item.owner | tx }}</a
@@ -306,10 +283,7 @@
                     </template>
 
                     <template #cell(actions)="data">
-                      <div
-                        v-if="!data.item._showDetails"
-                        class="flaticon-chevron-down"
-                      />
+                      <div v-if="!data.item._showDetails" class="flaticon-chevron-down" />
                       <div v-else class="flaticon-chevron-up" />
                     </template>
 
@@ -337,11 +311,7 @@
                   </b-table>
                 </TxList>
                 <div v-if="!interactionsLoaded">
-                  <div
-                    v-for="n in 15"
-                    :key="n"
-                    class="preloader text-preloader tx-preloader"
-                  ></div>
+                  <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
                 </div>
               </div>
             </div>
@@ -349,24 +319,14 @@
               Contract has no interactions!
             </div>
           </div>
-          <div
-            :class="['tab-pane', { active: $route.hash === '#code' }]"
-            class="p-2"
-          >
+          <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
               <ContractCode :contractId="contractId"></ContractCode>
             </div>
           </div>
-          <div
-            :class="['tab-pane', { active: $route.hash === '#state' }]"
-            class="p-2"
-          >
+          <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
             <div>
-              <ContractState
-                v-if="initState"
-                :contractId="contractId"
-                :initState="initState"
-              ></ContractState>
+              <ContractState v-if="initState" :contractId="contractId" :initState="initState"></ContractState>
             </div>
           </div>
         </div>
@@ -439,6 +399,7 @@ export default {
       noInteractionsDetected: false,
       wasmLang: null,
       initState: null,
+      loadedValidity: null,
     };
   },
   watch: {
@@ -455,12 +416,9 @@ export default {
       this.correct = true;
     }
 
-    this.getInteractions(
-      this.$route.query.page ? this.$route.query.page : this.currentPage
-    );
+    this.getInteractions(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.getContract();
     this.validity = await this.getInteractionValidity();
-
     this.visitedTabs.push(this.$route.hash);
   },
 
@@ -487,10 +445,7 @@ export default {
   methods: {
     convertTZ(date, tzString) {
       return new Date(
-        (typeof date === 'string'
-          ? new Date(date)
-          : date
-        ).toLocaleString('en-US', { timeZone: tzString })
+        (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
       );
     },
     getDuration(timeAgoInSeconds) {
@@ -507,10 +462,7 @@ export default {
     timeAgo(date, source) {
       const timeAgoInSeconds = Math.floor(
         (this.convertTZ(new Date(), 'Europe/Berlin') -
-          this.convertTZ(
-            new Date(date),
-            source ? 'Europe/Berlin' : 'Europe/London'
-          )) /
+          this.convertTZ(new Date(date), source ? 'Europe/Berlin' : 'Europe/London')) /
           1000
       );
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
@@ -549,15 +501,13 @@ export default {
       }
     },
     async getContract() {
-      axios
-        .get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`)
-        .then((fetchedContract) => {
-          this.owner = fetchedContract.data.owner;
-          this.pst_ticker = fetchedContract.data.pstTicker;
-          this.pst_name = fetchedContract.data.pstName;
-          this.wasmLang = fetchedContract.data.srcWasmLang;
-          this.initState = fetchedContract.data.initState;
-        });
+      axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then((fetchedContract) => {
+        this.owner = fetchedContract.data.owner;
+        this.pst_ticker = fetchedContract.data.pstTicker;
+        this.pst_name = fetchedContract.data.pstName;
+        this.wasmLang = fetchedContract.data.srcWasmLang;
+        this.initState = fetchedContract.data.initState;
+      });
     },
     async getInteractions(page, confirmationStatus) {
       this.interactions = null;
@@ -565,13 +515,9 @@ export default {
 
       axios
         .get(
-          `${this.gatewayUrl}/gateway/interactions?contractId=${
-            this.contractId
-          }&limit=${this.limit}&totalCount=true&page=${page}${
-            confirmationStatus
-              ? `&confirmationStatus=${confirmationStatus}`
-              : ''
-          }`
+          `${this.gatewayUrl}/gateway/interactions?contractId=${this.contractId}&limit=${
+            this.limit
+          }&totalCount=true&page=${page}${confirmationStatus ? `&confirmationStatus=${confirmationStatus}` : ''}`
         )
         .then(async (fetchedInteractions) => {
           if (fetchedInteractions.data.interactions.length == 0) {
@@ -594,10 +540,7 @@ export default {
               cursor: '',
               node: i.interaction,
             };
-            const inputFunc = JSON.parse(
-              tagsParser.getInputTag(interactionInterface, this.contractId)
-                .value
-            ).function;
+            const inputFunc = JSON.parse(tagsParser.getInputTag(interactionInterface, this.contractId).value).function;
             this.interactions.push({
               id: i.interaction.id,
               interactionId: i.interaction.id,
@@ -610,32 +553,24 @@ export default {
               function: inputFunc ? inputFunc : '-',
               status: i.status,
               owner: i.interaction.owner.address,
-              confirmingPeers: i.confirming_peers
-                ? i.confirming_peers.split(',')
-                : '-',
-              source:
-                i.confirming_peers == 'https://node1.bundlr.network'
-                  ? 'sequencer'
-                  : 'arweave',
+              confirmingPeers: i.confirming_peers ? i.confirming_peers.split(',') : '-',
+              source: i.confirming_peers == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
               interaction: i.interaction,
-              tags: tagsParser.getInputTag(
-                interactionInterface,
-                this.contractId
-              ),
+              tags: tagsParser.getInputTag(interactionInterface, this.contractId),
             });
           }
         });
     },
     async getInteractionValidity() {
       const validity = fetch(
-        `https://cache.redstone.tools/${
-          this.isTestnet ? 'testnet/' : ''
-        }cache/state/${this.contractId}`
+        `https://cache.redstone.tools/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
       ).then(async (res) => {
         if (res.status == 404) {
+          this.loadedValidity = true;
           return null;
         } else {
           const data = await res.json();
+          this.loadedValidity = true;
           return data.validity;
         }
       });

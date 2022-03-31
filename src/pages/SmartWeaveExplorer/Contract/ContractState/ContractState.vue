@@ -5,9 +5,7 @@
     </div>
 
     <div v-if="state">
-      <p class="json-header">Contract state:</p>
-      <json-viewer v-if="state" :value="state" :expand-depth="1" copyable sort>
-      </json-viewer>
+      <json-viewer v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
     </div>
   </div>
 </template>
@@ -36,21 +34,19 @@ export default {
   },
   methods: {
     async created() {
-      fetch(
-        `https://cache.redstone.tools/${
-          this.isTestnet ? 'testnet/' : ''
-        }cache/state/${this.contractId}`
-      ).then((response) => {
-        if (response.status == 404) {
-          this.loaded = true;
-          this.state = this.initState;
-        } else if (response.status == 200) {
-          return response.json().then((data) => {
-            this.state = data;
+      fetch(`https://cache.redstone.tools/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
+        (response) => {
+          if (response.status == 404) {
             this.loaded = true;
-          });
+            this.state = this.initState;
+          } else if (response.status == 200) {
+            return response.json().then((data) => {
+              this.state = data;
+              this.loaded = true;
+            });
+          }
         }
-      });
+      );
     },
   },
 
