@@ -187,7 +187,7 @@
                     stacked="md"
                     hover
                     :items="interactions"
-                    :fields="computedFields"
+                    :fields="fields"
                     @row-clicked="rowClicked"
                     :busy="!interactionsLoaded"
                   >
@@ -207,13 +207,13 @@
 
                     <template #cell(validity)="data">
                       <div
-                        v-show="data.item.validity == true"
+                        v-show="validity && validity[data.item.interactionId] == true"
                         class="
                           flaticon-check
                         "
                       />
                       <div
-                        v-show="data.item.validity == false"
+                        v-show="validity && validity[data.item.interactionId] == false"
                         class="
                           flaticon-cross
                         "
@@ -455,11 +455,11 @@ export default {
       this.correct = true;
     }
 
-    this.validity = await this.getInteractionValidity();
     this.getInteractions(
       this.$route.query.page ? this.$route.query.page : this.currentPage
     );
     this.getContract();
+    this.validity = await this.getInteractionValidity();
 
     this.visitedTabs.push(this.$route.hash);
   },
@@ -481,11 +481,6 @@ export default {
     },
     interactionsLoaded() {
       return this.interactions !== null && this.total !== null;
-    },
-    computedFields() {
-      return this.validity
-        ? this.fields
-        : this.fields.filter((field) => field.key != 'validity');
     },
   },
 
@@ -605,7 +600,6 @@ export default {
             ).function;
             this.interactions.push({
               id: i.interaction.id,
-              validity: this.validity && this.validity[i.interaction.id],
               interactionId: i.interaction.id,
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,
