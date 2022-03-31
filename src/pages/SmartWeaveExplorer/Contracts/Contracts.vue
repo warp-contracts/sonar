@@ -3,11 +3,7 @@
     <div class="contracts-wrapper d-lg-flex" style="marginBottom: 30px;">
       <div :key="gatewayUrl" class="d-none d-md-block pl-5 pl-xl-0 chart">
         <div v-if="!loading" class="chart-title">Interactions</div>
-        <v-chart
-          :option="option"
-          :loading="loading"
-          resize="width: 75%; height: 500px"
-        />
+        <v-chart :option="option" :loading="loading" resize="width: 75%; height: 500px" />
       </div>
       <div class="stats-wrapper">
         <div class="item-text">
@@ -52,9 +48,7 @@
               <b-form-radio value="all">All</b-form-radio>
             </div>
             <div class="contract-type-item">
-              <b-form-radio value="application/javascript"
-                >JavaScript</b-form-radio
-              >
+              <b-form-radio value="application/javascript">JavaScript</b-form-radio>
             </div>
             <div class="contract-type-item">
               <b-form-radio value="application/wasm">WASM</b-form-radio>
@@ -83,11 +77,7 @@
           </b-form-radio-group>
         </div>
       </div>
-      <TxList
-        :paging="pages"
-        @page-clicked="onPageClicked"
-        v-if="!noContractsDetected"
-      >
+      <TxList :paging="pages" @page-clicked="onPageClicked" v-if="!noContractsDetected">
         <b-table
           ref="table"
           id="contracts-table"
@@ -113,22 +103,13 @@
                 {{ data.item.contractId | tx }}
               </a>
               <span v-if="data.item.pst_ticker"
-                >{{ data.item.pst_ticker
-                }}<span v-if="data.item.pst_name">
-                  ({{ data.item.pst_name }})</span
-                ></span
+                >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
               >
             </div>
           </template>
 
           <template #cell(owner)="data">
-            <a
-              v-if="!isTestnet"
-              :href="
-                `https://viewblock.io/arweave/address/${data.item.blockId}`
-              "
-              target="_blank"
-            >
+            <a v-if="!isTestnet" :href="`https://viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
               {{ data.item.owner | tx }}</a
             >
             <span v-else>{{ data.item.owner | tx }}</span>
@@ -162,11 +143,7 @@
         </b-table>
 
         <div v-if="!contractsLoaded">
-          <div
-            v-for="n in 15"
-            :key="n"
-            class="preloader text-preloader tx-preloader"
-          ></div>
+          <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
         </div>
       </TxList>
       <div v-else class="no-contracts-wrapper ml-2">
@@ -324,9 +301,7 @@ export default {
 
   mounted() {
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
-    this.getContracts(
-      this.$route.query.page ? this.$route.query.page : this.currentPage
-    );
+    this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
   },
   components: { TxList, VChart },
@@ -345,8 +320,7 @@ export default {
       return (
         this.contracts &&
         this.paging &&
-        this.contracts.length ==
-          (this.paging.items > this.limit ? this.limit : this.paging.items)
+        this.contracts.length == (this.paging.items > this.limit ? this.limit : this.paging.items)
       );
     },
     computedFields() {
@@ -376,34 +350,31 @@ export default {
       });
     },
     async getStatsPerDay() {
-      axios
-        .get(`${this.gatewayUrl}/gateway/stats/per-day`)
-        .then((fetchedData) => {
-          for (const options of fetchedData.data) {
-            this.option.xAxis.data.push(
-              dayjs(options.date).format('DD-MM-YYYY')
-            );
-            this.option.series[0].data.push(options.per_day);
+      axios.get(`${this.gatewayUrl}/gateway/stats/per-day`).then((fetchedData) => {
+        for (const options of fetchedData.data) {
+          if (!options.date) {
+            continue;
           }
-          const end = 100;
-          const totalTime =
-            new Date(
-              fetchedData.data[fetchedData.data.length - 1].date
-            ).getTime() - new Date(fetchedData.data[0].date).getTime();
-          const start = 100 - (2592000000 / totalTime) * 100;
-          this.option.dataZoom[0].start = start;
-          this.option.dataZoom[0].end = end;
-          this.option.dataZoom[1].start = start;
-          this.option.dataZoom[1].end = end;
-          this.loading = false;
-        });
+          this.option.xAxis.data.push(dayjs(options.date).format('DD-MM-YYYY'));
+          this.option.series[0].data.push(options.per_day);
+        }
+        const end = 100;
+        const totalTime =
+          new Date(fetchedData.data[this.option.xAxis.data.length - 1].date).getTime() -
+          new Date(fetchedData.data[0].date).getTime();
+        const start = 100 - (2592000000 / totalTime) * 100;
+        this.option.dataZoom[0].start = start;
+        this.option.dataZoom[0].end = end;
+        this.option.dataZoom[1].start = start;
+        this.option.dataZoom[1].end = end;
+        this.loading = false;
+      });
     },
     loadStats() {
       this.loading = true;
       this.option.xAxis.data = [];
       this.option.series[0].data = [];
-      this.option.yAxis.max =
-        this.gatewayUrl == constants.gatewayProdUrl ? 2500 : 150;
+      this.option.yAxis.max = this.gatewayUrl == constants.gatewayProdUrl ? 2500 : 150;
       this.getStatsPerDay();
       this.getStats();
     },
@@ -419,16 +390,13 @@ export default {
       this.contracts = [];
       axios
         .get(
-          `${this.gatewayUrl}/gateway/contracts?limit=${
-            this.limit
-          }&page=${page}${type != null ? `&contractType=${type}` : ''}${
-            sourceType != null ? `&sourceType=${sourceType}` : ''
-          }`
+          `${this.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}${
+            type != null ? `&contractType=${type}` : ''
+          }${sourceType != null ? `&sourceType=${sourceType}` : ''}`
         )
 
         .then(async (fetchedContracts) => {
-          this.noContractsDetected =
-            fetchedContracts.data.contracts.length == 0;
+          this.noContractsDetected = fetchedContracts.data.contracts.length == 0;
           this.paging = fetchedContracts.data.paging;
           for (const contract of fetchedContracts.data.contracts) {
             this.contracts.push({
