@@ -41,7 +41,7 @@ export default {
             this.state = this.initState;
           } else if (response.status == 200) {
             return response.json().then((data) => {
-              this.state = data;
+              this.state = data.state;
               this.loaded = true;
             });
           }
