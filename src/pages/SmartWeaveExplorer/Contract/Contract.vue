@@ -22,7 +22,7 @@
           </p>
         </div>
       </div>
-      <div class="contract-details-wrapper">
+      <div class="contract-details-wrapper pb-5">
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
             <div class="cell">
@@ -60,9 +60,22 @@
               <div class="cell-header">PST Ticker</div>
               <div>{{ pst_ticker }}</div>
             </div>
-            <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
+            <div class="cell">
+              <div class="d-flex">
+                <div class="cell-header pb-2">State evaluated</div>
+                <div
+                  v-b-tooltip.hover
+                  title="State is evaluated for contracts which are registered as safe (which do not read other contracts' state and do not use unsafeClient). Please contact us to get the instruction on how to submit the contract for evaluation."
+                  class="flaticon-question-tooltip"
+                />
+              </div>
+              <div v-if="!loadedValidity" class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
+              <div v-else>
+                <div v-if="validity" class="flaticon-check" />
+                <div v-else class="flaticon-cross" />
+              </div>
             </div>
           </div>
           <div class="col-6 p-0">
@@ -77,6 +90,10 @@
             <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
+            </div>
+            <div v-if="wasmLang" class="cell">
+              <div class="cell-header">WASM</div>
+              <div>{{ wasmLang }}</div>
             </div>
           </div>
         </div>
@@ -127,7 +144,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show all contract interactions."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                     <div class="confirmation-status-item">
@@ -135,7 +152,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show contract interactions which have been positively confirmed by at least three different nodes."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                     <div class="confirmation-status-item">
@@ -143,7 +160,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                     <div class="confirmation-status-item">
@@ -151,7 +168,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show both confirmed and not yet processed interactions."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                   </b-form-radio-group>

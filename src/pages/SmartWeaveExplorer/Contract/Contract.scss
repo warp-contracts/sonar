@@ -133,8 +133,11 @@
   width: 25px;
   height: 25px;
   transform: scale(0.6);
-  margin-top: -2px;
   filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
+
+  &.lowered {
+    margin-top: -2px;
+  }
 }
 
 #confirmation-status-group {
@@ -194,15 +197,21 @@
 .flaticon-check {
   height: 12px;
   width: 12px;
-  margin: 0 auto;
   filter: invert(47%) sepia(86%) saturate(460%) hue-rotate(56deg) brightness(108%) contrast(94%);
+
+  &.centered {
+    margin: 0 auto;
+  }
 }
 
 .flaticon-cross {
   height: 12px;
   width: 12px;
-  margin: 0 auto;
   filter: invert(14%) sepia(48%) saturate(6784%) hue-rotate(338deg) brightness(107%) contrast(97%);
+
+  &.centered {
+    margin: 0 auto;
+  }
 }
 
 .centered {
