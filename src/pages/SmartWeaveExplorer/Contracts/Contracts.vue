@@ -91,17 +91,14 @@
           <template #table-busy> </template>
           <template #cell(contractId)="data" class="text-right">
             <div>
-              <a
-                @click="
-                  $router.push({
-                    path: '/app/contract/' + data.item.contractId,
-                    query: isTestnet ? { network: 'testnet' } : '',
-                  })
-                "
-                target="_blank"
+              <router-link
+                :to="{
+                  path: '/app/contract/' + data.item.contractId,
+                  query: isTestnet ? { network: 'testnet' } : '',
+                }"
               >
                 {{ data.item.contractId | tx }}
-              </a>
+              </router-link>
               <span v-if="data.item.pst_ticker"
                 >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
               >
