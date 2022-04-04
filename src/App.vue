@@ -21,7 +21,6 @@ export default {
     } else {
       currentGateway = constants.gatewayProdUrl;
     }
-    console.log(currentGateway);
     this.loadGateway(currentGateway);
     this.initArweaveTest();
     this.initArweave();
