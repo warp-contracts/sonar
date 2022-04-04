@@ -65,7 +65,8 @@
                 <div class="cell-header pb-2">State evaluated</div>
                 <div
                   v-b-tooltip.hover
-                  title="State is evaluated for contracts which are registered as safe (which do not read other contracts' state and do not use unsafeClient). Please contact us to get the instruction on how to submit the contract for evaluation."
+                  title="State is evaluated for contracts which are registered as safe (which do not read other contracts' state and do not use unsafeClient). 
+                  Please contact us to get the instruction on how to submit the contract for evaluation."
                   class="flaticon-question-tooltip"
                 />
               </div>
@@ -108,7 +109,6 @@
             Transactions
           </b-nav-item>
           <b-nav-item
-            v-if="!wasmLang"
             :to="`${isTestnet ? '?network=testnet' : ''}#code`"
             :active="$route.hash === '#code'"
             @click="onInput($route.hash)"
@@ -203,13 +203,13 @@
                       <div
                         v-show="validity && validity[data.item.interactionId] == true"
                         class="
-                          flaticon-check
+                          flaticon-check centered
                         "
                       />
                       <div
                         v-show="validity && validity[data.item.interactionId] == false"
                         class="
-                          flaticon-cross
+                          flaticon-cross centered
                         "
                       />
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
@@ -338,7 +338,7 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode :contractId="contractId"></ContractCode>
+              <ContractCode v-if="loadedContract" :contractId="contractId" :wasm="!!wasmLang"></ContractCode>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -417,6 +417,7 @@ export default {
       wasmLang: null,
       initState: null,
       loadedValidity: null,
+      loadedContract: null,
     };
   },
   watch: {
@@ -524,6 +525,7 @@ export default {
         this.pst_name = fetchedContract.data.pstName;
         this.wasmLang = fetchedContract.data.srcWasmLang;
         this.initState = fetchedContract.data.initState;
+        this.loadedContract = true;
       });
     },
     async getInteractions(page, confirmationStatus) {
