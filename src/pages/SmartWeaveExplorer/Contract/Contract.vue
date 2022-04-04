@@ -12,6 +12,7 @@
           <span class="d-none d-sm-block">{{ contractId }}</span
           ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
           <div
+            style="zIndex: 100000"
             class="flaticon-copy-to-clipboard"
             v-clipboard="contractId"
             v-clipboard:success="onCopy"
@@ -194,9 +195,29 @@
                     <template #table-busy></template>
 
                     <template #cell(id)="data">
-                      <a :href="`/#/app/interaction/${data.item.interactionId}${isTestnet ? '?network=testnet' : ''}`">
-                        {{ data.item.interactionId | tx }}</a
-                      >
+                      <div class="d-flex">
+                        <a
+                          :href="`/#/app/interaction/${data.item.interactionId}${isTestnet ? '?network=testnet' : ''}`"
+                        >
+                          {{ data.item.interactionId | tx }}</a
+                        >
+                        <div
+                          class="flaticon-copy-to-clipboard"
+                          v-clipboard="data.item.interactionId"
+                          v-clipboard:success="(e) => onCopyInteraction(e, data.item.interactionId)"
+                          title="Copy to clipboard"
+                          style="zIndex: 1000"
+                        ></div>
+                        <p
+                          class="clipboard-success"
+                          v-bind:class="{
+                            hidden: !copiedDisplayInteraction.includes(data.item.interactionId),
+                            visible: copiedDisplayInteraction.includes(data.item.interactionId),
+                          }"
+                        >
+                          Copied
+                        </p>
+                      </div>
                     </template>
 
                     <template #cell(validity)="data">
@@ -409,6 +430,7 @@ export default {
       selected: 'all',
       copiedDisplay: false,
       copiedDisplayOwner: false,
+      copiedDisplayInteraction: [],
       loadingInitialized: false,
       correct: false,
       pst_ticker: null,
@@ -501,6 +523,11 @@ export default {
     onCopyOwner() {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
+    },
+    onCopyInteraction({ value, event }) {
+      event.stopPropagation();
+      this.copiedDisplayInteraction.push(value);
+      setTimeout(() => this.copiedDisplayInteraction.splice(this.copiedDisplayInteraction.indexOf(value), 1), 2000);
     },
     onInput(value) {
       if (!this.visitedTabs.includes(value)) {

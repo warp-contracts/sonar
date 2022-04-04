@@ -90,7 +90,7 @@
         >
           <template #table-busy> </template>
           <template #cell(contractId)="data" class="text-right">
-            <div>
+            <div class="d-flex">
               <router-link
                 :to="{
                   path: '/app/contract/' + data.item.contractId,
@@ -99,9 +99,24 @@
               >
                 {{ data.item.contractId | tx }}
               </router-link>
-              <span v-if="data.item.pst_ticker"
+              <span v-if="data.item.pst_ticker" class="pl-3"
                 >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
               >
+              <div
+                class="flaticon-copy-to-clipboard"
+                v-clipboard="data.item.contractId"
+                v-clipboard:success="() => onCopy(data.item.contractId)"
+                title="Copy to clipboard"
+              ></div>
+              <p
+                class="clipboard-success"
+                v-bind:class="{
+                  hidden: !copiedDisplay.includes(data.item.contractId),
+                  visible: copiedDisplay.includes(data.item.contractId),
+                }"
+              >
+                Copied
+              </p>
             </div>
           </template>
 
@@ -293,6 +308,7 @@ export default {
         { value: 'other', label: 'Other' },
       ],
       noContractsDetected: false,
+      copiedDisplay: [],
     };
   },
 
@@ -411,6 +427,10 @@ export default {
             });
           }
         });
+    },
+    onCopy(contractId) {
+      this.copiedDisplay.push(contractId);
+      setTimeout(() => this.copiedDisplay.splice(this.copiedDisplay.indexOf(contractId), 1), 2000);
     },
     rowClicked(record) {
       this.$set(record, '_showDetails', !record._showDetails);
