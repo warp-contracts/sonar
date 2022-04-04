@@ -7,6 +7,8 @@
     <div v-show="loaded && contractSrc && wasm">
       <ul id="code-wasm">
         <li v-for="(item, idx) in contractSrc" :key="idx">
+          <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
+
           <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
         </li>
       </ul>
@@ -55,12 +57,21 @@ export default {
   async mounted() {
     if (this.wasm) {
       axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then(async (fetchedContract) => {
+        console.log('fetched', fetchedContract);
         const arweaveWrapper = new ArweaveWrapper(this.isTestnet ? this.arweaveTest : this.arweave);
         const srcTxData = await arweaveWrapper.txData(fetchedContract.data.srcTxId);
         const wasmSrc = new WasmSrc(srcTxData);
         const contractSrc = await wasmSrc.sourceCode();
-        const objFromContractSrc = Object.fromEntries(contractSrc);
-        this.contractSrc = objFromContractSrc;
+        let objFromContractSrc = Object.fromEntries(contractSrc);
+
+        if (fetchedContract.data.srcWasmLang == 'assemblyscript') {
+          this.contractSrc = this.getAs(objFromContractSrc);
+        } else if (fetchedContract.data.srcWasmLang == 'rusr') {
+          this.contractSrc = this.getRust(objFromContractSrc);
+        } else if (fetchedContract.data.srcWasmLang == 'go') {
+          this.contractSrc = this.getGo(objFromContractSrc);
+        }
+
         this.loaded = true;
       });
     } else {
@@ -85,6 +96,60 @@ export default {
     }
   },
   methods: {
+    getAs(obj) {
+      const contractKey = this.getObjKey('contract.ts', obj);
+      const contract = obj[contractKey];
+      const schemasKey = this.getObjKey('schemas.ts', obj);
+      const schemas = obj[schemasKey];
+      const actionsKey = this.getObjKey('actions/', obj);
+      const actions = obj[actionsKey];
+      let objOrder = {
+        [contractKey]: contract,
+        [schemasKey]: schemas,
+        [actionsKey]: actions,
+      };
+      return Object.assign(objOrder, obj);
+    },
+    getRust(obj) {
+      const contractKey = this.getObjKey('contract.rs', obj);
+      const contract = obj[contractKey];
+      const actionKey = this.getObjKey('action.rs', obj);
+      const action = obj[actionKey];
+      const stateKey = this.getObjKey('state.rs', obj);
+      const state = obj[stateKey];
+      const errorKey = this.getObjKey('error.rs', obj);
+      const error = obj[errorKey];
+      const actionsKey = this.getObjKey('actions/', obj);
+      const actions = obj[actionsKey];
+      let objOrder = {
+        [contractKey]: contract,
+        [actionKey]: action,
+        [stateKey]: state,
+        [errorKey]: error,
+        [actionsKey]: actions,
+      };
+      return Object.assign(objOrder, obj);
+    },
+    getGo(obj) {
+      const mainKey = this.getObjKey('main.go', obj);
+      const main = obj[mainKey];
+      const contractKey = this.getObjKey('contract.go', obj);
+      const contract = obj[contractKey];
+      const actionsKey = this.getObjKey('actions.go', obj);
+      const actions = obj[actionsKey];
+      const typesKey = this.getObjKey('types.go', obj);
+      const types = obj[typesKey];
+      let objOrder = {
+        [mainKey]: main,
+        [contractKey]: contract,
+        [actionsKey]: actions,
+        [typesKey]: types,
+      };
+      return Object.assign(objOrder, obj);
+    },
+    getObjKey(objKey, obj) {
+      return Object.keys(obj).find((key) => key.includes(objKey));
+    },
     toArrayBuffer(buf) {
       const ab = new ArrayBuffer(buf.length);
       const view = new Uint8Array(ab);

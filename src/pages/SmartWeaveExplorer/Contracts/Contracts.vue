@@ -99,9 +99,6 @@
               >
                 {{ data.item.contractId | tx }}
               </router-link>
-              <span v-if="data.item.pst_ticker" class="pl-3"
-                >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
-              >
               <div
                 class="flaticon-copy-to-clipboard"
                 v-clipboard="data.item.contractId"
@@ -119,7 +116,11 @@
               </p>
             </div>
           </template>
-
+          <template #cell(pst)="data">
+            <span v-if="data.item.pst_ticker"
+              >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
+            >
+          </template>
           <template #cell(owner)="data">
             <a v-if="!isTestnet" :href="`https://viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
               {{ data.item.owner | tx }}</a
@@ -262,6 +263,10 @@ export default {
       },
       fields: [
         'contractId',
+        {
+          key: 'pst',
+          label: '',
+        },
         'owner',
         'type',
         {
