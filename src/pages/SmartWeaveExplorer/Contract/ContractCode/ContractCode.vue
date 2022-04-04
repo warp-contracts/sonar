@@ -66,12 +66,11 @@ export default {
 
         if (fetchedContract.data.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
-        } else if (fetchedContract.data.srcWasmLang == 'rusr') {
+        } else if (fetchedContract.data.srcWasmLang == 'rust') {
           this.contractSrc = this.getRust(objFromContractSrc);
         } else if (fetchedContract.data.srcWasmLang == 'go') {
           this.contractSrc = this.getGo(objFromContractSrc);
         }
-
         this.loaded = true;
       });
     } else {

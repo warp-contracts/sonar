@@ -266,6 +266,8 @@ export default {
         {
           key: 'pst',
           label: '',
+          thClass: 'text-left',
+          tdClass: 'text-left',
         },
         'owner',
         'type',
