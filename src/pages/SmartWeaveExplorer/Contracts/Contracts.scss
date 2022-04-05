@@ -89,8 +89,7 @@
   height: 25px;
   transform: scale(0.6);
   margin-top: 8px;
-  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
-    brightness(95%) contrast(97%);
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
 }
 
 .chart-wrapper {
@@ -120,4 +119,10 @@
 
 .no-contracts-wrapper {
   height: 250px;
+}
+
+th:nth-of-type(2),
+th:nth-of-type(5),
+th:nth-of-type(6) {
+  width: 10%;
 }
