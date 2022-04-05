@@ -104,9 +104,7 @@
                 v-clipboard="data.item.contractId"
                 title="Copy to clipboard"
               ></div>
-              <span v-if="data.item.pst_ticker" class="pl-3"
-                >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
-              >
+              <span v-if="data.item.pst_ticker" class="pl-3">{{ data.item.pst_ticker }}</span>
             </div>
           </template>
           <template #cell(owner)="data">

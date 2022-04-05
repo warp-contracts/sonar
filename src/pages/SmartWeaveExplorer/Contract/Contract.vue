@@ -586,7 +586,7 @@ export default {
 </script>
 
 <style src="./Contract.scss" lang="scss" scoped></style>
-<style lang="scss">
+<style lang="scss" scoped>
 .contract-tabs > .tabs > div:first-of-type {
   height: 44px;
 }
