@@ -204,7 +204,7 @@
                         <div
                           class="flaticon-copy-to-clipboard"
                           v-clipboard="data.item.interactionId"
-                          v-clipboard:success="onCopyInteraction"
+                          v-clipboard:success="({ event }) => event.stopPropagation()"
                           title="Copy to clipboard"
                           style="zIndex: 1000"
                         ></div>
@@ -264,6 +264,16 @@
 
                     <template #cell(status)="data">
                       {{ data.item.status }}
+                    </template>
+
+                    <template #cell(bundlerTxId)="data">
+                      <a
+                        v-if="data.item.bundlerTxId"
+                        :href="`https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`"
+                        target="_blank"
+                        >{{ data.item.bundlerTxId | tx }}</a
+                      >
+                      <span v-else>-</span>
                     </template>
 
                     <template #cell(confirmingPeers)="data">
@@ -407,6 +417,7 @@ export default {
         'owner',
         'function',
         'status',
+        'bundlerTxId',
         'confirmingPeers',
         { key: 'actions', label: '' },
       ],
@@ -516,9 +527,6 @@ export default {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
     },
-    onCopyInteraction({ event }) {
-      event.stopPropagation();
-    },
     onInput(value) {
       if (!this.visitedTabs.includes(value)) {
         this.visitedTabs.push(value);
@@ -573,6 +581,7 @@ export default {
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
             console.log(i);
+            console.log(i);
             const interactionInterface = {
               cursor: '',
               node: i.interaction,
@@ -594,6 +603,7 @@ export default {
               source: i.confirming_peers == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
               interaction: i.interaction,
               tags: tagsParser.getInputTag(interactionInterface, this.contractId),
+              bundlerTxId: i.interaction.bundlerTxId,
             });
           }
         });
