@@ -591,6 +591,12 @@ export default {
   height: 44px;
 }
 
+.table thead th:nth-of-type(2),
+.table thead th:nth-of-type(5),
+.table thead th:nth-of-type(6) {
+  width: 10%;
+}
+
 #confirmation-status-group {
   .custom-control-input:checked ~ .custom-control-label:after {
     background-color: var(--redstone-smartweave-blue-color) !important;
