@@ -15,44 +15,44 @@
             v-clipboard:success="onCopy"
             title="Copy to clipboard"
           ></div>
-          <p
-            class="clipboard-success"
-            v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }"
-          >
+          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">
             Copied
           </p>
         </div>
       </div>
       <div class="row">
-        <div
-          v-if="loaded"
-          style="marginTop: 50px;"
-          class="pl-3 col-lg-7 col-12"
-        >
+        <div v-if="loaded" style="marginTop: 50px;" class="pl-3 col-lg-7 col-12">
           <div class="interaction-item">
             <div>Owner</div>
             <a
               v-if="!isTestnet"
-              :href="
-                `https://viewblock.io/arweave/address/${interaction.interaction?.owner.address}`
-              "
+              :href="`https://viewblock.io/arweave/address/${interaction.interaction?.owner.address}`"
               target="_blank"
             >
-              <span class="d-none d-sm-block">{{
-                interaction.interaction?.owner.address
-              }}</span
-              ><span class="d-block d-sm-none">{{
-                interaction.interaction?.owner.address | tx
-              }}</span>
+              <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
+              ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>
             <div v-else>
-              <span class="d-none d-sm-block">{{
-                interaction.interaction?.owner.address
-              }}</span
-              ><span class="d-block d-sm-none">{{
-                interaction.interaction?.owner.address | tx
-              }}</span>
+              <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
+              ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </div>
+          </div>
+          <div class="interaction-item">
+            <div>Bundler id</div>
+            <div v-if="interaction.bundlerTxId">
+              <a
+                :href="`https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`"
+                target="_blank"
+                class="d-none d-sm-block"
+                >{{ interaction.bundlerTxId }}</a
+              ><a
+                :href="`https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`"
+                target="_blank"
+                class="d-block d-sm-none"
+                >{{ interaction.bundlerTxId | tx }}</a
+              >
+            </div>
+            <div v-else>N/A</div>
           </div>
           <div class="interaction-item">
             <div>Confirmation status</div>
@@ -60,12 +60,7 @@
           </div>
           <div class="interaction-item">
             <div>Confirming peers</div>
-            <div
-              v-if="
-                interaction.confirmingPeer &&
-                  interaction.confirmingPeer[0] != '-'
-              "
-            >
+            <div v-if="interaction.confirmingPeer && interaction.confirmingPeer[0] != '-'">
               <a
                 :href="
                   `${
@@ -106,17 +101,13 @@
                 {{ interaction.confirmingPeer[2] }}</a
               >
             </div>
-            <div v-else>{{ interaction.confirmingPeer }}</div>
+            <div v-else>N/A</div>
           </div>
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
-              <span class="d-none d-sm-block">{{
-                interaction?.contractId
-              }}</span
-              ><span class="d-block d-sm-none">{{
-                interaction?.contractId | tx
-              }}</span>
+              <span class="d-none d-sm-block">{{ interaction?.contractId }}</span
+              ><span class="d-block d-sm-none">{{ interaction?.contractId | tx }}</span>
             </a>
           </div>
           <div class="interaction-item">
@@ -154,9 +145,7 @@
               target="_blank"
             >
               <span class="d-none d-sm-block">{{ interaction?.blockId }}</span
-              ><span class="d-block d-sm-none">{{
-                interaction?.blockId | tx
-              }}</span>
+              ><span class="d-block d-sm-none">{{ interaction?.blockId | tx }}</span>
             </a>
           </div>
           <div class="interaction-item">
@@ -165,18 +154,13 @@
           </div>
           <div class="interaction-item">
             <div>Timestamp</div>
-            <div>
-              {{ interaction.timestamp }} ({{ interaction.timestampFormatted }})
-            </div>
+            <div>{{ interaction.timestamp }} ({{ interaction.timestampFormatted }})</div>
           </div>
           <div class="interaction-item">
             <div>Fee</div>
             <div>
               {{ interaction.fee }} ({{ interaction.feeInAr }} AR /
-              <a
-                href="https://app.redstone.finance/#/app/token/AR"
-                target="_blank"
-                >${{ interaction.feeInUsd }}</a
+              <a href="https://app.redstone.finance/#/app/token/AR" target="_blank">${{ interaction.feeInUsd }}</a
               >)
             </div>
           </div>
@@ -185,27 +169,13 @@
             <div>{{ interaction.interaction?.quantity.winston }}</div>
           </div>
         </div>
-        <div
-          class="pl-3 col-lg-7 col-12"
-          style="marginTop: 50px;"
-          v-if="!loaded"
-        >
-          <div
-            v-for="n in 11"
-            :key="n"
-            class="preloader text-preloader tx-preloader"
-          ></div>
+        <div class="pl-3 col-lg-7 col-12" style="marginTop: 50px;" v-if="!loaded">
+          <div v-for="n in 11" :key="n" class="preloader text-preloader tx-preloader"></div>
         </div>
         <div class="col-lg-5 col-12 pt-4">
           <div v-if="interaction">
             <p class="json-header">Interaction Tags</p>
-            <json-viewer
-              :value="interaction.tags"
-              :expand-depth="2"
-              copyable
-              sort
-              theme="json-theme"
-            ></json-viewer>
+            <json-viewer :value="interaction.tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
           </div>
         </div>
       </div>
@@ -286,8 +256,7 @@ export default {
       return (
         this.interactions &&
         this.total &&
-        this.interactions.length ==
-          (this.paging.items > this.limit ? this.limit : this.paging.items)
+        this.interactions.length == (this.paging.items > this.limit ? this.limit : this.paging.items)
       );
     },
   },
@@ -302,16 +271,11 @@ export default {
       const price = await redstone.getPrice(symbols.AR);
       const { value } = price;
       this.usdPrice = value;
-      this.getInteraction(
-        this.$route.query.page ? this.$route.query.page : this.currentPage
-      );
+      this.getInteraction(this.$route.query.page ? this.$route.query.page : this.currentPage);
     },
     convertTZ(date, tzString) {
       return new Date(
-        (typeof date === 'string'
-          ? new Date(date)
-          : date
-        ).toLocaleString('en-US', { timeZone: tzString })
+        (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
       );
     },
     getDuration(timeAgoInSeconds) {
@@ -327,9 +291,7 @@ export default {
     },
     timeAgo(date) {
       const timeAgoInSeconds = Math.floor(
-        (this.convertTZ(new Date(), 'Europe/Berlin') -
-          this.convertTZ(new Date(date), 'Europe/London')) /
-          1000
+        (this.convertTZ(new Date(), 'Europe/Berlin') - this.convertTZ(new Date(date), 'Europe/London')) / 1000
       );
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
       const suffix = interval === 1 ? '' : 's';
@@ -359,51 +321,32 @@ export default {
           this.correct = !_.isEmpty(fetchedInteractions.data);
           this.interaction = {
             id: fetchedInteractions.data.interactionid,
+            bundlerTxId: fetchedInteractions.data.bundlertxid,
             interaction: fetchedInteractions.data.interaction,
             blockId: fetchedInteractions.data.blockid,
             blockHeight: fetchedInteractions.data.blockheight,
             contractId: fetchedInteractions.data.contractid,
             func: fetchedInteractions.data.function,
-            pstQty: JSON.parse(
-              fetchedInteractions.data.interaction.tags.find(
-                (t) => t.name == 'Input'
-              ).value
-            ).qty,
+            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find((t) => t.name == 'Input').value).qty,
             confirmationStatus: fetchedInteractions.data.confirmationstatus,
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
               : '-',
-            source:
-              fetchedInteractions.data.confirmingpeer ==
-              'https://node1.bundlr.network'
-                ? 'sequencer'
-                : 'arweave',
+            source: fetchedInteractions.data.confirmingpeer == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
-            interactionValue: JSON.parse(
-              tagsParser.getInputTag(interactionInterface, this.contractId)
-                .value
-            ),
+            interactionValue: JSON.parse(tagsParser.getInputTag(interactionInterface, this.contractId).value),
             timestamp: fetchedInteractions.data.interaction.block.timestamp,
             timestampFormatted: dayjs
-              .utc(
-                dayjs.unix(fetchedInteractions.data.interaction.block.timestamp)
-              )
+              .utc(dayjs.unix(fetchedInteractions.data.interaction.block.timestamp))
               .local()
               .format('ddd, DD MMM YYYY, HH:mm:ss ZZ'),
             fee: fetchedInteractions.data.interaction.fee.winston,
-            feeInAr: (
-              fetchedInteractions.data.interaction.fee.winston *
-              this.winstonToAR
-            ).toFixed(8),
-            feeInUsd: (
-              fetchedInteractions.data.interaction.fee.winston *
-              this.winstonToAR *
-              this.usdPrice
-            ).toFixed(4),
+            feeInAr: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR).toFixed(8),
+            feeInUsd: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR * this.usdPrice).toFixed(4),
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
-                ? '-'
+                ? 'N/A'
                 : fetchedInteractions.data.interaction.recipient,
           };
           this.loaded = true;

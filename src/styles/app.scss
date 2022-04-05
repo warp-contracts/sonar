@@ -94,6 +94,10 @@
   margin-left: 10px;
   cursor: pointer;
   filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
+
+  &.small {
+    margin-bottom: 3px;
+  }
 }
 
 .visible {

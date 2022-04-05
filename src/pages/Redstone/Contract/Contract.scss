@@ -1,4 +1,4 @@
-@import "~@/styles/app";
+@import '~@/styles/app';
 
 .providers-wrapper {
   background-color: $gray-100;
@@ -151,16 +151,6 @@
 .flaticon-file-signature {
   height: 25px;
   width: 25px;
-}
-
-.flaticon-copy-to-clipboard {
-  height: 15px;
-  width: 15px;
-  background-repeat: no-repeat;
-  align-self: end;
-  margin-bottom: 5px;
-  margin-left: 10px;
-  cursor: pointer;
 }
 
 .contract-id {

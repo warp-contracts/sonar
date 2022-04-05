@@ -12,7 +12,6 @@
           <span class="d-none d-sm-block">{{ contractId }}</span
           ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
           <div
-            style="zIndex: 100000"
             class="flaticon-copy-to-clipboard"
             v-clipboard="contractId"
             v-clipboard:success="onCopy"
@@ -202,13 +201,27 @@
                           {{ data.item.interactionId | tx }}</a
                         >
                         <div
-                          class="flaticon-copy-to-clipboard"
+                          class="flaticon-copy-to-clipboard small"
                           v-clipboard="data.item.interactionId"
                           v-clipboard:success="({ event }) => event.stopPropagation()"
                           title="Copy to clipboard"
-                          style="zIndex: 1000"
                         ></div>
                       </div>
+                    </template>
+
+                    <template #cell(bundlerId)="data">
+                      <div class="d-flex" v-if="data.item.bundlerTxId">
+                        <a :href="`https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`" target="_blank">{{
+                          data.item.bundlerTxId | tx
+                        }}</a>
+                        <div
+                          class="flaticon-copy-to-clipboard small"
+                          v-clipboard="data.item.bundlerTxId"
+                          v-clipboard:success="({ event }) => event.stopPropagation()"
+                          title="Copy to clipboard"
+                        ></div>
+                      </div>
+                      <span v-else>N/A</span>
                     </template>
 
                     <template #cell(validity)="data">
@@ -264,61 +277,6 @@
 
                     <template #cell(status)="data">
                       {{ data.item.status }}
-                    </template>
-
-                    <template #cell(bundlerTxId)="data">
-                      <a
-                        v-if="data.item.bundlerTxId"
-                        :href="`https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`"
-                        target="_blank"
-                        >{{ data.item.bundlerTxId | tx }}</a
-                      >
-                      <span v-else>-</span>
-                    </template>
-
-                    <template #cell(confirmingPeers)="data">
-                      <div v-if="data.item.confirmingPeers[0] != '-'">
-                        <a
-                          :href="
-                            `${
-                              data.item.source && data.item.source == 'arweave'
-                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                                : `https://node1.bundlr.network`
-                            }`
-                          "
-                          target="_blank"
-                          class="mr-1"
-                        >
-                          {{ data.item.confirmingPeers[0] }}</a
-                        >
-                        <a
-                          :href="
-                            `${
-                              data.item.source && data.item.source == 'arweave'
-                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                                : `https://node1.bundlr.network`
-                            }`
-                          "
-                          target="_blank"
-                          class="mr-1"
-                        >
-                          {{ data.item.confirmingPeers[1] }}</a
-                        >
-                        <a
-                          :href="
-                            `${
-                              data.item.source && data.item.source == 'arweave'
-                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                                : `https://node1.bundlr.network`
-                            }`
-                          "
-                          target="_blank"
-                          class="mr-1"
-                        >
-                          {{ data.item.confirmingPeers[2] }}</a
-                        >
-                      </div>
-                      <div v-else>{{ data.item.confirmingPeers }}</div>
                     </template>
 
                     <template #cell(actions)="data">
@@ -406,9 +364,10 @@ export default {
       ],
       fields: [
         'id',
+        'bundlerId',
         {
           key: 'validity',
-          label: 'validity',
+          label: 'valid',
           thClass: 'text-center',
         },
         'block_id',
@@ -417,8 +376,6 @@ export default {
         'owner',
         'function',
         'status',
-        'bundlerTxId',
-        'confirmingPeers',
         { key: 'actions', label: '' },
       ],
       interactions: null,
@@ -461,7 +418,7 @@ export default {
 
     this.getInteractions(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.getContract();
-    this.validity = await this.getInteractionValidity();
+    this.valid = await this.getInteractionValidity();
     this.visitedTabs.push(this.$route.hash);
   },
 
@@ -599,8 +556,6 @@ export default {
               function: inputFunc ? inputFunc : '-',
               status: i.status,
               owner: i.interaction.owner.address,
-              confirmingPeers: i.confirming_peers ? i.confirming_peers.split(',') : '-',
-              source: i.confirming_peers == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
               interaction: i.interaction,
               tags: tagsParser.getInputTag(interactionInterface, this.contractId),
               bundlerTxId: i.interaction.bundlerTxId,

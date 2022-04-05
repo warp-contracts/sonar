@@ -7,7 +7,7 @@
     <div v-if="state">
       <p class="json-header">{{ header }}</p>
 
-      <json-viewer v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
+      <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
     </div>
   </div>
 </template>

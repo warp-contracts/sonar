@@ -100,7 +100,7 @@
                 {{ data.item.contractId | tx }}
               </router-link>
               <div
-                class="flaticon-copy-to-clipboard"
+                class="flaticon-copy-to-clipboard small"
                 v-clipboard="data.item.contractId"
                 title="Copy to clipboard"
               ></div>

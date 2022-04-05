@@ -1,4 +1,4 @@
-@import "~@/styles/app";
+@import '~@/styles/app';
 
 .contract-wrapper {
   background-color: #fcfcfc;
@@ -52,18 +52,6 @@
   width: 30px;
   background-repeat: no-repeat;
   align-self: end;
-}
-
-.flaticon-copy-to-clipboard {
-  height: 15px;
-  width: 15px;
-  background-repeat: no-repeat;
-  align-self: end;
-  margin-bottom: 5px;
-  margin-left: 10px;
-  cursor: pointer;
-  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
-    brightness(95%) contrast(97%);
 }
 
 .contract-id {
@@ -142,8 +130,7 @@
   height: 25px;
   transform: scale(0.6);
   margin-top: -2px;
-  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
-    brightness(95%) contrast(97%);
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
 }
 
 #confirmation-status-group {
@@ -180,6 +167,5 @@
   width: 25px;
   background-repeat: no-repeat;
   align-self: end;
-  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg)
-    brightness(95%) contrast(97%);
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
 }
