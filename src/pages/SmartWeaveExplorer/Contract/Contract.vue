@@ -418,7 +418,7 @@ export default {
 
     this.getInteractions(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.getContract();
-    this.valid = await this.getInteractionValidity();
+    this.validity = await this.getInteractionValidity();
     this.visitedTabs.push(this.$route.hash);
   },
 
@@ -537,8 +537,6 @@ export default {
           }
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
-            console.log(i);
-            console.log(i);
             const interactionInterface = {
               cursor: '',
               node: i.interaction,

@@ -400,7 +400,6 @@ export default {
           for (const contract of fetchedContracts.data.contracts) {
             this.contracts.push({
               pst_ticker: contract.pst_ticker,
-              pst_name: contract.pst_name,
               id: contract.contract,
               contractId: contract.contract,
               owner: contract.owner,
