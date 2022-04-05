@@ -204,19 +204,10 @@
                         <div
                           class="flaticon-copy-to-clipboard"
                           v-clipboard="data.item.interactionId"
-                          v-clipboard:success="(e) => onCopyInteraction(e, data.item.interactionId)"
+                          v-clipboard:success="onCopyInteraction"
                           title="Copy to clipboard"
                           style="zIndex: 1000"
                         ></div>
-                        <p
-                          class="clipboard-success"
-                          v-bind:class="{
-                            hidden: !copiedDisplayInteraction.includes(data.item.interactionId),
-                            visible: copiedDisplayInteraction.includes(data.item.interactionId),
-                          }"
-                        >
-                          Copied
-                        </p>
                       </div>
                     </template>
 
@@ -440,6 +431,7 @@ export default {
       initState: null,
       loadedValidity: null,
       loadedContract: null,
+      validity: null,
     };
   },
   watch: {
@@ -524,10 +516,8 @@ export default {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
     },
-    onCopyInteraction({ value, event }) {
+    onCopyInteraction({ event }) {
       event.stopPropagation();
-      this.copiedDisplayInteraction.push(value);
-      setTimeout(() => this.copiedDisplayInteraction.splice(this.copiedDisplayInteraction.indexOf(value), 1), 2000);
     },
     onInput(value) {
       if (!this.visitedTabs.includes(value)) {
@@ -582,6 +572,7 @@ export default {
           }
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
+            console.log(i);
             const interactionInterface = {
               cursor: '',
               node: i.interaction,

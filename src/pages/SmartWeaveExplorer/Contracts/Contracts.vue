@@ -102,24 +102,12 @@
               <div
                 class="flaticon-copy-to-clipboard"
                 v-clipboard="data.item.contractId"
-                v-clipboard:success="() => onCopy(data.item.contractId)"
                 title="Copy to clipboard"
               ></div>
-              <p
-                class="clipboard-success"
-                v-bind:class="{
-                  hidden: !copiedDisplay.includes(data.item.contractId),
-                  visible: copiedDisplay.includes(data.item.contractId),
-                }"
+              <span v-if="data.item.pst_ticker" class="pl-3"
+                >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
               >
-                Copied
-              </p>
             </div>
-          </template>
-          <template #cell(pst)="data">
-            <span v-if="data.item.pst_ticker"
-              >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
-            >
           </template>
           <template #cell(owner)="data">
             <a v-if="!isTestnet" :href="`https://viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
@@ -263,12 +251,6 @@ export default {
       },
       fields: [
         'contractId',
-        {
-          key: 'pst',
-          label: '',
-          thClass: 'text-left',
-          tdClass: 'text-left',
-        },
         'owner',
         'type',
         {
@@ -315,7 +297,6 @@ export default {
         { value: 'other', label: 'Other' },
       ],
       noContractsDetected: false,
-      copiedDisplay: [],
     };
   },
 
@@ -434,10 +415,6 @@ export default {
             });
           }
         });
-    },
-    onCopy(contractId) {
-      this.copiedDisplay.push(contractId);
-      setTimeout(() => this.copiedDisplay.splice(this.copiedDisplay.indexOf(contractId), 1), 2000);
     },
     rowClicked(record) {
       this.$set(record, '_showDetails', !record._showDetails);
