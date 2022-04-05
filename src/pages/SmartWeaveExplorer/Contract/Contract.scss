@@ -55,17 +55,6 @@
   filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
 }
 
-.flaticon-copy-to-clipboard {
-  height: 15px;
-  width: 15px;
-  background-repeat: no-repeat;
-  align-self: end;
-  margin-bottom: 5px;
-  margin-left: 10px;
-  cursor: pointer;
-  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
-}
-
 .contract-id {
   font-size: 15px;
 }
@@ -84,27 +73,6 @@
       cursor: pointer;
     }
   }
-}
-
-.clipboard-success {
-  align-self: end;
-  margin-bottom: 3px;
-  margin-left: 3px;
-  color: var(--redstone-smartweave-blue-color);
-  padding: 2px;
-  font-size: 11px;
-  font-weight: 500;
-}
-.visible {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.5s linear;
-}
-
-.hidden {
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s 0.5s, opacity 0.5s linear;
 }
 
 .jv-container .jv-code {
@@ -133,8 +101,11 @@
   width: 25px;
   height: 25px;
   transform: scale(0.6);
-  margin-top: -2px;
   filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
+
+  &.lowered {
+    margin-top: -2px;
+  }
 }
 
 #confirmation-status-group {
@@ -194,15 +165,21 @@
 .flaticon-check {
   height: 12px;
   width: 12px;
-  margin: 0 auto;
   filter: invert(47%) sepia(86%) saturate(460%) hue-rotate(56deg) brightness(108%) contrast(94%);
+
+  &.centered {
+    margin: 0 auto;
+  }
 }
 
 .flaticon-cross {
   height: 12px;
   width: 12px;
-  margin: 0 auto;
   filter: invert(14%) sepia(48%) saturate(6784%) hue-rotate(338deg) brightness(107%) contrast(97%);
+
+  &.centered {
+    margin: 0 auto;
+  }
 }
 
 .centered {

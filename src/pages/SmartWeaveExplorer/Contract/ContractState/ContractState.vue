@@ -5,7 +5,9 @@
     </div>
 
     <div v-if="state">
-      <json-viewer v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
+      <p class="json-header">{{ header }}</p>
+
+      <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
     </div>
   </div>
 </template>
@@ -26,6 +28,7 @@ export default {
     return {
       state: null,
       loaded: false,
+      header: null,
     };
   },
 
@@ -38,9 +41,11 @@ export default {
         (response) => {
           if (response.status == 404) {
             this.loaded = true;
+            this.header = 'Contract Initial State';
             this.state = this.initState;
           } else if (response.status == 200) {
             return response.json().then((data) => {
+              this.header = 'Contract Current State';
               this.state = data.state;
               this.loaded = true;
             });

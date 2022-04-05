@@ -90,24 +90,25 @@
         >
           <template #table-busy> </template>
           <template #cell(contractId)="data" class="text-right">
-            <div>
-              <a
-                @click="
-                  $router.push({
-                    path: '/app/contract/' + data.item.contractId,
-                    query: isTestnet ? { network: 'testnet' } : '',
-                  })
-                "
-                target="_blank"
+            <div class="d-flex">
+              <router-link
+                :to="{
+                  path: '/app/contract/' + data.item.contractId,
+                  query: isTestnet ? { network: 'testnet' } : '',
+                }"
               >
                 {{ data.item.contractId | tx }}
-              </a>
-              <span v-if="data.item.pst_ticker"
+              </router-link>
+              <div
+                class="flaticon-copy-to-clipboard small"
+                v-clipboard="data.item.contractId"
+                title="Copy to clipboard"
+              ></div>
+              <span v-if="data.item.pst_ticker" class="pl-3"
                 >{{ data.item.pst_ticker }}<span v-if="data.item.pst_name"> ({{ data.item.pst_name }})</span></span
               >
             </div>
           </template>
-
           <template #cell(owner)="data">
             <a v-if="!isTestnet" :href="`https://viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
               {{ data.item.owner | tx }}</a

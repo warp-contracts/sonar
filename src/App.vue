@@ -21,13 +21,13 @@ export default {
     } else {
       currentGateway = constants.gatewayProdUrl;
     }
-    console.log(currentGateway);
     this.loadGateway(currentGateway);
+    this.initArweaveTest();
     this.initArweave();
     this.prefetchAll();
   },
   methods: {
-    ...mapActions('prefetch', ['loadGateway', 'prefetchAll', 'initArweave']),
+    ...mapActions('prefetch', ['loadGateway', 'prefetchAll', 'initArweave', 'initArweaveTest']),
   },
 };
 </script>

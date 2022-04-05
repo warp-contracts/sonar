@@ -22,7 +22,7 @@
           </p>
         </div>
       </div>
-      <div class="contract-details-wrapper">
+      <div class="contract-details-wrapper pb-5">
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
             <div class="cell">
@@ -60,9 +60,23 @@
               <div class="cell-header">PST Ticker</div>
               <div>{{ pst_ticker }}</div>
             </div>
-            <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
+            <div class="cell">
+              <div class="d-flex">
+                <div class="cell-header pb-2">State evaluated</div>
+                <div
+                  v-b-tooltip.hover
+                  title="State is evaluated for contracts which are registered as safe (which do not read other contracts' state and do not use unsafeClient). 
+                  Please contact us to get the instruction on how to submit the contract for evaluation."
+                  class="flaticon-question-tooltip"
+                />
+              </div>
+              <div v-if="!loadedValidity" class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
+              <div v-else>
+                <div v-if="validity" class="flaticon-check" />
+                <div v-else class="flaticon-cross" />
+              </div>
             </div>
           </div>
           <div class="col-6 p-0">
@@ -78,6 +92,10 @@
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
             </div>
+            <div v-if="wasmLang" class="cell">
+              <div class="cell-header">WASM</div>
+              <div>{{ wasmLang }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -91,7 +109,6 @@
             Transactions
           </b-nav-item>
           <b-nav-item
-            v-if="!wasmLang"
             :to="`${isTestnet ? '?network=testnet' : ''}#code`"
             :active="$route.hash === '#code'"
             @click="onInput($route.hash)"
@@ -127,7 +144,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show all contract interactions."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                     <div class="confirmation-status-item">
@@ -135,7 +152,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show contract interactions which have been positively confirmed by at least three different nodes."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                     <div class="confirmation-status-item">
@@ -143,7 +160,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                     <div class="confirmation-status-item">
@@ -151,7 +168,7 @@
                       <div
                         v-b-tooltip.hover
                         title="Show both confirmed and not yet processed interactions."
-                        class="flaticon-question-tooltip"
+                        class="flaticon-question-tooltip lowered"
                       />
                     </div>
                   </b-form-radio-group>
@@ -177,22 +194,47 @@
                     <template #table-busy></template>
 
                     <template #cell(id)="data">
-                      <a :href="`/#/app/interaction/${data.item.interactionId}${isTestnet ? '?network=testnet' : ''}`">
-                        {{ data.item.interactionId | tx }}</a
-                      >
+                      <div class="d-flex">
+                        <a
+                          :href="`/#/app/interaction/${data.item.interactionId}${isTestnet ? '?network=testnet' : ''}`"
+                        >
+                          {{ data.item.interactionId | tx }}</a
+                        >
+                        <div
+                          class="flaticon-copy-to-clipboard small"
+                          v-clipboard="data.item.interactionId"
+                          v-clipboard:success="({ event }) => event.stopPropagation()"
+                          title="Copy to clipboard"
+                        ></div>
+                      </div>
+                    </template>
+
+                    <template #cell(bundlerId)="data">
+                      <div class="d-flex" v-if="data.item.bundlerTxId">
+                        <a :href="`https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`" target="_blank">{{
+                          data.item.bundlerTxId | tx
+                        }}</a>
+                        <div
+                          class="flaticon-copy-to-clipboard small"
+                          v-clipboard="data.item.bundlerTxId"
+                          v-clipboard:success="({ event }) => event.stopPropagation()"
+                          title="Copy to clipboard"
+                        ></div>
+                      </div>
+                      <span v-else>N/A</span>
                     </template>
 
                     <template #cell(validity)="data">
                       <div
                         v-show="validity && validity[data.item.interactionId] == true"
                         class="
-                          flaticon-check
+                          flaticon-check centered
                         "
                       />
                       <div
                         v-show="validity && validity[data.item.interactionId] == false"
                         class="
-                          flaticon-cross
+                          flaticon-cross centered
                         "
                       />
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
@@ -237,51 +279,6 @@
                       {{ data.item.status }}
                     </template>
 
-                    <template #cell(confirmingPeers)="data">
-                      <div v-if="data.item.confirmingPeers[0] != '-'">
-                        <a
-                          :href="
-                            `${
-                              data.item.source && data.item.source == 'arweave'
-                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                                : `https://node1.bundlr.network`
-                            }`
-                          "
-                          target="_blank"
-                          class="mr-1"
-                        >
-                          {{ data.item.confirmingPeers[0] }}</a
-                        >
-                        <a
-                          :href="
-                            `${
-                              data.item.source && data.item.source == 'arweave'
-                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                                : `https://node1.bundlr.network`
-                            }`
-                          "
-                          target="_blank"
-                          class="mr-1"
-                        >
-                          {{ data.item.confirmingPeers[1] }}</a
-                        >
-                        <a
-                          :href="
-                            `${
-                              data.item.source && data.item.source == 'arweave'
-                                ? `http://${data.item.confirmingPeers[0]}:1984/tx/${data.item.interactionId}/status`
-                                : `https://node1.bundlr.network`
-                            }`
-                          "
-                          target="_blank"
-                          class="mr-1"
-                        >
-                          {{ data.item.confirmingPeers[2] }}</a
-                        >
-                      </div>
-                      <div v-else>{{ data.item.confirmingPeers }}</div>
-                    </template>
-
                     <template #cell(actions)="data">
                       <div v-if="!data.item._showDetails" class="flaticon-chevron-down" />
                       <div v-else class="flaticon-chevron-up" />
@@ -321,7 +318,7 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode :contractId="contractId"></ContractCode>
+              <ContractCode v-if="loadedContract" :contractId="contractId" :wasm="!!wasmLang"></ContractCode>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -367,9 +364,10 @@ export default {
       ],
       fields: [
         'id',
+        'bundlerId',
         {
           key: 'validity',
-          label: 'validity',
+          label: 'valid',
           thClass: 'text-center',
         },
         'block_id',
@@ -378,7 +376,6 @@ export default {
         'owner',
         'function',
         'status',
-        'confirmingPeers',
         { key: 'actions', label: '' },
       ],
       interactions: null,
@@ -392,6 +389,7 @@ export default {
       selected: 'all',
       copiedDisplay: false,
       copiedDisplayOwner: false,
+      copiedDisplayInteraction: [],
       loadingInitialized: false,
       correct: false,
       pst_ticker: null,
@@ -400,6 +398,8 @@ export default {
       wasmLang: null,
       initState: null,
       loadedValidity: null,
+      loadedContract: null,
+      validity: null,
     };
   },
   watch: {
@@ -418,7 +418,7 @@ export default {
 
     this.getInteractions(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.getContract();
-    this.validity = await this.getInteractionValidity();
+    this.valid = await this.getInteractionValidity();
     this.visitedTabs.push(this.$route.hash);
   },
 
@@ -507,6 +507,7 @@ export default {
         this.pst_name = fetchedContract.data.pstName;
         this.wasmLang = fetchedContract.data.srcWasmLang;
         this.initState = fetchedContract.data.initState;
+        this.loadedContract = true;
       });
     },
     async getInteractions(page, confirmationStatus) {
@@ -536,6 +537,8 @@ export default {
           }
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
+            console.log(i);
+            console.log(i);
             const interactionInterface = {
               cursor: '',
               node: i.interaction,
@@ -553,10 +556,9 @@ export default {
               function: inputFunc ? inputFunc : '-',
               status: i.status,
               owner: i.interaction.owner.address,
-              confirmingPeers: i.confirming_peers ? i.confirming_peers.split(',') : '-',
-              source: i.confirming_peers == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
               interaction: i.interaction,
               tags: tagsParser.getInputTag(interactionInterface, this.contractId),
+              bundlerTxId: i.interaction.bundlerTxId,
             });
           }
         });
@@ -587,6 +589,12 @@ export default {
 <style lang="scss">
 .contract-tabs > .tabs > div:first-of-type {
   height: 44px;
+}
+
+.table thead th:nth-of-type(2),
+.table thead th:nth-of-type(5),
+.table thead th:nth-of-type(6) {
+  width: 10%;
 }
 
 #confirmation-status-group {

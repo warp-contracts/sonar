@@ -1,14 +1,12 @@
 import constants from '@/constants';
 import Arweave from 'arweave';
-import {
-  ContractDefinitionLoader,
-  SmartWeaveWebFactory,
-} from 'redstone-smartweave';
+import { ContractDefinitionLoader, SmartWeaveWebFactory } from 'redstone-smartweave';
 
 export default {
   namespaced: true,
   state: {
     arweave: null,
+    arweaveTest: null,
     smartweave: null,
     gatewayUrl: null,
     switchText: null,
@@ -18,6 +16,11 @@ export default {
     setArweave(state, arweave) {
       if (!state.arweave) {
         state.arweave = arweave;
+      }
+    },
+    setArweaveTest(state, arweaveTest) {
+      if (!state.arweaveTest) {
+        state.arweaveTest = arweaveTest;
       }
     },
     setSmartweave(state, client) {
@@ -50,11 +53,18 @@ export default {
 
       commit('setArweave', arweaveObject);
     },
+    initArweaveTest({ commit }) {
+      const arweaveObject = Arweave.init({
+        host: 'testnet.redstone.tools',
+        protocol: 'https',
+        port: 443,
+      });
+
+      commit('setArweaveTest', arweaveObject);
+    },
     smartweave({ commit, state }) {
       const arweave = state.arweave;
-      const contractDefinitionLoader = new ContractDefinitionLoader(
-        state.arweave
-      );
+      const contractDefinitionLoader = new ContractDefinitionLoader(state.arweave);
 
       const smartweave = SmartWeaveWebFactory.memCachedBased(arweave)
         .setDefinitionLoader(contractDefinitionLoader)
