@@ -57,9 +57,10 @@ export default {
   async mounted() {
     if (this.wasm) {
       axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then(async (fetchedContract) => {
-        const arweaveWrapper = new ArweaveWrapper(this.isTestnet ? this.arweaveTest : this.arweave);
-        const srcTxData = await arweaveWrapper.txData(fetchedContract.data.srcTxId);
-        const wasmSrc = new WasmSrc(srcTxData);
+        if (!(fetchedContract.data.srcBinary instanceof Buffer)) {
+          fetchedContract.data.srcBinary = Buffer.from(fetchedContract.data.srcBinary.data);
+        }
+        const wasmSrc = new WasmSrc(fetchedContract.data.srcBinary);
         const contractSrc = await wasmSrc.sourceCode();
         let objFromContractSrc = Object.fromEntries(contractSrc);
 
