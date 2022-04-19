@@ -400,6 +400,7 @@ export default {
       loadedValidity: null,
       loadedContract: null,
       validity: null,
+      axiosSource: null,
     };
   },
   watch: {
@@ -511,6 +512,12 @@ export default {
       });
     },
     async getInteractions(page, confirmationStatus) {
+      if (this.axiosSource) {
+        this.axiosSource.cancel('Cancel previous request');
+      }
+      const CancelToken = axios.CancelToken;
+      this.axiosSource = CancelToken.source();
+
       this.interactions = null;
       this.total = null;
 

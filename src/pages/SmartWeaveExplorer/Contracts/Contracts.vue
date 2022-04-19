@@ -295,6 +295,7 @@ export default {
         { value: 'other', label: 'Other' },
       ],
       noContractsDetected: false,
+      axiosSource: null,
     };
   },
 
@@ -334,6 +335,7 @@ export default {
         this.$router.push({ query: {} });
       }
       this.currentPage = 1;
+
       this.getContracts(
         this.currentPage,
         this.selected == 'all' ? null : this.selected,
@@ -386,12 +388,21 @@ export default {
       );
     },
     async getContracts(page, type, sourceType) {
+      if (this.axiosSource) {
+        this.axiosSource.cancel('Cancel previous request');
+      }
+      const CancelToken = axios.CancelToken;
+      this.axiosSource = CancelToken.source();
+
       this.contracts = [];
       axios
         .get(
           `${this.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}${
             type != null ? `&contractType=${type}` : ''
-          }${sourceType != null ? `&sourceType=${sourceType}` : ''}`
+          }${sourceType != null ? `&sourceType=${sourceType}` : ''}`,
+          {
+            cancelToken: this.axiosSource.token,
+          }
         )
 
         .then(async (fetchedContracts) => {
