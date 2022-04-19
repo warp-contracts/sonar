@@ -3,8 +3,8 @@
     <div v-if="!loaded" class="state-container">
       Loading Contract Code...
     </div>
-    <pre v-show="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
-    <div v-show="loaded && contractSrc && wasm">
+    <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
+    <div v-if="loaded && contractSrc && wasm">
       <ul id="code-wasm">
         <li v-for="(item, idx) in contractSrc" :key="idx">
           <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
@@ -14,7 +14,8 @@
       </ul>
     </div>
 
-    <iframe
+    <!-- temporary - until ArCode loads contract's code from the redstone gateway -->
+    <!-- <iframe
       v-show="loaded && !isTestnet && !wasm"
       ref="arcode"
       id="arcode"
@@ -24,7 +25,7 @@
       frameBorder="0"
       :src="getCodeSrc()"
     >
-    </iframe>
+    </iframe> -->
   </div>
 </template>
 
@@ -74,24 +75,25 @@ export default {
         this.loaded = true;
       });
     } else {
-      if (this.isTestnet) {
-        axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then((fetchedContract) => {
-          this.contractSrc = fetchedContract.data.src;
-          this.loaded = true;
-        });
-      } else {
-        const contentWindow = document.getElementById('arcode').contentWindow;
-        window.addEventListener(
-          'message',
-          async (event) => {
-            const origin = event.origin;
+      // temporary until ArCode loads contracrt from the RedStone gateway
+      // if (this.isTestnet) {
+      axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then((fetchedContract) => {
+        this.contractSrc = fetchedContract.data.src;
+        this.loaded = true;
+      });
+      //   } else {
+      //     const contentWindow = document.getElementById('arcode').contentWindow;
+      //     window.addEventListener(
+      //       'message',
+      //       async (event) => {
+      //         const origin = event.origin;
 
-            const frameEvent = `${event.data.event}`.trim();
-            await this.handleCalls(frameEvent, event, contentWindow, origin);
-          },
-          false
-        );
-      }
+      //         const frameEvent = `${event.data.event}`.trim();
+      //         await this.handleCalls(frameEvent, event, contentWindow, origin);
+      //       },
+      //       false
+      //     );
+      //   }
     }
   },
   methods: {
