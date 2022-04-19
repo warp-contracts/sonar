@@ -64,10 +64,9 @@ export default {
     },
     smartweave({ commit, state }) {
       const arweave = state.arweave;
-      const contractDefinitionLoader = new ContractDefinitionLoader(state.arweave);
 
       const smartweave = SmartWeaveWebFactory.memCachedBased(arweave)
-        .setDefinitionLoader(contractDefinitionLoader)
+        .useRedStoneGateway()
         .build();
 
       commit('setSmartweave', smartweave);
