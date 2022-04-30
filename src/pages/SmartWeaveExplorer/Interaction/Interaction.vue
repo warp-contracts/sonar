@@ -192,7 +192,7 @@ import axios from 'axios';
 import JsonViewer from 'vue-json-viewer';
 import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
-import redstone from 'redstone-api';
+/*import redstone from 'redstone-api';*/
 import utc from 'dayjs/plugin/utc';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { mapState } from 'vuex';
@@ -267,10 +267,10 @@ export default {
         this.loadingInitialized = true;
         this.correct = false;
       }
-      const { symbols } = redstone;
-      const price = await redstone.getPrice(symbols.AR);
-      const { value } = price;
-      this.usdPrice = value;
+      //const { symbols } = redstone;
+      //const price = await redstone.getPrice(symbols.AR);
+      //const { value } = price;
+      this.usdPrice = 0;
       this.getInteraction(this.$route.query.page ? this.$route.query.page : this.currentPage);
     },
     convertTZ(date, tzString) {
