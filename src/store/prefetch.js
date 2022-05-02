@@ -66,7 +66,7 @@ export default {
       const arweave = state.arweave;
 
       const smartweave = SmartWeaveWebFactory.memCachedBased(arweave)
-        .useRedStoneGateway(null, null, "https://d1o5nlqr4okus2.cloudfront.net")
+        .useRedStoneGateway()
         .build();
 
       commit('setSmartweave', smartweave);
