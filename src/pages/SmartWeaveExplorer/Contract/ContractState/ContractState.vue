@@ -15,6 +15,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import { mapState } from 'vuex';
+import constants from '@/constants';
 
 export default {
   name: 'ContractState',
@@ -37,7 +38,7 @@ export default {
   },
   methods: {
     async created() {
-      fetch(`https://cache.redstone.tools/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
+      fetch(`${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
         (response) => {
           if (response.status == 404) {
             this.loaded = true;

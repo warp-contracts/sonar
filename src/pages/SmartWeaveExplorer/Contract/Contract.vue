@@ -346,6 +346,7 @@ import ContractState from './ContractState/ContractState';
 import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
+import constants from '@/constants';
 
 export default {
   name: 'Contract',
@@ -570,7 +571,7 @@ export default {
     },
     async getInteractionValidity() {
       const validity = fetch(
-        `https://cache.redstone.tools/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
+        `${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
       ).then(async (res) => {
         if (res.status == 404) {
           this.loadedValidity = true;
