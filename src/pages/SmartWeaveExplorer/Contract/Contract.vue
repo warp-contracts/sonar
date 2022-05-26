@@ -558,11 +558,12 @@ export default {
 
       axios
         .get(
-          `${this.gatewayUrl}/gateway/interactions?contractId=${this.contractId}&limit=${
+          `${this.gatewayUrl}/gateway/interactions-sort-key?contractId=${this.contractId}&limit=${
             this.limit
           }&totalCount=true&page=${page}${confirmationStatus ? `&confirmationStatus=${confirmationStatus}` : ''}`
         )
         .then(async (fetchedInteractions) => {
+          console.log(fetchedInteractions.data);
           if (fetchedInteractions.data.interactions.length == 0) {
             this.noInteractionsDetected = true;
           }
