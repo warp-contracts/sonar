@@ -88,11 +88,31 @@
               <div class="cell-header">Corrupted interactions</div>
               <div>{{ corrupted }}</div>
             </div>
-            <div v-if="sourceTxId" class="cell">
-              <div class="cell-header">Source tx id</div>
-              <div>
-                <span class="d-none d-sm-block">{{ sourceTxId }}</span
-                ><span class="d-block d-sm-none">{{ sourceTxId | tx }}</span>
+            <div class="cell">
+              <div class="cell-header">Source transaction id</div>
+              <div class="d-flex">
+                <div v-if="sourceTxId" class="align-self-end d-flex">
+                  <span class="d-none d-sm-block">{{ sourceTxId }}</span
+                  ><span class="d-block d-sm-none">{{ sourceTxId | tx }}</span>
+                  <div
+                    class="flaticon-copy-to-clipboard"
+                    v-clipboard="sourceTxId"
+                    v-clipboard:success="onCopySourceTxId"
+                    title="Copy to clipboard"
+                  ></div>
+                  <p
+                    class="clipboard-success"
+                    v-bind:class="{
+                      hidden: !copiedDisplaySourceTxId,
+                      visible: copiedDisplaySourceTxId,
+                    }"
+                  >
+                    Copied
+                  </p>
+                </div>
+                <div v-else class="pl-3 pt-3">
+                  <div class="dot-flashing"></div>
+                </div>
               </div>
             </div>
             <div v-if="pst_name" class="cell">
@@ -397,6 +417,7 @@ export default {
       selected: 'all',
       copiedDisplay: false,
       copiedDisplayOwner: false,
+      copiedDisplaySourceTxId: false,
       copiedDisplayInteraction: [],
       loadingInitialized: false,
       correct: false,
@@ -493,6 +514,10 @@ export default {
     onCopyOwner() {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
+    },
+    onCopySourceTxId() {
+      this.copiedDisplaySourceTxId = true;
+      setTimeout(() => (this.copiedDisplaySourceTxId = false), 2000);
     },
     onInput(value) {
       if (!this.visitedTabs.includes(value)) {
