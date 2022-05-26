@@ -88,6 +88,13 @@
               <div class="cell-header">Corrupted interactions</div>
               <div>{{ corrupted }}</div>
             </div>
+            <div v-if="sourceTxId" class="cell">
+              <div class="cell-header">Source tx id</div>
+              <div>
+                <span class="d-none d-sm-block">{{ sourceTxId }}</span
+                ><span class="d-block d-sm-none">{{ sourceTxId | tx }}</span>
+              </div>
+            </div>
             <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
@@ -402,6 +409,7 @@ export default {
       loadedContract: null,
       validity: null,
       axiosSource: null,
+      sourceTxId: null,
     };
   },
   watch: {
@@ -510,6 +518,7 @@ export default {
         this.wasmLang = fetchedContract.data.srcWasmLang;
         this.initState = fetchedContract.data.initState;
         this.loadedContract = true;
+        this.sourceTxId = fetchedContract.data.srcTxId;
       });
     },
     async getInteractions(page, confirmationStatus) {
