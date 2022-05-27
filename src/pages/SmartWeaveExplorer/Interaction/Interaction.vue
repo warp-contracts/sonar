@@ -23,6 +23,25 @@
       <div class="row">
         <div v-if="loaded" style="marginTop: 50px;" class="pl-3 col-lg-7 col-12">
           <div class="interaction-item">
+            <div>Contract id</div>
+            <a :href="`/#/app/contract/${interaction?.contractId}`">
+              <span class="d-none d-sm-block">{{ interaction?.contractId }}</span
+              ><span class="d-block d-sm-none">{{ interaction?.contractId | tx }}</span>
+            </a>
+            <div
+              class="flaticon-copy-to-clipboard"
+              v-clipboard="contractId"
+              v-clipboard:success="onCopyContractId"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success"
+              v-bind:class="{ hidden: !copiedContractIdDisplay, visible: copiedContractIdDisplay }"
+            >
+              Copied
+            </p>
+          </div>
+          <div class="interaction-item">
             <div>Owner</div>
             <a
               v-if="!isTestnet"
@@ -102,13 +121,6 @@
               >
             </div>
             <div v-else>N/A</div>
-          </div>
-          <div class="interaction-item">
-            <div>Contract id</div>
-            <a :href="`/#/app/contract/${interaction?.contractId}`">
-              <span class="d-none d-sm-block">{{ interaction?.contractId }}</span
-              ><span class="d-block d-sm-none">{{ interaction?.contractId | tx }}</span>
-            </a>
           </div>
           <div class="interaction-item">
             <div>Function</div>
@@ -226,6 +238,7 @@ export default {
       selected: 'all',
       copiedDisplay: false,
       copiedDisplayOwner: false,
+      copiedContractIdDisplay: false,
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
@@ -304,6 +317,10 @@ export default {
     onCopyOwner() {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
+    },
+    onCopyContractId() {
+      this.copiedContractIdDisplay = true;
+      setTimeout(() => (this.copiedContractIdDisplay = false), 2000);
     },
     async getInteraction() {
       this.interactions = [];
