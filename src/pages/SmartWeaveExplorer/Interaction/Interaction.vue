@@ -30,7 +30,7 @@
             </a>
             <div
               class="flaticon-copy-to-clipboard"
-              v-clipboard="contractId"
+              v-clipboard="interaction?.contractId"
               v-clipboard:success="onCopyContractId"
               title="Copy to clipboard"
             ></div>
@@ -121,6 +121,10 @@
               >
             </div>
             <div v-else>N/A</div>
+          </div>
+          <div class="interaction-item">
+            <div>Sort key</div>
+            <div>{{ interaction.sortKey }}</div>
           </div>
           <div class="interaction-item">
             <div>Function</div>
@@ -328,6 +332,7 @@ export default {
         .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
         .then((fetchedInteractions) => {
+          console.log(fetchedInteractions.data);
           const tagsParser = new TagsParser();
 
           const interactionInterface = {
@@ -349,6 +354,7 @@ export default {
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
               : '-',
+            sortKey: fetchedInteractions.data.sortKey,
             source: fetchedInteractions.data.confirmingpeer == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,

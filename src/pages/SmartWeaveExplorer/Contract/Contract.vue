@@ -78,6 +78,10 @@
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
+            <div v-if="wasmLang" class="cell">
+              <div class="cell-header">WASM</div>
+              <div>{{ wasmLang }}</div>
+            </div>
           </div>
           <div class="col-6 p-0">
             <div class="cell">
@@ -118,10 +122,6 @@
             <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
-            </div>
-            <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
             </div>
           </div>
         </div>
@@ -238,9 +238,17 @@
 
                     <template #cell(bundlerId)="data">
                       <div class="d-flex" v-if="data.item.bundlerTxId">
-                        <a :href="`https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`" target="_blank">{{
-                          data.item.bundlerTxId | tx
-                        }}</a>
+                        <a
+                          :href="
+                            `${
+                              hoursAgo(data.item.timestamp) > 24
+                                ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
+                                : `https://arweave.net/${data.item.bundlerTxId}`
+                            }`
+                          "
+                          target="_blank"
+                          >{{ data.item.bundlerTxId | tx }}</a
+                        >
                         <div
                           class="flaticon-copy-to-clipboard small"
                           v-clipboard="data.item.bundlerTxId"
@@ -375,6 +383,9 @@ import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
 
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
+
 export default {
   name: 'Contract',
 
@@ -500,6 +511,9 @@ export default {
       const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
     },
+    hoursAgo(timestamp) {
+      return dayjs.duration(Math.trunc(+Date.now() / 1000) - timestamp).$d.hours;
+    },
     refreshData() {
       this.currentPage = 1;
       this.$router.push({ query: {} });
@@ -592,6 +606,7 @@ export default {
               interactionId: i.interaction.id,
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,
+              timestamp: i.interaction.block.timestamp,
               age: this.timeAgo(
                 dayjs.unix(i.interaction.block.timestamp),
                 i.confirming_peers == 'https://node1.bundlr.network'
