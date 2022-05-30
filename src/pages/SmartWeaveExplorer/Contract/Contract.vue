@@ -579,7 +579,6 @@ export default {
           }`
         )
         .then(async (fetchedInteractions) => {
-          console.log(fetchedInteractions.data);
           if (fetchedInteractions.data.interactions.length == 0) {
             this.noInteractionsDetected = true;
           }

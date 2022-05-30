@@ -332,7 +332,6 @@ export default {
         .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
         .then((fetchedInteractions) => {
-          console.log(fetchedInteractions.data);
           const tagsParser = new TagsParser();
 
           const interactionInterface = {
