@@ -74,6 +74,10 @@
             <div v-else>N/A</div>
           </div>
           <div class="interaction-item">
+            <div>Sort key</div>
+            <div style="word-break: break-all">{{ interaction.sortKey ? interaction.sortKey : '-' }}</div>
+          </div>
+          <div class="interaction-item">
             <div>Confirmation status</div>
             <div>{{ interaction.confirmationStatus }}</div>
           </div>
@@ -121,10 +125,6 @@
               >
             </div>
             <div v-else>N/A</div>
-          </div>
-          <div class="interaction-item">
-            <div>Sort key</div>
-            <div>{{ interaction.sortKey }}</div>
           </div>
           <div class="interaction-item">
             <div>Function</div>
@@ -354,7 +354,7 @@ export default {
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
               : '-',
-            sortKey: fetchedInteractions.data.sortKey,
+            sortKey: fetchedInteractions.data.sortkey,
             source: fetchedInteractions.data.confirmingpeer == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
