@@ -241,7 +241,7 @@
                         <a
                           :href="
                             `${
-                              hoursAgo(data.item.timestamp) > 24
+                              daysAgo(data.item.timestamp) > 1
                                 ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
                                 : `https://arweave.net/${data.item.bundlerTxId}`
                             }`
@@ -511,8 +511,11 @@ export default {
       const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
     },
-    hoursAgo(timestamp) {
-      return dayjs.duration(Math.trunc(+Date.now() / 1000) - timestamp).$d.hours;
+    daysAgo(timestamp) {
+      const difference = Math.trunc(+Date.now() / 1000) - timestamp;
+      const daysDifference = Math.floor(difference / 60 / 60 / 24);
+
+      return daysDifference;
     },
     refreshData() {
       this.currentPage = 1;
