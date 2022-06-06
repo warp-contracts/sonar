@@ -60,12 +60,24 @@
             <div>Bundler id</div>
             <div v-if="interaction.bundlerTxId">
               <a
-                :href="`https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`"
+                :href="
+                  `${
+                    daysAgo(interaction.timestamp) > 1
+                      ? `https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                      : `https://arweave.net/${interaction.bundlerTxId}`
+                  }`
+                "
                 target="_blank"
                 class="d-none d-sm-block"
                 >{{ interaction.bundlerTxId }}</a
               ><a
-                :href="`https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`"
+                :href="
+                  `${
+                    daysAgo(interaction.timestamp) > 1
+                      ? `https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                      : `https://arweave.net/${interaction.bundlerTxId}`
+                  }`
+                "
                 target="_blank"
                 class="d-block d-sm-none"
                 >{{ interaction.bundlerTxId | tx }}</a
@@ -313,6 +325,12 @@ export default {
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
       const suffix = interval === 1 ? '' : 's';
       return `${interval} ${epoch}${suffix} ago`;
+    },
+    daysAgo(timestamp) {
+      const difference = Math.trunc(+Date.now() / 1000) - timestamp;
+      const daysDifference = Math.floor(difference / 60 / 60 / 24);
+
+      return daysDifference;
     },
     onCopy() {
       this.copiedDisplay = true;
