@@ -575,11 +575,9 @@ export default {
 
       axios
         .get(
-          `${this.gatewayUrl}/gateway/${this.isTestnet ? 'interactions' : 'interactions-sort-key'}?contractId=${
-            this.contractId
-          }&limit=${this.limit}&totalCount=true&page=${page}${
-            confirmationStatus ? `&confirmationStatus=${confirmationStatus}` : ''
-          }`
+          `${this.gatewayUrl}/gateway/interactions-sort-key?contractId=${this.contractId}&limit=${
+            this.limit
+          }&totalCount=true&page=${page}${confirmationStatus ? `&confirmationStatus=${confirmationStatus}` : ''}`
         )
         .then(async (fetchedInteractions) => {
           if (fetchedInteractions.data.interactions.length == 0) {
