@@ -374,7 +374,7 @@
 import _ from 'lodash';
 import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
-import { TagsParser } from 'redstone-smartweave';
+import { TagsParser } from 'warp-contracts';
 import JsonViewer from 'vue-json-viewer';
 import ContractCode from './ContractCode/ContractCode';
 import ContractState from './ContractState/ContractState';
@@ -553,7 +553,7 @@ export default {
       }
     },
     async getContract() {
-      axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then((fetchedContract) => {
+      axios.get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`).then((fetchedContract) => {
         this.owner = fetchedContract.data.owner;
         this.pst_ticker = fetchedContract.data.pstTicker;
         this.pst_name = fetchedContract.data.pstName;
@@ -657,8 +657,8 @@ export default {
 
 #confirmation-status-group {
   .custom-control-input:checked ~ .custom-control-label:after {
-    background-color: var(--redstone-smartweave-blue-color) !important;
-    border-color: var(--redstone-smartweave-blue-color) !important;
+    background-color: var(--warp-blue-color) !important;
+    border-color: var(--warp-blue-color) !important;
     border-radius: 50%;
   }
 }

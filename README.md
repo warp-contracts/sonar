@@ -1,7 +1,7 @@
-# redstone-sw-gateway-app
+# Sonar
 
-[https://sonar.redstone.tools/](https://sonar.redstone.tools/)
+[https://sonar.warp.cc/](https://sonar.warp.cc/)
 
-Redstone Smartweave Gateway exploration app
+Warp Gateway exploration app
 
 start development: yarn serve

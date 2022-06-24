@@ -14,7 +14,7 @@
       <footer class="contentFooter">
         <div class="mb-2">
           Learn more on
-          <a target="_blank" href="https://contracts.redstone.finance"
+          <a target="_blank" href="https://warp.cc"
             >our website</a
           >
         </div>
@@ -44,7 +44,7 @@
               ></path>
             </svg>
           </a>
-          <a href="https://github.com/redstone-finance" target="_blank">
+          <a href="https://github.com/warp-contracts" target="_blank">
             <svg
               width="20"
               height="20"

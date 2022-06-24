@@ -33,7 +33,7 @@
       margin-right: 10px;
       font-size: $font-size-mini;
       color: white;
-      background-color: var(--redstone-smartweave-blue-color);
+      background-color: var(--warp-blue-color);
 
       &:hover {
         opacity: 0.85;
@@ -61,7 +61,7 @@
 
     .input-group-text {
       &.blue {
-        color: var(--redstone-smartweave-blue-color);
+        color: var(--warp-blue-color);
       }
     }
 
@@ -160,7 +160,7 @@
 .suggestion-type {
   font-size: 10px;
   text-transform: uppercase;
-  color: var(--redstone-smartweave-blue-color);
+  color: var(--warp-blue-color);
   align-self: end;
 }
 
@@ -196,7 +196,7 @@
   display: block;
   width: 0;
   height: 2px;
-  background: var(--redstone-smartweave-blue-color);
+  background: var(--warp-blue-color);
   transition: width 0.3s;
 }
 
@@ -205,7 +205,7 @@
 }
 
 .height {
-  color: var(--redstone-smartweave-blue-color);
+  color: var(--warp-blue-color);
 }
 
 .height-text {

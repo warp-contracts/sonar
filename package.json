@@ -26,7 +26,6 @@
     "node-sass": "^6.0.0",
     "prismjs": "^1.26.0",
     "redstone-api": "^0.4.7",
-    "redstone-smartweave": "0.4.80",
     "sass-loader": "^10",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.4",
@@ -45,6 +44,7 @@
     "vue-typeahead-bootstrap": "^2.12.0",
     "vue-virtual-scroller": "^1.0.10",
     "vuex": "^3.5.1",
+    "warp-contracts": "^1.1.4",
     "webpack-cli": "^3.3.12",
     "yargs": "^16.2.0"
   },

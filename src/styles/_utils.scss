@@ -679,8 +679,8 @@ $i: 0;
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: var(--redstone-smartweave-blue-color);
-  color: var(--redstone-smartweave-blue-color);
+  background-color: var(--warp-blue-color);
+  color: var(--warp-blue-color);
   animation: dotFlashing 1s infinite linear alternate;
   animation-delay: 0.5s;
 }
@@ -698,8 +698,8 @@ $i: 0;
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: var(--redstone-smartweave-blue-color);
-  color: var(--redstone-smartweave-blue-color);
+  background-color: var(--warp-blue-color);
+  color: var(--warp-blue-color);
   animation: dotFlashing 1s infinite alternate;
   animation-delay: 0s;
 }
@@ -709,15 +709,15 @@ $i: 0;
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: var(--redstone-smartweave-blue-color);
-  color: var(--redstone-smartweave-blue-color);
+  background-color: var(--warp-blue-color);
+  color: var(--warp-blue-color);
   animation: dotFlashing 1s infinite alternate;
   animation-delay: 1s;
 }
 
 @keyframes dotFlashing {
   0% {
-    background-color: var(--redstone-smartweave-blue-color);
+    background-color: var(--warp-blue-color);
   }
   50%,
   100% {

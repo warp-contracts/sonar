@@ -12,13 +12,13 @@
           <b-button
             class="btn-docs rounded-pill"
             target="_blank"
-            href="https://github.com/redstone-finance/redstone-sw-gateway#redstone-smartweave-gateway"
+            href="https://github.com/warp-contracts/gateway#redstone-smartweave-gateway"
             >Check repository</b-button
           >
         </div>
       </div>
       <div class="p-3">
-        <span class="info-colored">Redstone SmartWeave Gateway</span> is a
+        <span class="info-colored">Warp SmartWeave Gateway</span> is a
         gateway dedicated to loading SmartWeave contract interactions. It
         firstly loads information about currently active peers and rank them by
         the amount of synced blocks and response times. It then loads and index

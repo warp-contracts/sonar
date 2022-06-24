@@ -68,8 +68,8 @@
 
 #confirmation-status-group {
   .custom-control-input:checked ~ .custom-control-label:after {
-    background-color: var(--redstone-smartweave-blue-color) !important;
-    border-color: var(--redstone-smartweave-blue-color) !important;
+    background-color: var(--warp-blue-color) !important;
+    border-color: var(--warp-blue-color) !important;
     border-radius: 50%;
   }
 }
@@ -86,7 +86,7 @@
   align-self: end;
   margin-bottom: 3px;
   margin-left: 3px;
-  color: var(--redstone-smartweave-blue-color);
+  color: var(--warp-blue-color);
   padding: 2px;
   font-size: 11px;
   font-weight: 500;
@@ -112,8 +112,8 @@
 }
 
 .btn-refresh {
-  border-color: var(--redstone-smartweave-blue-color) !important;
-  color: var(--redstone-smartweave-blue-color) !important;
+  border-color: var(--warp-blue-color) !important;
+  color: var(--warp-blue-color) !important;
   border: 1px solid !important;
   background-color: white !important;
   font-size: $font-size-mini;

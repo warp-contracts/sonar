@@ -1,13 +1,13 @@
 import constants from '@/constants';
 import Arweave from 'arweave';
-import { ContractDefinitionLoader, SmartWeaveWebFactory } from 'redstone-smartweave';
+import { WarpWebFactory } from 'warp-contracts';
 
 export default {
   namespaced: true,
   state: {
     arweave: null,
     arweaveTest: null,
-    smartweave: null,
+    warp: null,
     gatewayUrl: null,
     switchText: null,
     isTestnet: null,
@@ -23,8 +23,8 @@ export default {
         state.arweaveTest = arweaveTest;
       }
     },
-    setSmartweave(state, client) {
-      state.smartweave = client;
+    setWarp(state, client) {
+      state.warp = client;
     },
     setGatewayUrl(state, gatewayUrl) {
       state.gatewayUrl = gatewayUrl;
@@ -41,7 +41,7 @@ export default {
     },
     async prefetchAll({ dispatch }) {
       dispatch('initArweave').then(() => {
-        dispatch('smartweave');
+        dispatch('warp');
       });
     },
     initArweave({ commit }) {
@@ -62,14 +62,12 @@ export default {
 
       commit('setArweaveTest', arweaveObject);
     },
-    smartweave({ commit, state }) {
+    warp({ commit, state }) {
       const arweave = state.arweave;
 
-      const smartweave = SmartWeaveWebFactory.memCachedBased(arweave)
-        .useRedStoneGateway()
-        .build();
+      const warp = WarpWebFactory.memCachedBased(arweave).build();
 
-      commit('setSmartweave', smartweave);
+      commit('setWarp', warp);
     },
   },
 };

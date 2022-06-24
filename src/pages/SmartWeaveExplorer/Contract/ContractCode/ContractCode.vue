@@ -34,7 +34,7 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-okaidia.css';
-import { WasmSrc, getTag, ArweaveWrapper } from 'redstone-smartweave';
+import { WasmSrc } from 'warp-contracts';
 
 export default {
   name: 'ContractCode',
@@ -57,7 +57,7 @@ export default {
   },
   async mounted() {
     if (this.wasm) {
-      axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then(async (fetchedContract) => {
+      axios.get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`).then(async (fetchedContract) => {
         if (!(fetchedContract.data.srcBinary instanceof Buffer)) {
           fetchedContract.data.srcBinary = Buffer.from(fetchedContract.data.srcBinary.data);
         }
@@ -77,7 +77,7 @@ export default {
     } else {
       // temporary until ArCode loads contracrt from the RedStone gateway
       // if (this.isTestnet) {
-      axios.get(`${this.gatewayUrl}/gateway/contracts/${this.contractId}`).then((fetchedContract) => {
+      axios.get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`).then((fetchedContract) => {
         this.contractSrc = fetchedContract.data.src;
         this.loaded = true;
       });

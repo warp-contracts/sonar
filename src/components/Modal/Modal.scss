@@ -1,7 +1,7 @@
-@import "../../styles/app";
+@import '../../styles/app';
 
 .btn-docs {
-  background-color: var(--redstone-smartweave-blue-color) !important;
+  background-color: var(--warp-blue-color) !important;
   color: white !important;
   font-size: $font-size-mini;
   border: none !important;
@@ -16,7 +16,7 @@
 }
 
 .info-colored {
-  color: var(--redstone-smartweave-blue-color) !important;
+  color: var(--warp-blue-color) !important;
 }
 
 .intro {
