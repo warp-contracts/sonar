@@ -78,9 +78,22 @@
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
-            <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
+            <div class="cell">
+              <div class="d-flex">
+                <div class="cell-header pb-2">Contract data</div>
+                <div
+                  v-b-tooltip.hover
+                  title="Contract data available only for contracts deployed through bundler. Either initial state if it is set in the data field by default or custom data defined by the contract developer."
+                  class="flaticon-question-tooltip"
+                />
+              </div>
+              <div v-if="!loadedContractData" class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
+              <div v-else>
+                <div v-if="contractData"><a target="_blank" :href="contractData">Link</a></div>
+                <div v-else class="flaticon-cross" />
+              </div>
             </div>
           </div>
           <div class="col-6 p-0">
@@ -122,6 +135,10 @@
             <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
+            </div>
+            <div v-if="wasmLang" class="cell">
+              <div class="cell-header">WASM</div>
+              <div>{{ wasmLang }}</div>
             </div>
           </div>
         </div>
@@ -442,6 +459,8 @@ export default {
       validity: null,
       axiosSource: null,
       sourceTxId: null,
+      loadedContractData: false,
+      contractData: null,
     };
   },
   watch: {
@@ -458,8 +477,9 @@ export default {
 
     this.getInteractions(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.getContract();
-    this.validity = await this.getInteractionValidity();
+    await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
+    this.validity = await this.getInteractionValidity();
   },
 
   components: {
@@ -483,6 +503,18 @@ export default {
   },
 
   methods: {
+    async getContractData() {
+      axios
+        .get(`${this.gatewayUrl}/gateway/contract-data/${this.contractId}`)
+        .then((contractData) => {
+          this.loadedContractData = true;
+          this.contractData = `${this.gatewayUrl}/gateway/contract-data/${this.contractId}`;
+        })
+        .catch((e) => {
+          this.loadedContractData = true;
+          this.contract = null;
+        });
+    },
     convertTZ(date, tzString) {
       return new Date(
         (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
