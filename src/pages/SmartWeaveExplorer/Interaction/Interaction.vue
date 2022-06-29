@@ -1,6 +1,6 @@
 <template>
   <div :key="interactionId">
-    <div v-if="loadingInitialized && correct" class="contract-wrapper">
+    <div v-if="correct" class="contract-wrapper">
       <div class="d-block d-sm-flex pl-2">
         <div class="contract-header-wrapper">
           <div class="flaticon-interaction"></div>
@@ -208,7 +208,7 @@
         </div>
       </div>
     </div>
-    <div v-if="loadingInitialized && !correct">
+    <div v-if="!correct">
       <Error />
     </div>
   </div>
@@ -258,7 +258,6 @@ export default {
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
-      loadingInitialized: false,
       usdPrice: 0,
       qty: 0,
     };
@@ -293,8 +292,10 @@ export default {
   methods: {
     async loadInteractionData() {
       if (this.$route.params.id.length != 43) {
-        this.loadingInitialized = true;
+        console.log('test');
         this.correct = false;
+      } else {
+        this.correct = true;
       }
       const { symbols } = redstone;
       const price = await redstone.getPrice(symbols.AR);
@@ -356,7 +357,7 @@ export default {
             cursor: '',
             node: fetchedInteractions.data.interaction,
           };
-          this.loadingInitialized = true;
+          this.correct = true;
           this.correct = !_.isEmpty(fetchedInteractions.data);
           this.interaction = {
             id: fetchedInteractions.data.interactionid,
@@ -390,6 +391,9 @@ export default {
                 : fetchedInteractions.data.interaction.recipient,
           };
           this.loaded = true;
+        })
+        .catch((e) => {
+          this.correct = false;
         });
     },
     styleCategory(text, numberOfCategories, index) {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="loadingInitialized && correct" class="contract-wrapper">
+    <div v-if="correct" class="contract-wrapper">
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
           <div class="flaticon-file-signature m-0-auto"></div>
@@ -364,7 +364,7 @@
         </div>
       </div>
     </div>
-    <div v-if="loadingInitialized && !correct">
+    <div v-if="!correct">
       <Error />
     </div>
   </div>
@@ -451,10 +451,8 @@ export default {
   },
   async mounted() {
     if (this.$route.params.id.length != 43) {
-      this.loadingInitialized = true;
       this.correct = false;
     } else {
-      this.loadingInitialized = true;
       this.correct = true;
     }
 
@@ -553,15 +551,20 @@ export default {
       }
     },
     async getContract() {
-      axios.get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`).then((fetchedContract) => {
-        this.owner = fetchedContract.data.owner;
-        this.pst_ticker = fetchedContract.data.pstTicker;
-        this.pst_name = fetchedContract.data.pstName;
-        this.wasmLang = fetchedContract.data.srcWasmLang;
-        this.initState = fetchedContract.data.initState;
-        this.loadedContract = true;
-        this.sourceTxId = fetchedContract.data.srcTxId;
-      });
+      axios
+        .get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`)
+        .then((fetchedContract) => {
+          this.owner = fetchedContract.data.owner;
+          this.pst_ticker = fetchedContract.data.pstTicker;
+          this.pst_name = fetchedContract.data.pstName;
+          this.wasmLang = fetchedContract.data.srcWasmLang;
+          this.initState = fetchedContract.data.initState;
+          this.loadedContract = true;
+          this.sourceTxId = fetchedContract.data.srcTxId;
+        })
+        .catch((e) => {
+          this.correct = false;
+        });
     },
     async getInteractions(page, confirmationStatus) {
       if (this.axiosSource) {
