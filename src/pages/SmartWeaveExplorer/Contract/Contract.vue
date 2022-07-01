@@ -531,10 +531,13 @@ export default {
         }
       }
     },
-    timeAgo(date, source) {
+    timeAgo(date, sortKeyTimestamp) {
       const timeAgoInSeconds = Math.floor(
         (this.convertTZ(new Date(), 'Europe/Berlin') -
-          this.convertTZ(new Date(date), source ? 'Europe/Berlin' : 'Europe/London')) /
+          this.convertTZ(
+            new Date(sortKeyTimestamp ? sortKeyTimestamp : date),
+            sortKeyTimestamp ? 'Europe/Berlin' : 'Europe/London'
+          )) /
           1000
       );
       const { interval, epoch } = this.getDuration(timeAgoInSeconds);
@@ -636,6 +639,10 @@ export default {
               node: i.interaction,
             };
             const inputFunc = JSON.parse(tagsParser.getInputTag(interactionInterface, this.contractId).value).function;
+            const isBundled =
+              i.confirming_peers == 'https://node2.bundlr.network' ||
+              i.confirming_peers == 'https://node1.bundlr.network';
+
             this.interactions.push({
               id: i.interaction.id,
               interactionId: i.interaction.id,
@@ -644,7 +651,7 @@ export default {
               timestamp: i.interaction.block.timestamp,
               age: this.timeAgo(
                 dayjs.unix(i.interaction.block.timestamp),
-                i.confirming_peers == 'https://node1.bundlr.network'
+                isBundled ? dayjs.unix(Math.trunc(i.interaction.sortKey.split(',')[1] / 1000)) : null
               ),
               function: inputFunc ? inputFunc : '-',
               status: i.status,
