@@ -1,0 +1,29 @@
+@import '~@/styles/app';
+
+.fullscreen-wrapper {
+  background-color: $gray-100;
+  border-radius: 10px;
+  padding: 4rem;
+  box-shadow: var(--content-shadow);
+  height: 550px;
+
+  @media (max-width: breakpoint-max(lg)) {
+    padding: 1rem;
+  }
+}
+
+.title {
+  margin-left: 5.25rem;
+  @media (max-width: breakpoint-max(lg)) {
+    margin-left: 0;
+  }
+}
+
+.flaticon-chevron-left {
+  height: 25px;
+  width: 25px;
+  margin-left: 5.25rem;
+  @media (max-width: breakpoint-max(lg)) {
+    margin-left: 0;
+  }
+}

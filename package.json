@@ -32,6 +32,7 @@
     "v-clipboard": "^2.2.3",
     "vue": "^2.6.14",
     "vue-echarts": "^6.0.0",
+    "vue-fullscreen": "^2.6.1",
     "vue-json-viewer": "^2.2.19",
     "vue-loaders": "^4.1.4",
     "vue-multiselect": "^2.1.6",

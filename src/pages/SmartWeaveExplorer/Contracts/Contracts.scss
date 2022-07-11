@@ -2,11 +2,14 @@
 
 .stats-wrapper {
   align-self: center;
-  margin-left: -75px;
-  flex-grow: 1;
+  flex: 1 1 0%;
+  padding: 15px;
+  margin: 0.5rem;
+  min-width: 150px;
 
   @media (max-width: breakpoint-max(lg)) {
     margin-left: 0;
+    flex-basis: 100%;
   }
 
   .item-text {
@@ -37,6 +40,17 @@
   box-shadow: var(--content-shadow);
 }
 
+.charts-wrapper {
+  background-color: $gray-100;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: var(--content-shadow);
+  margin-bottom: 30px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+
 .provider-card {
   cursor: pointer;
   transition: all 0.5s ease;
@@ -57,10 +71,6 @@
 .flaticon-file-signature {
   height: 30px;
   width: 30px;
-}
-
-.chart {
-  overflow: auto;
 }
 
 .filter-header {
@@ -92,31 +102,36 @@
   filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
 }
 
+.no-contracts-wrapper {
+  height: 250px;
+}
+
 .chart-wrapper {
   width: 80%;
   height: 300px;
 }
-.chart {
-  height: 300px;
-  width: 100%;
-  margin-top: -15px;
-  margin-left: -12px;
-  position: relative;
-  overflow: hidden;
 
-  @media (min-width: breakpoint-min(lg)) {
-    width: 80%;
-    padding-right: 50px !important;
+.flaticon-fullscreen {
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+}
+
+.chart-header {
+  align-items: center;
+  margin-top: 1rem;
+  margin-right: 3.75rem;
+  display: flex;
+}
+
+.chart-single-wrapper {
+  flex: 2 1 0%;
+  padding: 15px;
+  margin: 0.5rem;
+  min-width: 150px;
+  height: 350px !important;
+
+  @media (max-width: breakpoint-max(lg)) {
+    flex: 1 0 50%;
   }
-}
-
-.chart-title {
-  transform: rotate(270deg);
-  position: absolute;
-  left: -20px;
-  bottom: 150px;
-}
-
-.no-contracts-wrapper {
-  height: 250px;
 }

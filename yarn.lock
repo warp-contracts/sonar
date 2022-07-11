@@ -9702,6 +9702,11 @@ schema-utils@^3.0.0:
     ajv "^6.12.5"
     ajv-keywords "^3.5.2"
 
+screenfull@^5.1.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/screenfull/-/screenfull-5.2.0.tgz#6533d524d30621fc1283b9692146f3f13a93d1ba"
+  integrity sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==
+
 scrollparent@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/scrollparent/-/scrollparent-2.0.1.tgz#715d5b9cc57760fb22bdccc3befb5bfe06b1a317"
@@ -11218,6 +11223,13 @@ vue-eslint-parser@^2.0.3:
     espree "^3.5.2"
     esquery "^1.0.0"
     lodash "^4.17.4"
+
+vue-fullscreen@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/vue-fullscreen/-/vue-fullscreen-2.6.1.tgz#447ed7e3a848cffe5870ecbea2c240d8ffacc5f4"
+  integrity sha512-bbMJDKj2ZhsAwLcsvh8oV8WJeqAr2zxTHysvf7H8wSqaJTn5CnHXMSMbP9Tz4L/54I7jNQIdyA7VZ+EKAG+svg==
+  dependencies:
+    screenfull "^5.1.0"
 
 vue-functional-data-merge@^3.1.0:
   version "3.1.0"

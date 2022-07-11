@@ -1,9 +1,35 @@
 <template>
   <div>
-    <div class="contracts-wrapper d-lg-flex" style="marginBottom: 30px;">
-      <div :key="gatewayUrl" class="d-none d-md-block pl-5 pl-xl-0 chart">
-        <div v-if="!loading" class="chart-title">Interactions</div>
-        <v-chart :option="option" :loading="loading" resize="width: 75%; height: 500px" />
+    <div class="charts-wrapper d-lg-flex">
+      <div class="d-none d-md-block chart-single-wrapper">
+        <div class="chart-header">
+          <div>Interactions</div>
+          <router-link
+            class="d-xl-block d-none"
+            :to="{
+              path: '/app/stats/interactions',
+            }"
+            style="marginLeft: auto; cursor: pointer;"
+          >
+            <div class="flaticon-fullscreen" />
+          </router-link>
+        </div>
+        <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
+      </div>
+      <div class="d-none d-md-block chart-single-wrapper">
+        <div class="chart-header">
+          <div>Contracts</div>
+          <router-link
+            class="d-xl-block d-none"
+            :to="{
+              path: '/app/stats/contracts',
+            }"
+            style="marginLeft: auto; cursor: pointer;"
+          >
+            <div class="flaticon-fullscreen" />
+          </router-link>
+        </div>
+        <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
       </div>
       <div class="stats-wrapper">
         <div class="item-text">
@@ -156,97 +182,17 @@
 import _ from 'lodash';
 import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
-import { use } from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
-import { LineChart } from 'echarts/charts';
-import {
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  ToolboxComponent,
-  GridComponent,
-  DataZoomComponent,
-} from 'echarts/components';
-import VChart, { LOADING_OPTIONS_KEY } from 'vue-echarts';
-import dayjs from 'dayjs';
+import Charts from '@/components/Charts/Charts';
 import { mapState } from 'vuex';
-import constants from '@/constants';
 
-use([
-  CanvasRenderer,
-  LineChart,
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  ToolboxComponent,
-  GridComponent,
-  DataZoomComponent,
-]);
 export default {
   name: 'Contracts',
-  provide: {
-    [LOADING_OPTIONS_KEY]: {
-      text: '',
-      color: '#5982f1',
-      textColor: '#000',
-      maskColor: 'rgba(255, 255, 255, 0)',
-      showSpinner: true,
-    },
-  },
   data() {
     return {
       selected: 'all',
       selectedSource: 'all',
       chartLoading: true,
       loading: true,
-      option: {
-        tooltip: {
-          trigger: 'axis',
-          position: function(pt) {
-            return [pt[0], '10%'];
-          },
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: [],
-        },
-        yAxis: {
-          type: 'value',
-          boundaryGap: [0, '100%'],
-          min: 0,
-          max: null,
-        },
-        dataZoom: [
-          {
-            type: 'slider',
-            start: '',
-            end: '',
-            dataBackground: {
-              lineStyle: {
-                color: '#5982f1',
-              },
-              areaStyle: {
-                color: '#5982f1',
-                shadowColor: '#5982f1',
-                opacity: 0.2,
-              },
-            },
-          },
-          {
-            start: '',
-            end: '',
-          },
-        ],
-        series: [
-          {
-            name: 'Interactions',
-            type: 'line',
-            data: [],
-            lineStyle: { color: '#5982f1' },
-          },
-        ],
-      },
       fields: [
         'contractId',
         'owner',
@@ -296,15 +242,16 @@ export default {
       ],
       noContractsDetected: false,
       axiosSource: null,
+      contractsPerDay: null,
+      interactionsPerDay: null,
     };
   },
-
   mounted() {
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
   },
-  components: { TxList, VChart },
+  components: { TxList, Charts },
   watch: {
     gatewayUrl() {
       this.refreshData();
@@ -352,30 +299,11 @@ export default {
     },
     async getStatsPerDay() {
       axios.get(`${this.gatewayUrl}/gateway/stats/per-day`).then((fetchedData) => {
-        for (const options of fetchedData.data) {
-          if (!options.date) {
-            continue;
-          }
-          this.option.xAxis.data.push(dayjs(options.date).format('DD-MM-YYYY'));
-          this.option.series[0].data.push(options.per_day);
-        }
-        const end = 100;
-        const totalTime =
-          new Date(fetchedData.data[this.option.xAxis.data.length - 1].date).getTime() -
-          new Date(fetchedData.data[0].date).getTime();
-        const start = 100 - (2592000000 / totalTime) * 100;
-        this.option.dataZoom[0].start = start;
-        this.option.dataZoom[0].end = end;
-        this.option.dataZoom[1].start = start;
-        this.option.dataZoom[1].end = end;
-        this.loading = false;
+        this.contractsPerDay = fetchedData.data.contracts_per_day;
+        this.interactionsPerDay = fetchedData.data.interactions_per_day;
       });
     },
     loadStats() {
-      this.loading = true;
-      this.option.xAxis.data = [];
-      this.option.series[0].data = [];
-      this.option.yAxis.max = this.gatewayUrl == constants.gatewayProdUrl ? 2500 : 150;
       this.getStatsPerDay();
       this.getStats();
     },

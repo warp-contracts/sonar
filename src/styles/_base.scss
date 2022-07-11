@@ -1,11 +1,8 @@
 body:after {
-  content: url(../../src/assets/icons/search-2.svg)
-      url(../../src/assets/icons/file-signature-solid.svg)
+  content: url(../../src/assets/icons/search-2.svg) url(../../src/assets/icons/file-signature-solid.svg)
       url(../../src/assets/icons/interaction.svg),
-    url(../../src/assets/icons/sad-error.svg),
-    url(../../src/assets/icons/chevron-up.svg),
-    url(../../src/assets/icons/chevron-down.svg),
-    url(../../src/assets/icons/question-tooltip.svg);
+    url(../../src/assets/icons/sad-error.svg), url(../../src/assets/icons/chevron-up.svg),
+    url(../../src/assets/icons/chevron-down.svg), url(../../src/assets/icons/question-tooltip.svg);
   display: none;
 }
 .page-title {
@@ -141,7 +138,7 @@ table > thead > tr > th {
     + li {
       &::before {
         color: #999;
-        content: "\25cf";
+        content: '\25cf';
         padding: 0 8px;
       }
     }

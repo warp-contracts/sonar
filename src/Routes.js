@@ -8,7 +8,7 @@ import ErrorPage from '@/pages/Error/Error';
 import Contracts from '@/pages/SmartWeaveExplorer/Contracts/Contracts';
 import Contract from '@/pages/SmartWeaveExplorer/Contract/Contract';
 import Interaction from '@/pages/SmartWeaveExplorer/Interaction/Interaction';
-
+import ChartFullscreen from '@/pages/SmartWeaveExplorer/ChartFullscreen/ChartFullscreen';
 // Store
 import store from './store';
 
@@ -52,6 +52,12 @@ const router = new Router({
           meta: {
             showSearchInputInNavbar: true,
           },
+        },
+        {
+          path: 'stats/:id',
+          name: 'ChartFullscreen',
+          props: true,
+          component: ChartFullscreen,
         },
       ],
     },
