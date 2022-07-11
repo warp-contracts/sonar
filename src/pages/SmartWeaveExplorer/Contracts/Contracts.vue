@@ -1,37 +1,57 @@
 <template>
   <div>
-    <div class="charts-wrapper d-lg-flex">
-      <div class="d-none d-md-block chart-single-wrapper">
-        <div class="chart-header">
-          <div>Interactions</div>
-          <router-link
-            class="d-xl-block d-none"
-            :to="{
-              path: '/app/stats/interactions',
-            }"
-            style="marginLeft: auto; cursor: pointer;"
-          >
-            <div class="flaticon-fullscreen" />
-          </router-link>
+    <div class="charts-wrapper ">
+      <div class="charts d-none d-md-block">
+        <div class=" chart-single-wrapper">
+          <div class="chart-header">
+            <div>Interactions</div>
+            <router-link
+              class="d-xl-block d-none"
+              :to="{
+                path: '/app/stats/interactions',
+              }"
+              style="marginLeft: auto; cursor: pointer;"
+            >
+              <div class="flaticon-fullscreen" />
+            </router-link>
+          </div>
+          <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
+          <div class="d-flex justify-content-center item-text">
+            <div>Total:&nbsp;</div>
+            <div v-if="totalInteractionsLoaded">
+              <div>{{ totalInteractions }}</div>
+            </div>
+            <div v-else class="align-self-center" style="marginLeft: 47px;">
+              <div class="dot-flashing"></div>
+            </div>
+          </div>
         </div>
-        <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
-      </div>
-      <div class="d-none d-md-block chart-single-wrapper">
-        <div class="chart-header">
-          <div>Contracts</div>
-          <router-link
-            class="d-xl-block d-none"
-            :to="{
-              path: '/app/stats/contracts',
-            }"
-            style="marginLeft: auto; cursor: pointer;"
-          >
-            <div class="flaticon-fullscreen" />
-          </router-link>
+        <div class="d-none d-md-block chart-single-wrapper">
+          <div class="chart-header">
+            <div>Contracts</div>
+            <router-link
+              class="d-xl-block d-none"
+              :to="{
+                path: '/app/stats/contracts',
+              }"
+              style="marginLeft: auto; cursor: pointer;"
+            >
+              <div class="flaticon-fullscreen" />
+            </router-link>
+          </div>
+          <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
+          <div class="d-flex justify-content-center item-text">
+            <div>Total:&nbsp;</div>
+            <div v-if="totalContractsLoaded">
+              <div>{{ totalContracts }}</div>
+            </div>
+            <div v-else class="align-self-center" style="marginLeft: 47px;">
+              <div class="dot-flashing"></div>
+            </div>
+          </div>
         </div>
-        <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
       </div>
-      <div class="stats-wrapper">
+      <div class="stats-wrapper d-block d-md-none">
         <div class="item-text">
           <div>Total contracts</div>
           <div class="d-flex justify-content-center">

@@ -5,9 +5,14 @@
   border-radius: 10px;
   padding: 4rem;
   box-shadow: var(--content-shadow);
-  height: 550px;
+  height: 85vh;
+  min-height: 550px;
 
-  @media (max-width: breakpoint-max(lg)) {
+  @media (max-width: breakpoint-max(xl)) {
+    padding: 2rem;
+  }
+
+  @media (max-width: breakpoint-max(md)) {
     padding: 1rem;
   }
 }
@@ -23,6 +28,7 @@
   height: 25px;
   width: 25px;
   margin-left: 5.25rem;
+  margin-right: 1rem;
   @media (max-width: breakpoint-max(lg)) {
     margin-left: 0;
   }

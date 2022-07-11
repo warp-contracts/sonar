@@ -1,12 +1,16 @@
 <template>
   <div class="fullscreen-wrapper" style="marginBottom: 30px;">
-    <div class="d-flex mb-2">
-      <div class="flaticon-chevron-left" />
-      <div>Return</div>
-    </div>
-    <h1 class="title">{{ title }}</h1>
-    <div style="height: calc(100% - 70px); width: 100%;">
-      <Charts :gatewayUrl="gatewayUrl" :statsPerDay="perDay" :title="title" :fullscreen="true" />
+    <div style="width: 100%; height: 100%;">
+      <a :href="returnUrl">
+        <div class="d-flex mb-2">
+          <div class="flaticon-chevron-left" />
+          <div>Return</div>
+        </div>
+      </a>
+      <h1 class="title">{{ title }}</h1>
+      <div style="height: calc(100% - 70px); width: 100%;">
+        <Charts :gatewayUrl="gatewayUrl" :statsPerDay="perDay" :title="title" :fullscreen="true" />
+      </div>
     </div>
   </div>
 </template>
@@ -14,6 +18,7 @@
 import { mapState } from 'vuex';
 import axios from 'axios';
 import Charts from '@/components/Charts/Charts';
+import constants from '@/constants';
 
 export default {
   name: 'Fullscreen',
@@ -31,6 +36,9 @@ export default {
     },
     title() {
       return this.$route.params.id == 'contracts' ? 'Contracts' : 'Interactions';
+    },
+    returnUrl() {
+      return this.gatewayUrl == constants.gatewayProdUrl ? '/' : '/#/app/contracts?network=testnet';
     },
   },
   async mounted() {

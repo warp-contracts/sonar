@@ -124,7 +124,7 @@ export default {
         option.xAxis.data.push(dayjs(options.date).format('DD-MM-YYYY'));
         option.series[0].data.push(options.per_day);
       }
-      option.dataZoom[0].startValue = dayjs(data[option.xAxis.data.length - (this.fullscreen ? 31 : 8)].date).format(
+      option.dataZoom[0].startValue = dayjs(data[option.xAxis.data.length - (this.fullscreen ? 31 : 11)].date).format(
         'DD-MM-YYYY'
       );
       option.dataZoom[0].endValue = dayjs(data[option.xAxis.data.length - 1].date).format('DD-MM-YYYY');
