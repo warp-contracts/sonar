@@ -57,7 +57,6 @@ export default {
           type: 'category',
           boundaryGap: false,
           data: [],
-          min: 100,
         },
         yAxis: {
           type: 'value',
