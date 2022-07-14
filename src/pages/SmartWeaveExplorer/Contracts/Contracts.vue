@@ -8,7 +8,7 @@
             <router-link
               class="d-xl-block d-none"
               :to="{
-                path: '/app/stats/interactions',
+                path: `/app/stats/interactions${this.isTestnet ? '?network=testnet' : ''}`,
               }"
               style="marginLeft: auto; cursor: pointer;"
             >
@@ -32,7 +32,7 @@
             <router-link
               class="d-xl-block d-none"
               :to="{
-                path: '/app/stats/contracts',
+                path: `/app/stats/contracts${this.isTestnet ? '?network=testnet' : ''}`,
               }"
               style="marginLeft: auto; cursor: pointer;"
             >
