@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="charts-wrapper ">
-      <div class="charts d-none d-md-block">
+      <div class="charts d-none d-flex">
         <div class=" chart-single-wrapper">
           <div class="chart-header">
             <div>Interactions</div>
@@ -319,6 +319,7 @@ export default {
     },
     async getStatsPerDay() {
       axios.get(`${this.gatewayUrl}/gateway/stats/per-day`).then((fetchedData) => {
+        console.log(fetchedData.data);
         this.contractsPerDay = fetchedData.data.contracts_per_day;
         this.interactionsPerDay = fetchedData.data.interactions_per_day;
       });
