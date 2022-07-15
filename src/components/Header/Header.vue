@@ -4,14 +4,8 @@
       <div class="logo-container align-self-center">
         <a :href="logoUrl">
           <div class="logo-image-container">
-            <img
-              class="d-none d-md-block logo-image first"
-              src="/smartweave-logo.svg"
-            />
-            <img
-              class="d-block d-md-none logo-image first"
-              src="/smartweave-favicon.png"
-            />
+            <img class="d-none d-md-block logo-image first" src="/smartweave-logo.svg" />
+            <img class="d-block d-md-none logo-image first" src="/smartweave-favicon.png" />
           </div>
         </a>
       </div>
@@ -19,19 +13,11 @@
     <b-nav class="w-25 w-md-auto">
       <b-form class="ml-1" inline>
         <b-form-group style="margin-bottom: 0">
-          <b-input-group
-            v-if="showSearchInputInHeader"
-            class="input-group-no-border"
-          >
+          <b-input-group v-if="showSearchInputInHeader" class="input-group-no-border">
             <template v-slot:prepend>
-              <b-input-group-text v-if="!searching"
-                ><i class="fi flaticon-search-2"
-              /></b-input-group-text>
+              <b-input-group-text v-if="!searching"><i class="fi flaticon-search-2"/></b-input-group-text>
               <b-input-group-text v-if="searching" class="blue"
-                ><b-spinner
-                  style="width: 20px; height: 20px;"
-                  label="Busy"
-                ></b-spinner>
+                ><b-spinner style="width: 20px; height: 20px;" label="Busy"></b-spinner>
               </b-input-group-text>
             </template>
 
@@ -42,8 +28,7 @@
               :serializer="
                 (item) =>
                   item.type == 'pst'
-                    ? item.pst_ticker.substring(0, 3).toLowerCase() ==
-                      query.substring(0, 3).toLowerCase()
+                    ? item.pst_ticker.substring(0, 3).toLowerCase() == query.substring(0, 3).toLowerCase()
                       ? item.pst_ticker
                       : item.pst_name
                     : item.contract_id
@@ -56,29 +41,15 @@
             >
               <template slot="suggestion" slot-scope="{ data, htmlText }">
                 <div class="d-block d-md-flex justify-content-between">
-                  <span
-                    v-if="data.type == 'pst'"
-                    class="d-none d-md-block text-left"
-                    >{{ data.contract_id }}</span
-                  >
-                  <span class="suggestion-type d-block d-md-none">{{
-                    data.type
-                  }}</span>
-                  <span
-                    v-if="data.type == 'pst'"
-                    class="text-nowrap pst-match"
-                    v-html="htmlText"
-                  ></span>
+                  <span v-if="data.type == 'pst'" class="d-none d-md-block text-left">{{ data.contract_id }}</span>
+                  <span class="suggestion-type d-block d-md-none">{{ data.type }}</span>
+                  <span v-if="data.type == 'pst'" class="text-nowrap pst-match" v-html="htmlText"></span>
                   <span v-else class="text-nowrap" v-html="htmlText"></span>
-                  <span
-                    v-if="data.type == 'pst'"
-                    class="d-block d-md-none text-nowrap text-left"
-                    >{{ data.contract_id }}</span
-                  >
+                  <span v-if="data.type == 'pst'" class="d-block d-md-none text-nowrap text-left">{{
+                    data.contract_id
+                  }}</span>
                   <div style="width: 12%">
-                    <span class="d-none d-md-block suggestion-type mt-1">{{
-                      data.type
-                    }}</span>
+                    <span class="d-none d-md-block suggestion-type mt-1">{{ data.type }}</span>
                   </div>
                 </div>
               </template>
@@ -92,24 +63,20 @@
     </b-nav>
     <b-nav></b-nav>
     <b-nav class="align-items-center flex-grow-1 justify-content-end">
-      <div class="text-uppercase">
-        <div class="d-flex flex-column p-1">
-          <span>height</span>
+      <div class="d-none d-md-flex align-items-center">
+        <div class="text-uppercase">
+          <div class="d-flex flex-column p-1">
+            <span>height</span>
+          </div>
         </div>
+        <span class="pr-5 pl-2 height">{{ networkHeight }}</span>
       </div>
-      <span class="pr-5 pl-2 height">{{ networkHeight }}</span>
 
-      <div
-        class="text-uppercase mr-4 switch-link"
-        role="button"
-        @click="toggleGateway"
-      >
+      <div class="text-uppercase mr-4 switch-link" role="button" @click="toggleGateway">
         {{ switchNetworkText }}
       </div>
 
-      <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{
-        findMoreText
-      }}</b-button>
+      <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{ findMoreText }}</b-button>
       <b-modal id="modal-1" title="Redstone SmartWeave Gateway" size="lg">
         <Modal />
         <template #modal-footer><div></div></template>
@@ -144,24 +111,17 @@ export default {
     };
   },
   async mounted() {
-    this.switchNetworkText =
-      this.gatewayUrl == constants.gatewayProdUrl
-        ? 'Switch to Testnet'
-        : 'Switch to Mainnet';
+    this.switchNetworkText = this.gatewayUrl == constants.gatewayProdUrl ? 'Switch to Testnet' : 'Switch to Mainnet';
     await this.getNetworkHeight();
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
     searchBarText() {
-      return screen.width >= 1024
-        ? 'Search PST, Contracts, Interactions...'
-        : 'Search...';
+      return screen.width >= 1024 ? 'Search PST, Contracts, Interactions...' : 'Search...';
     },
     logoUrl() {
-      return this.gatewayUrl == constants.gatewayProdUrl
-        ? '/'
-        : '/#/app/contracts?network=testnet';
+      return this.gatewayUrl == constants.gatewayProdUrl ? '/' : '/#/app/contracts?network=testnet';
     },
     findMoreText() {
       return screen.width >= 768 ? 'Find out more' : 'More';
@@ -223,17 +183,9 @@ export default {
     },
     goToContract(data) {
       if (data.type == 'contract' || data.type == 'pst') {
-        this.$router.push(
-          `/app/contract/${data.contract_id}${
-            this.isTestnet ? '?network=testnet' : ''
-          }`
-        );
+        this.$router.push(`/app/contract/${data.contract_id}${this.isTestnet ? '?network=testnet' : ''}`);
       } else {
-        this.$router.push(
-          `/app/interaction/${data.contract_id}${
-            this.isTestnet ? '?network=testnet' : ''
-          }`
-        );
+        this.$router.push(`/app/interaction/${data.contract_id}${this.isTestnet ? '?network=testnet' : ''}`);
       }
       this.foundContracts = [];
       this.query = '';

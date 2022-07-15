@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="charts-wrapper ">
-      <div class="charts d-none d-flex">
+      <div class="charts d-none d-md-flex">
         <div class=" chart-single-wrapper">
           <div class="chart-header">
             <div>Interactions</div>
