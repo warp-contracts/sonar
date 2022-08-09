@@ -9,6 +9,7 @@ import Contracts from '@/pages/SmartWeaveExplorer/Contracts/Contracts';
 import Contract from '@/pages/SmartWeaveExplorer/Contract/Contract';
 import Interaction from '@/pages/SmartWeaveExplorer/Interaction/Interaction';
 import ChartFullscreen from '@/pages/SmartWeaveExplorer/ChartFullscreen/ChartFullscreen';
+import Source from '@/pages/SmartWeaveExplorer/Source/Source';
 // Store
 import store from './store';
 
@@ -49,6 +50,15 @@ const router = new Router({
           name: 'Interaction',
           props: true,
           component: Interaction,
+          meta: {
+            showSearchInputInNavbar: true,
+          },
+        },
+        {
+          path: 'source/:id',
+          name: 'Source',
+          props: true,
+          component: Source,
           meta: {
             showSearchInputInNavbar: true,
           },

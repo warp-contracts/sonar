@@ -31,7 +31,7 @@
                     ? item.pst_ticker.substring(0, 3).toLowerCase() == query.substring(0, 3).toLowerCase()
                       ? item.pst_ticker
                       : item.pst_name
-                    : item.contract_id
+                    : item.id
               "
               @hit="goToContract"
               @input="lookupContracts"
@@ -41,13 +41,11 @@
             >
               <template slot="suggestion" slot-scope="{ data, htmlText }">
                 <div class="d-block d-md-flex justify-content-between">
-                  <span v-if="data.type == 'pst'" class="d-none d-md-block text-left">{{ data.contract_id }}</span>
+                  <span v-if="data.type == 'pst'" class="d-none d-md-block text-left">{{ data.id }}</span>
                   <span class="suggestion-type d-block d-md-none">{{ data.type }}</span>
                   <span v-if="data.type == 'pst'" class="text-nowrap pst-match" v-html="htmlText"></span>
                   <span v-else class="text-nowrap" v-html="htmlText"></span>
-                  <span v-if="data.type == 'pst'" class="d-block d-md-none text-nowrap text-left">{{
-                    data.contract_id
-                  }}</span>
+                  <span v-if="data.type == 'pst'" class="d-block d-md-none text-nowrap text-left">{{ data.id }}</span>
                   <div style="width: 12%">
                     <span class="d-none d-md-block suggestion-type mt-1">{{ data.type }}</span>
                   </div>
@@ -183,9 +181,11 @@ export default {
     },
     goToContract(data) {
       if (data.type == 'contract' || data.type == 'pst') {
-        this.$router.push(`/app/contract/${data.contract_id}${this.isTestnet ? '?network=testnet' : ''}`);
+        this.$router.push(`/app/contract/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
+      } else if (data.type == 'interaction') {
+        this.$router.push(`/app/interaction/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
       } else {
-        this.$router.push(`/app/interaction/${data.contract_id}${this.isTestnet ? '?network=testnet' : ''}`);
+        this.$router.push(`/app/source/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
       }
       this.foundContracts = [];
       this.query = '';
