@@ -109,8 +109,11 @@
               <div class="cell-header">Source transaction id</div>
               <div class="d-flex">
                 <div v-if="sourceTxId" class="align-self-end d-flex">
-                  <span class="d-none d-sm-block">{{ sourceTxId }}</span
-                  ><span class="d-block d-sm-none">{{ sourceTxId | tx }}</span>
+                  <span class="d-none d-sm-block"
+                    ><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+                      sourceTxId
+                    }}</a></span
+                  ><span class="d-block d-sm-none"><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{ sourceTxId | tx }}</a></span>
                   <div
                     class="flaticon-copy-to-clipboard"
                     v-clipboard="sourceTxId"
@@ -370,7 +373,7 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedContract" :contractId="contractId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode v-if="loadedContract" :contractId="sourceTxId" :wasm="!!wasmLang"></ContractCode>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">

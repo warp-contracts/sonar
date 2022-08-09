@@ -39,7 +39,7 @@ import { WasmSrc } from 'warp-contracts';
 export default {
   name: 'ContractCode',
   props: {
-    contractId: String,
+    sourceId: String,
     wasm: Boolean,
   },
   computed: {
@@ -57,19 +57,19 @@ export default {
   },
   async mounted() {
     if (this.wasm) {
-      axios.get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`).then(async (fetchedContract) => {
-        if (!(fetchedContract.data.srcBinary instanceof Buffer)) {
-          fetchedContract.data.srcBinary = Buffer.from(fetchedContract.data.srcBinary.data);
+      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async (fetchedSource) => {
+        if (!(fetchedSource.data.srcBinary instanceof Buffer)) {
+          fetchedSource.data.srcBinary = Buffer.from(fetchedSource.data.srcBinary.data);
         }
-        const wasmSrc = new WasmSrc(fetchedContract.data.srcBinary);
+        const wasmSrc = new WasmSrc(fetchedSource.data.srcBinary);
         const contractSrc = await wasmSrc.sourceCode();
         let objFromContractSrc = Object.fromEntries(contractSrc);
 
-        if (fetchedContract.data.srcWasmLang == 'assemblyscript') {
+        if (fetchedSource.data.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
-        } else if (fetchedContract.data.srcWasmLang == 'rust') {
+        } else if (fetchedSource.data.srcWasmLang == 'rust') {
           this.contractSrc = this.getRust(objFromContractSrc);
-        } else if (fetchedContract.data.srcWasmLang == 'go') {
+        } else if (fetchedSource.data.srcWasmLang == 'go') {
           this.contractSrc = this.getGo(objFromContractSrc);
         }
         this.loaded = true;
@@ -77,8 +77,10 @@ export default {
     } else {
       // temporary until ArCode loads contracrt from the RedStone gateway
       // if (this.isTestnet) {
-      axios.get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`).then((fetchedContract) => {
-        this.contractSrc = fetchedContract.data.src;
+      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
+        console.log(this.sourceId);
+
+        this.contractSrc = fetchedSource.data.src;
         this.loaded = true;
       });
       //   } else {
@@ -232,9 +234,9 @@ export default {
         }
       }
     },
-    getCodeSrc() {
-      return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
-    },
+    // getCodeSrc() {
+    //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
+    // },
   },
 };
 </script>
