@@ -78,8 +78,6 @@ export default {
       // temporary until ArCode loads contracrt from the RedStone gateway
       // if (this.isTestnet) {
       axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
-        console.log(this.sourceId);
-
         this.contractSrc = fetchedSource.data.src;
         this.loaded = true;
       });

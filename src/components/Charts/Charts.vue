@@ -116,7 +116,6 @@ export default {
       this.loading = false;
     },
     fillChartWithData(data, option) {
-      console.log(data);
       for (const options of data) {
         if (!options.date) {
           continue;
@@ -127,9 +126,7 @@ export default {
       option.dataZoom[0].startValue = dayjs(data[option.xAxis.data.length - (this.fullscreen ? 31 : 11)].date).format(
         'DD-MM-YYYY'
       );
-      console.log('1', dayjs(data[option.xAxis.data.length - (this.fullscreen ? 31 : 11)].date).format('DD-MM-YYYY'));
       option.dataZoom[0].endValue = dayjs(data[option.xAxis.data.length - 1].date).format('DD-MM-YYYY');
-      console.log(dayjs(data[option.xAxis.data.length - 1].date).format('DD-MM-YYYY'));
       option.dataZoom[0].show = this.fullscreen ? true : false;
       // this.interactionsOption.yAxis.max = Math.round(this.getBiggestData(data) / 100) * 100;
     },

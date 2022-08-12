@@ -113,7 +113,11 @@
                     ><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{
                       sourceTxId
                     }}</a></span
-                  ><span class="d-block d-sm-none"><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{ sourceTxId | tx }}</a></span>
+                  ><span class="d-block d-sm-none"
+                    ><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+                      sourceTxId | tx
+                    }}</a></span
+                  >
                   <div
                     class="flaticon-copy-to-clipboard"
                     v-clipboard="sourceTxId"
@@ -373,7 +377,7 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedContract" :contractId="sourceTxId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode v-if="loadedContract" :sourceId="sourceTxId" :wasm="!!wasmLang"></ContractCode>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">

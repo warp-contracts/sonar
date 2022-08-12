@@ -292,7 +292,6 @@ export default {
   methods: {
     async loadInteractionData() {
       if (this.$route.params.id.length != 43) {
-        console.log('test');
         this.correct = false;
       } else {
         this.correct = true;
