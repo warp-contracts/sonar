@@ -118,7 +118,7 @@ export default {
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
     searchBarText() {
-      return screen.width >= 1024 ? 'Search PST, Contracts, Interactions...' : 'Search...';
+      return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
     logoUrl() {
       return this.gatewayUrl == constants.gatewayProdUrl ? '/' : '/#/app/contracts?network=testnet';
