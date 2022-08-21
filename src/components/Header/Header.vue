@@ -4,7 +4,7 @@
       <div class="logo-container align-self-center">
         <a :href="logoUrl">
           <div class="logo-image-container">
-            <img class="d-none d-md-block logo-image first" src="/smartweave-logo.svg" />
+            <img class="d-none d-md-block logo-image first" src="/warp-logo-full.svg" style="width: 150px" />
             <img class="d-block d-md-none logo-image first" src="/smartweave-favicon.png" />
           </div>
         </a>
