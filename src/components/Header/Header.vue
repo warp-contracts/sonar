@@ -4,7 +4,7 @@
       <div class="logo-container align-self-center">
         <a :href="logoUrl">
           <div class="logo-image-container">
-            <img class="d-none d-md-block logo-image first" src="/warp-logo-full.svg" style="width: 150px" />
+            <img class="d-none d-md-block logo-image first" src="/warp-logo-full.svg" style="width: 120px" />
             <img class="d-block d-md-none logo-image first" src="/warp-logo-mobile.svg" style="width: 32px" />
           </div>
         </a>
@@ -13,7 +13,7 @@
     <b-nav class="w-25 w-md-auto">
       <b-form class="ml-1" inline>
         <b-form-group style="margin-bottom: 0">
-          <b-input-group v-if="showSearchInputInHeader" class="input-group-no-border">
+          <b-input-group v-if="showSearchInputInHeader" class="input-group-no-border" style="paddingLeft: 10px;">
             <template v-slot:prepend>
               <b-input-group-text v-if="!searching"><i class="fi flaticon-search-2"/></b-input-group-text>
               <b-input-group-text v-if="searching" class="blue"
