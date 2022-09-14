@@ -297,7 +297,7 @@ export default {
         this.correct = true;
       }
       const { symbols } = redstone;
-      const price = await redstone.getPrice(symbols.AR);
+      const price = await redstone.getPrice('AR');
       const { value } = price;
       this.usdPrice = value;
       this.getInteraction(this.$route.query.page ? this.$route.query.page : this.currentPage);
