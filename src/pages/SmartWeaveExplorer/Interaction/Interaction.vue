@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="row">
-        <div v-if="loaded" style="margintop: 50px" class="pl-3 col-lg-7 col-12 mt-5">
+        <div v-if="loaded" style="marginTop: 50px" class="pl-3 col-lg-7 col-12">
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
@@ -155,7 +155,7 @@
               theme="json-theme"
             ></json-viewer>
           </div>
-          <div class="vrf-container" v-if="interaction.vrf != 'N/A'">
+          <div class="vrf-container" v-if="interaction.vrf">
             <p class="json-header">VRF</p>
             <json-viewer :value="interaction.vrf" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
           </div>
@@ -391,14 +391,13 @@ export default {
             fee: fetchedInteractions.data.interaction.fee.winston,
             feeInAr: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR).toFixed(8),
             feeInUsd: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR * this.usdPrice).toFixed(4),
-            vrf: fetchedInteractions.data.interaction.vrf == null ? 'N/A' : fetchedInteractions.data.interaction.vrf,
+            vrf: fetchedInteractions.data.interaction.vrf,
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
                 ? 'N/A'
                 : fetchedInteractions.data.interaction.recipient
           };
           this.loaded = true;
-          console.log(fetchedInteractions);
         })
         .catch(e => {
           this.correct = false;
