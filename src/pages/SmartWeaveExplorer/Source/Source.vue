@@ -17,9 +17,7 @@
             v-clipboard:success="onCopy"
             title="Copy to clipboard"
           ></div>
-          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">
-            Copied
-          </p>
+          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
         </div>
       </div>
       <div class="contract-details-wrapper pb-5">
@@ -46,7 +44,7 @@
                     class="clipboard-success"
                     v-bind:class="{
                       hidden: !copiedDisplayOwner,
-                      visible: copiedDisplayOwner,
+                      visible: copiedDisplayOwner
                     }"
                   >
                     Copied
@@ -80,7 +78,7 @@
                     class="clipboard-success"
                     v-bind:class="{
                       hidden: !copiedDisplayBundler,
-                      visible: copiedDisplayBundler,
+                      visible: copiedDisplayBundler
                     }"
                   >
                     Copied
@@ -104,9 +102,7 @@
             <div class="cell">
               <div class="cell-header">WASM</div>
               <div v-if="wasmLang">{{ wasmLang }}</div>
-              <div v-else>
-                N/A
-              </div>
+              <div v-else>N/A</div>
             </div>
           </div>
         </div>
@@ -220,9 +216,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="interactions-wrapper">
-              Contract has no interactions!
-            </div>
+            <div v-else class="interactions-wrapper">Contract has no interactions!</div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
@@ -270,7 +264,7 @@ export default {
         ['day', 86400],
         ['hour', 3600],
         ['minute', 60],
-        ['second', 1],
+        ['second', 1]
       ],
       fields: [
         'id',
@@ -282,8 +276,8 @@ export default {
           key: 'interactions',
           label: 'interactions',
           thClass: 'text-right',
-          tdClass: 'text-right',
-        },
+          tdClass: 'text-right'
+        }
       ],
       contracts: null,
       currentPage: 1,
@@ -311,13 +305,13 @@ export default {
       srcContentType: null,
       loadedContractData: false,
       contractData: null,
-      bundlerSrcTxId: null,
+      bundlerSrcTxId: null
     };
   },
   watch: {
     sourceId: function() {
       this.$router.go(0);
-    },
+    }
   },
   async mounted() {
     if (this.$route.params.id.length != 43) {
@@ -335,7 +329,7 @@ export default {
     TxList,
     JsonViewer,
     Error,
-    ContractCode,
+    ContractCode
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
@@ -347,7 +341,7 @@ export default {
     },
     contractsLoaded() {
       return this.contracts !== null;
-    },
+    }
   },
 
   methods: {
@@ -362,7 +356,7 @@ export default {
         if (interval >= 1) {
           return {
             interval: interval,
-            epoch: name,
+            epoch: name
           };
         }
       }
@@ -417,7 +411,7 @@ export default {
     async getContracts(page) {
       axios
         .get(`${this.gatewayUrl}/gateway/contracts-by-source?id=${this.sourceId}&limit=${this.limit}&page=${page}`)
-        .then(async (fetchedContracts) => {
+        .then(async fetchedContracts => {
           if (this.contracts === null) {
             this.contracts = [];
           }
@@ -430,7 +424,7 @@ export default {
               bundlerId: c.bundlerTxId,
               blockHeight: c.blockHeight,
               age: this.timeAgo(dayjs.unix(c.blockTimestamp)),
-              interactions: c.interactions,
+              interactions: c.interactions
             });
           }
         });
@@ -443,21 +437,19 @@ export default {
       this.axiosSource = CancelToken.source();
       this.total = null;
 
-      axios
-        .get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`)
-        .then(async (fetchedContractSource) => {
-          const source = fetchedContractSource.data;
-          this.loadedSource = true;
-          this.wasmLang = source.srcWasmLang;
-          this.owner = source.owner;
-          this.bundlerSrcTxId = source.bundlerSrcTxId;
-          this.srcContentType = source.srcContentType;
-        });
+      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async fetchedContractSource => {
+        const source = fetchedContractSource.data;
+        this.loadedSource = true;
+        this.wasmLang = source.srcWasmLang;
+        this.owner = source.owner;
+        this.bundlerSrcTxId = source.bundlerSrcTxId;
+        this.srcContentType = source.srcContentType;
+      });
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
-    },
-  },
+    }
+  }
 };
 </script>
 

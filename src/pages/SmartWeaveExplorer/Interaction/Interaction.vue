@@ -15,13 +15,11 @@
             v-clipboard:success="onCopy"
             title="Copy to clipboard"
           ></div>
-          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">
-            Copied
-          </p>
+          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
         </div>
       </div>
       <div class="row">
-        <div v-if="loaded" style="marginTop: 50px;" class="pl-3 col-lg-7 col-12">
+        <div v-if="loaded" style="margintop: 50px" class="pl-3 col-lg-7 col-12">
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
@@ -36,7 +34,10 @@
             ></div>
             <p
               class="clipboard-success"
-              v-bind:class="{ hidden: !copiedContractIdDisplay, visible: copiedContractIdDisplay }"
+              v-bind:class="{
+                hidden: !copiedContractIdDisplay,
+                visible: copiedContractIdDisplay
+              }"
             >
               Copied
             </p>
@@ -87,7 +88,9 @@
           </div>
           <div class="interaction-item">
             <div>Sort key</div>
-            <div style="word-break: break-all">{{ interaction.sortKey ? interaction.sortKey : '-' }}</div>
+            <div style="word-break: break-all">
+              {{ interaction.sortKey ? interaction.sortKey : '-' }}
+            </div>
           </div>
           <div class="interaction-item">
             <div>Confirmation status</div>
@@ -197,7 +200,7 @@
             <div>{{ interaction.interaction?.quantity.winston }}</div>
           </div>
         </div>
-        <div class="pl-3 col-lg-7 col-12" style="marginTop: 50px;" v-if="!loaded">
+        <div class="pl-3 col-lg-7 col-12" style="margintop: 50px" v-if="!loaded">
           <div v-for="n in 11" :key="n" class="preloader text-preloader tx-preloader"></div>
         </div>
         <div class="col-lg-5 col-12 pt-4">
@@ -242,7 +245,7 @@ export default {
         ['day', 86400],
         ['hour', 3600],
         ['minute', 60],
-        ['second', 1],
+        ['second', 1]
       ],
       interactions: [],
       currentPage: 1,
@@ -259,7 +262,7 @@ export default {
       winstonToAR: 0.000000000001,
       correct: false,
       usdPrice: 0,
-      qty: 0,
+      qty: 0
     };
   },
 
@@ -269,7 +272,7 @@ export default {
   watch: {
     interactionId: function() {
       this.loadInteractionData();
-    },
+    }
   },
   components: { JsonViewer, Error },
   computed: {
@@ -286,7 +289,7 @@ export default {
         this.total &&
         this.interactions.length == (this.paging.items > this.limit ? this.limit : this.paging.items)
       );
-    },
+    }
   },
 
   methods: {
@@ -313,7 +316,7 @@ export default {
         if (interval >= 1) {
           return {
             interval: interval,
-            epoch: name,
+            epoch: name
           };
         }
       }
@@ -349,12 +352,12 @@ export default {
       axios
         .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
-        .then((fetchedInteractions) => {
+        .then(fetchedInteractions => {
           const tagsParser = new TagsParser();
 
           const interactionInterface = {
             cursor: '',
-            node: fetchedInteractions.data.interaction,
+            node: fetchedInteractions.data.interaction
           };
           this.correct = true;
           this.correct = !_.isEmpty(fetchedInteractions.data);
@@ -366,7 +369,7 @@ export default {
             blockHeight: fetchedInteractions.data.blockheight,
             contractId: fetchedInteractions.data.contractid,
             func: fetchedInteractions.data.function,
-            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find((t) => t.name == 'Input').value).qty,
+            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find(t => t.name == 'Input').value).qty,
             confirmationStatus: fetchedInteractions.data.confirmationstatus,
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
@@ -387,18 +390,18 @@ export default {
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
                 ? 'N/A'
-                : fetchedInteractions.data.interaction.recipient,
+                : fetchedInteractions.data.interaction.recipient
           };
           this.loaded = true;
         })
-        .catch((e) => {
+        .catch(e => {
           this.correct = false;
         });
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
-    },
-  },
+    }
+  }
 };
 </script>
 

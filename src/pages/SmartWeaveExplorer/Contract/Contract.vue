@@ -17,9 +17,7 @@
             v-clipboard:success="onCopy"
             title="Copy to clipboard"
           ></div>
-          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">
-            Copied
-          </p>
+          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
         </div>
       </div>
       <div class="contract-details-wrapper pb-5">
@@ -91,7 +89,9 @@
                 <div class="dot-flashing"></div>
               </div>
               <div v-else>
-                <div v-if="contractData"><a target="_blank" :href="contractData">Link</a></div>
+                <div v-if="contractData">
+                  <a target="_blank" :href="contractData">Link</a>
+                </div>
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
@@ -179,9 +179,7 @@
             <div v-if="!noInteractionsDetected">
               <div class="d-block d-sm-flex justify-content-between">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">
-                    Confirmation Status
-                  </p>
+                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p>
                   <b-form-radio-group
                     id="confirmation-status-group"
                     name="confirmation-status-group"
@@ -263,13 +261,11 @@
                     <template #cell(bundlerId)="data">
                       <div class="d-flex" v-if="data.item.bundlerTxId">
                         <a
-                          :href="
-                            `${
-                              daysAgo(data.item.timestamp) > 1
-                                ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
-                                : `https://arweave.net/${data.item.bundlerTxId}`
-                            }`
-                          "
+                          :href="`${
+                            daysAgo(data.item.timestamp) > 1
+                              ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
+                              : `https://arweave.net/${data.item.bundlerTxId}`
+                          }`"
                           target="_blank"
                           >{{ data.item.bundlerTxId | tx }}</a
                         >
@@ -286,15 +282,11 @@
                     <template #cell(validity)="data">
                       <div
                         v-show="validity && validity[data.item.interactionId] == true"
-                        class="
-                          flaticon-check centered
-                        "
+                        class="flaticon-check centered"
                       />
                       <div
                         v-show="validity && validity[data.item.interactionId] == false"
-                        class="
-                          flaticon-cross centered
-                        "
+                        class="flaticon-cross centered"
                       />
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
@@ -302,13 +294,11 @@
 
                     <template #cell(block_id)="data">
                       <a
-                        :href="
-                          `${
-                            isTestnet
-                              ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
-                              : `https://viewblock.io/arweave/block/${data.item.blockId}`
-                          }`
-                        "
+                        :href="`${
+                          isTestnet
+                            ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
+                            : `https://viewblock.io/arweave/block/${data.item.blockId}`
+                        }`"
                         target="_blank"
                       >
                         {{ data.item.blockId | tx }}
@@ -371,9 +361,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="interactions-wrapper">
-              Contract has no interactions!
-            </div>
+            <div v-else class="interactions-wrapper">Contract has no interactions!</div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
@@ -471,7 +459,7 @@ export default {
     };
   },
   watch: {
-    contractId: function() {
+    contractId: function () {
       this.$router.go(0);
     },
   },

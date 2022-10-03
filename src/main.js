@@ -28,7 +28,7 @@ Vue.config.productionTip = false;
 Vue.directive('observe-visibility', ObserveVisibility);
 
 function setupFilters() {
-  Vue.filter('tx', function(value) {
+  Vue.filter('tx', function (value) {
     if (!value) return '';
     return value.substr(0, 6) + '...' + value.substr(value.length - 6);
   });

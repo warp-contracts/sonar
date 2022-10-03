@@ -13,11 +13,11 @@
     <b-nav class="w-25 w-md-auto">
       <b-form class="ml-1" inline>
         <b-form-group style="margin-bottom: 0">
-          <b-input-group v-if="showSearchInputInHeader" class="input-group-no-border" style="paddingLeft: 10px;">
+          <b-input-group v-if="showSearchInputInHeader" class="input-group-no-border" style="paddingleft: 10px">
             <template v-slot:prepend>
-              <b-input-group-text v-if="!searching"><i class="fi flaticon-search-2"/></b-input-group-text>
+              <b-input-group-text v-if="!searching"><i class="fi flaticon-search-2" /></b-input-group-text>
               <b-input-group-text v-if="searching" class="blue"
-                ><b-spinner style="width: 20px; height: 20px;" label="Busy"></b-spinner>
+                ><b-spinner style="width: 20px; height: 20px" label="Busy"></b-spinner>
               </b-input-group-text>
             </template>
 
@@ -190,7 +190,7 @@ export default {
       this.foundContracts = [];
       this.query = '';
     },
-    lookupContracts: debounce(function() {
+    lookupContracts: debounce(function () {
       this.searching = true;
       if (this.query?.length < 3) {
         this.searching = false;

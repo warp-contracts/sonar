@@ -1,6 +1,6 @@
 <template>
-  <div class="fullscreen-wrapper" style="marginBottom: 30px;">
-    <div style="width: 100%; height: 100%;">
+  <div class="fullscreen-wrapper" style="marginbottom: 30px">
+    <div style="width: 100%; height: 100%">
       <a :href="returnUrl">
         <div class="d-flex mb-2">
           <div class="flaticon-chevron-left" />
@@ -8,7 +8,7 @@
         </div>
       </a>
       <h1 class="title">{{ title }}</h1>
-      <div style="height: calc(100% - 70px); width: 100%;">
+      <div style="height: calc(100% - 70px); width: 100%">
         <Charts :gatewayUrl="gatewayUrl" :statsPerDay="perDay" :title="title" :fullscreen="true" />
       </div>
     </div>

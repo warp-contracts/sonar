@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="charts-wrapper ">
+    <div class="charts-wrapper">
       <div class="charts d-none d-md-flex">
-        <div class=" chart-single-wrapper">
+        <div class="chart-single-wrapper">
           <div class="chart-header">
             <div>Interactions</div>
             <router-link
@@ -10,7 +10,7 @@
               :to="{
                 path: `/app/stats/interactions${this.isTestnet ? '?network=testnet' : ''}`,
               }"
-              style="marginLeft: auto; cursor: pointer;"
+              style="marginleft: auto; cursor: pointer"
             >
               <div class="flaticon-fullscreen" />
             </router-link>
@@ -21,7 +21,7 @@
             <div v-if="totalInteractionsLoaded">
               <div>{{ totalInteractions }}</div>
             </div>
-            <div v-else class="align-self-center" style="marginLeft: 47px;">
+            <div v-else class="align-self-center" style="marginleft: 47px">
               <div class="dot-flashing"></div>
             </div>
           </div>
@@ -34,7 +34,7 @@
               :to="{
                 path: `/app/stats/contracts${this.isTestnet ? '?network=testnet' : ''}`,
               }"
-              style="marginLeft: auto; cursor: pointer;"
+              style="marginleft: auto; cursor: pointer"
             >
               <div class="flaticon-fullscreen" />
             </router-link>
@@ -45,7 +45,7 @@
             <div v-if="totalContractsLoaded">
               <div>{{ totalContracts }}</div>
             </div>
-            <div v-else class="align-self-center" style="marginLeft: 47px;">
+            <div v-else class="align-self-center" style="marginleft: 47px">
               <div class="dot-flashing"></div>
             </div>
           </div>
@@ -191,9 +191,7 @@
           <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
         </div>
       </TxList>
-      <div v-else class="no-contracts-wrapper ml-2">
-        No contracts for specified requirements!
-      </div>
+      <div v-else class="no-contracts-wrapper ml-2">No contracts for specified requirements!</div>
     </div>
   </div>
 </template>

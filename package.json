@@ -5,13 +5,15 @@
   "scripts": {
     "serve": "vue-cli-service serve --port 3000",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "format": "prettier .  --write"
   },
   "dependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
     "animate.css": "^4.1.1",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "axios": "^0.24.0",
+    "@babel/eslint-parser": "^7.5.4",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "2.21.2",
     "css-loader": "^1.0.1",
@@ -57,6 +59,10 @@
     "@vue/cli-plugin-eslint": "^3.12.0",
     "@vue/cli-service": "^4.5.13",
     "@vue/composition-api": "^1.4.3",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-vue": "^9.5.1",
+    "prettier": "^2.7.1",
     "vue-template-compiler": "^2.6.12"
   },
   "eslintConfig": {
@@ -66,14 +72,23 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "prettier"
     ],
     "rules": {
       "no-console": "off",
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "vue/multi-word-component-names": "off",
+      "vue/no-useless-template-attributes": "off",
+      "vue/no-reserved-component-names": "off",
+      "vue/no-unused-components": "off",
+      "vue/no-mutating-props": "off",
+      "vue/return-in-computed-property": "off"
     },
     "parserOptions": {
-      "parser": "babel-eslint"
+      "requireConfigFile": false,
+      "ecmaVersion": 6,
+      "parser": "@babel/eslint-parser"
     }
   },
   "postcss": {

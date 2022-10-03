@@ -1,8 +1,6 @@
 <template>
   <div class="code-container">
-    <div v-if="!loaded" class="state-container">
-      Loading Contract Code...
-    </div>
+    <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
     <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
     <div v-if="loaded && contractSrc && wasm">
       <ul id="code-wasm">
@@ -52,7 +50,7 @@ export default {
       contractSrc: null,
     };
   },
-  updated: function() {
+  updated: function () {
     Prism.highlightAll();
   },
   async mounted() {

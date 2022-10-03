@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: "TxList",
+  name: 'TxList',
   data() {
     return {
       currentPage: 1,
@@ -28,10 +28,10 @@ export default {
   methods: {
     handleClick(event, pageNumber) {
       this.currentPage = pageNumber;
-      this.$emit("page-clicked", this.currentPage);
+      this.$emit('page-clicked', this.currentPage);
     },
     linkGen(pageNum) {
-      return pageNum === 1 ? "?" : `?page=${pageNum}`;
+      return pageNum === 1 ? '?' : `?page=${pageNum}`;
     },
   },
 

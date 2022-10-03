@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div class="state-container" v-if="!loaded">
-      Loading Contract State...
-    </div>
+    <div class="state-container" v-if="!loaded">Loading Contract State...</div>
 
     <div v-if="state">
       <p class="json-header">{{ header }}</p>

@@ -2,11 +2,11 @@ export default {
   namespaced: true,
   state: {
     showSearchInputInHeader: false,
-    searchTerm: "",
+    searchTerm: '',
   },
   mutations: {
     handleSwipe(state, e) {
-      if ("ontouchstart" in window) {
+      if ('ontouchstart' in window) {
         if (e.direction === 4) {
           state.showSidebar = true;
         }
@@ -25,13 +25,13 @@ export default {
   },
   actions: {
     handleSwipe({ commit }, e) {
-      commit("handleSwipe", e);
+      commit('handleSwipe', e);
     },
     setSearchInputVisibilityInHeader({ commit }, visibility) {
-      commit("setSearchInputVisibilityInHeader", visibility);
+      commit('setSearchInputVisibilityInHeader', visibility);
     },
     updateSearchTerm({ commit }, searchTerm) {
-      commit("updateSearchTerm", searchTerm);
+      commit('updateSearchTerm', searchTerm);
     },
   },
 };
