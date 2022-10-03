@@ -155,6 +155,10 @@
               theme="json-theme"
             ></json-viewer>
           </div>
+          <div class="vrf-container" v-if="interaction">
+            <p class="json-header">VRF</p>
+            <json-viewer :value="interaction.vrf" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+          </div>
           <div class="interaction-item" v-if="interaction.pstQty">
             <div>PST transfer qty</div>
             <div>{{ interaction.pstQty }}</div>
@@ -387,12 +391,14 @@ export default {
             fee: fetchedInteractions.data.interaction.fee.winston,
             feeInAr: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR).toFixed(8),
             feeInUsd: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR * this.usdPrice).toFixed(4),
+            vrf: fetchedInteractions.data.interaction.vrf == '' ? 'N/A' : fetchedInteractions.data.interaction.vrf,
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
                 ? 'N/A'
                 : fetchedInteractions.data.interaction.recipient
           };
           this.loaded = true;
+          console.log(fetchedInteractions);
         })
         .catch(e => {
           this.correct = false;
@@ -415,5 +421,10 @@ export default {
   .nav-tabs > .nav-item {
     flex: 0 0 124px !important;
   }
+}
+
+.vrf-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
