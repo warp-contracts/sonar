@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="row">
-        <div v-if="loaded" style="margintop: 50px" class="pl-3 col-lg-7 col-12">
+        <div v-if="loaded" style="margintop: 50px" class="pl-3 col-lg-7 col-12 mt-5">
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
@@ -155,7 +155,7 @@
               theme="json-theme"
             ></json-viewer>
           </div>
-          <div class="vrf-container" v-if="interaction">
+          <div class="vrf-container" v-if="interaction.vrf != 'N/A'">
             <p class="json-header">VRF</p>
             <json-viewer :value="interaction.vrf" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
           </div>
