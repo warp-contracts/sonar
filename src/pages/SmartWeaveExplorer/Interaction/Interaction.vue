@@ -391,7 +391,7 @@ export default {
             fee: fetchedInteractions.data.interaction.fee.winston,
             feeInAr: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR).toFixed(8),
             feeInUsd: (fetchedInteractions.data.interaction.fee.winston * this.winstonToAR * this.usdPrice).toFixed(4),
-            vrf: fetchedInteractions.data.interaction.vrf == '' ? 'N/A' : fetchedInteractions.data.interaction.vrf,
+            vrf: fetchedInteractions.data.interaction.vrf == null ? 'N/A' : fetchedInteractions.data.interaction.vrf,
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
                 ? 'N/A'
