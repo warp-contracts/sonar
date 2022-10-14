@@ -149,6 +149,10 @@
             </div>
           </div>
         </div>
+        <div class="mt-6">
+          <p class="json-header">Contract tags:</p>
+          <json-viewer :value="tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+        </div>
       </div>
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
@@ -394,6 +398,7 @@ import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
+import Transaction from 'arweave/node/lib/transaction';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -456,6 +461,7 @@ export default {
       sourceTxId: null,
       loadedContractData: false,
       contractData: null,
+      tags: [],
     };
   },
   watch: {
@@ -580,22 +586,31 @@ export default {
         this.getInteractions(this.currentPage, this.selected);
       }
     },
+
     async getContract() {
-      axios
-        .get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`)
-        .then((fetchedContract) => {
-          this.owner = fetchedContract.data.owner;
-          this.pst_ticker = fetchedContract.data.pstTicker;
-          this.pst_name = fetchedContract.data.pstName;
-          this.wasmLang = fetchedContract.data.srcWasmLang;
-          this.initState = fetchedContract.data.initState;
-          this.loadedContract = true;
-          this.sourceTxId = fetchedContract.data.srcTxId;
-        })
-        .catch((e) => {
-          this.correct = false;
-        });
+      const response = await fetch(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`);
+      if (!response.ok) {
+        const error = `An error has occured: ${response.status}`;
+        throw new Error(error);
+      }
+      const data = await response.json();
+      const contractTx = new Transaction((await data).contractTx);
+      contractTx.get('tags').forEach((tag) => {
+        let key = tag.get('name', { decode: true, string: true });
+        let value = tag.get('value', { decode: true, string: true });
+        this.tags.push({ key, value });
+      });
+
+      this.owner = data.owner;
+      this.pst_ticker = data.pstTicker;
+      this.pst_name = data.pstName;
+      this.wasmLang = data.srcWasmLang;
+      this.initState = data.initState;
+      this.loadedContract = true;
+      this.sourceTxId = data.srcTxId;
+
     },
+
     async getInteractions(page, confirmationStatus) {
       if (this.axiosSource) {
         this.axiosSource.cancel('Cancel previous request');
