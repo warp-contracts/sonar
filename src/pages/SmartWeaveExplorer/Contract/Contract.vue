@@ -312,7 +312,7 @@
                     <template #cell(owner)="data">
                       <a
                         v-if="!isTestnet"
-                        :href="`https://viewblock.io/arweave/address/${data.item.owner}`"
+                        :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`"
                         target="_blank"
                       >
                         {{ data.item.owner | tx }}</a
