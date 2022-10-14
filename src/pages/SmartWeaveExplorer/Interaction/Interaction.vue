@@ -46,7 +46,7 @@
             <div>Owner</div>
             <a
               v-if="!isTestnet"
-              :href="`https://viewblock.io/arweave/address/${interaction.interaction?.owner.address}`"
+              :href="`https://v2.viewblock.io/arweave/address/${interaction.interaction?.owner.address}`"
               target="_blank"
             >
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
@@ -64,7 +64,7 @@
                 :href="
                   `${
                     daysAgo(interaction.timestamp) > 1
-                      ? `https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                      ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
                       : `https://arweave.net/${interaction.bundlerTxId}`
                   }`
                 "
@@ -75,7 +75,7 @@
                 :href="
                   `${
                     daysAgo(interaction.timestamp) > 1
-                      ? `https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                      ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
                       : `https://arweave.net/${interaction.bundlerTxId}`
                   }`
                 "
@@ -174,7 +174,7 @@
                 `${
                   isTestnet
                     ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
-                    : `https://viewblock.io/arweave/block/${interaction.blockId}`
+                    : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
                 }`
               "
               target="_blank"
