@@ -263,7 +263,7 @@
                         <a
                           :href="`${
                             daysAgo(data.item.timestamp) > 1
-                              ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
+                              ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerTxId}`
                               : `https://arweave.net/${data.item.bundlerTxId}`
                           }`"
                           target="_blank"
@@ -297,7 +297,7 @@
                         :href="`${
                           isTestnet
                             ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
-                            : `https://viewblock.io/arweave/block/${data.item.blockId}`
+                            : `https://v2.viewblock.io/arweave/block/${data.item.blockId}`
                         }`"
                         target="_blank"
                       >
