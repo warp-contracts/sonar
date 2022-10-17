@@ -149,10 +149,6 @@
             </div>
           </div>
         </div>
-        <div class="mt-6">
-          <p class="json-header">Contract tags:</p>
-          <json-viewer :value="tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
-        </div>
       </div>
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
@@ -176,6 +172,13 @@
             @click="onInput($route.hash)"
           >
             State
+          </b-nav-item>
+          <b-nav-item
+            :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
+            :active="$route.hash === '#tags'"
+            @click="onInput($route.hash)"
+          >
+            Tags
           </b-nav-item>
         </b-nav>
         <div class="tab-content">
@@ -377,6 +380,11 @@
               <ContractState v-if="initState" :contractId="contractId" :initState="initState"></ContractState>
             </div>
           </div>
+          <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
+            <div>
+              <ContractTags v-if="this.tags.length > 0" :contractTags="tags"></ContractTags>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -398,7 +406,8 @@ import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
-import Transaction from 'arweave/node/lib/transaction';
+import ContractTags from './ContractTags/ContractTags.vue';
+import { interactionTagsParser } from '@/utils';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -489,6 +498,7 @@ export default {
     Error,
     ContractState,
     ContractCode,
+    ContractTags,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
@@ -590,17 +600,13 @@ export default {
     async getContract() {
       const response = await fetch(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`);
       if (!response.ok) {
+        this.correct = false;
         const error = `An error has occured: ${response.status}`;
         throw new Error(error);
       }
       const data = await response.json();
-      const contractTx = new Transaction((await data).contractTx);
-      contractTx.get('tags').forEach((tag) => {
-        let key = tag.get('name', { decode: true, string: true });
-        let value = tag.get('value', { decode: true, string: true });
-        this.tags.push({ key, value });
-      });
 
+      this.tags = await interactionTagsParser(data);
       this.owner = data.owner;
       this.pst_ticker = data.pstTicker;
       this.pst_name = data.pstName;
@@ -608,7 +614,6 @@ export default {
       this.initState = data.initState;
       this.loadedContract = true;
       this.sourceTxId = data.srcTxId;
-
     },
 
     async getInteractions(page, confirmationStatus) {
