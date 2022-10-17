@@ -154,7 +154,7 @@
             </div>
           </template>
           <template #cell(owner)="data">
-            <a v-if="!isTestnet" :href="`https://viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
+            <a v-if="!isTestnet" :href="`https://v2.viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
               {{ data.item.owner | tx }}</a
             >
             <span v-else>{{ data.item.owner | tx }}</span>

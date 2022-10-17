@@ -263,7 +263,7 @@
                         <a
                           :href="`${
                             daysAgo(data.item.timestamp) > 1
-                              ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
+                              ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerTxId}`
                               : `https://arweave.net/${data.item.bundlerTxId}`
                           }`"
                           target="_blank"
@@ -297,7 +297,7 @@
                         :href="`${
                           isTestnet
                             ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
-                            : `https://viewblock.io/arweave/block/${data.item.blockId}`
+                            : `https://v2.viewblock.io/arweave/block/${data.item.blockId}`
                         }`"
                         target="_blank"
                       >
@@ -312,7 +312,7 @@
                     <template #cell(owner)="data">
                       <a
                         v-if="!isTestnet"
-                        :href="`https://viewblock.io/arweave/address/${data.item.owner}`"
+                        :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`"
                         target="_blank"
                       >
                         {{ data.item.owner | tx }}</a
