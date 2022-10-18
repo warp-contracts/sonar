@@ -10,6 +10,8 @@ import Contract from '@/pages/SmartWeaveExplorer/Contract/Contract';
 import Interaction from '@/pages/SmartWeaveExplorer/Interaction/Interaction';
 import ChartFullscreen from '@/pages/SmartWeaveExplorer/ChartFullscreen/ChartFullscreen';
 import Source from '@/pages/SmartWeaveExplorer/Source/Source';
+import Creator from '@/pages/SmartWeaveExplorer/Creator/Creator';
+
 // Store
 import store from './store';
 
@@ -68,6 +70,15 @@ const router = new Router({
           name: 'ChartFullscreen',
           props: true,
           component: ChartFullscreen,
+        },
+        {
+          path: 'creator/:id',
+          name: 'Creator',
+          props: true,
+          component: Creator,
+          meta: {
+            showSearchInputInNavbar: true,
+          },
         },
       ],
     },
