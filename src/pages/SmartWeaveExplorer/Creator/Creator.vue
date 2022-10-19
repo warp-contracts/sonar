@@ -19,8 +19,8 @@
             <div v-if="!noTransactionsDetected">
               <div class="d-block d-sm-flex justify-content-between">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p>
-                  <b-form-radio-group
+                  <!-- <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p> -->
+                  <!-- <b-form-radio-group
                     id="confirmation-status-group"
                     name="confirmation-status-group"
                     @change="refreshData"
@@ -36,14 +36,14 @@
                         class="flaticon-question-tooltip lowered"
                       />
                     </div>
-                    <!-- <div class="confirmation-status-item">
+                    <div class="confirmation-status-item">
                       <b-form-radio value="confirmed">Confirmed</b-form-radio>
                       <div
                         v-b-tooltip.hover
                         title="Show contract transactions which have been positively confirmed by at least three different nodes."
                         class="flaticon-question-tooltip lowered"
                       />
-                    </div> -->
+                    </div>
                     <div class="confirmation-status-item">
                       <b-form-radio value="corrupted">Corrupted</b-form-radio>
                       <div
@@ -60,7 +60,7 @@
                         class="flaticon-question-tooltip lowered"
                       />
                     </div>
-                  </b-form-radio-group>
+                  </b-form-radio-group> -->
                 </b-col>
 
                 <b-button class="btn btn-refresh rounded-pill mb-3 mb-sm-0" @click="refreshData"
@@ -166,21 +166,21 @@
                       {{ data.item.status }}
                     </template> -->
 
-                    <template #cell(actions)="data">
+                    <!-- <template #cell(actions)="data">
                       <div v-if="!data.item._showDetails" class="flaticon-chevron-down" />
                       <div v-else class="flaticon-chevron-up" />
-                    </template>
+                    </template> -->
 
-                    <template slot="row-details" slot-scope="data">
+                    <!-- <template slot="row-details" slot-scope="data">
                       <div>
-                        <!-- <p class="json-header">Contract Input:</p>
+                        <p class="json-header">Contract Input:</p>
                         <json-viewer
                           :value="data.item.tags"
                           :expand-depth="1"
                           copyable
                           sort
                           theme="json-theme"
-                        ></json-viewer> -->
+                        ></json-viewer>
                         <hr />
                         <p class="json-header">Full transaction:</p>
                         <json-viewer
@@ -191,7 +191,7 @@
                           theme="json-theme"
                         ></json-viewer>
                       </div>
-                    </template>
+                    </template> -->
                   </b-table>
                 </TxList>
                 <div v-if="!transactionsLoaded">
@@ -248,11 +248,11 @@ export default {
       fields: [
         'id',
         'bundlerId',
-        {
-          key: 'validity',
-          label: 'valid',
-          thClass: 'text-center',
-        },
+        // {
+        //   key: 'validity',
+        //   label: 'valid',
+        //   thClass: 'text-center',
+        // },
         'block_height',
         'age',
         { key: 'actions', label: '' },
@@ -293,6 +293,7 @@ export default {
           blockHeight: t.block_height,
           timestamp: t.block_timestamp,
           interactionType: t.type,
+          age: this.timeAgo(dayjs.unix(t.block_timestamp)),
         });
       }
     },
