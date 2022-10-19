@@ -16,7 +16,7 @@
         </b-nav>
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
-            <div v-if="!noInteractionsDetected">
+            <div v-if="!noTransactionsDetected">
               <div class="d-block d-sm-flex justify-content-between">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
                   <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p>
@@ -32,7 +32,7 @@
                       <b-form-radio value="all">All</b-form-radio>
                       <div
                         v-b-tooltip.hover
-                        title="Show all contract interactions."
+                        title="Show all contract transactions."
                         class="flaticon-question-tooltip lowered"
                       />
                     </div>
@@ -40,7 +40,7 @@
                       <b-form-radio value="confirmed">Confirmed</b-form-radio>
                       <div
                         v-b-tooltip.hover
-                        title="Show contract interactions which have been positively confirmed by at least three different nodes."
+                        title="Show contract transactions which have been positively confirmed by at least three different nodes."
                         class="flaticon-question-tooltip lowered"
                       />
                     </div> -->
@@ -48,7 +48,7 @@
                       <b-form-radio value="corrupted">Corrupted</b-form-radio>
                       <div
                         v-b-tooltip.hover
-                        title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
+                        title="Show corruptetransactions which are not part of any block but are still returned by Arweave GQL endpoint."
                         class="flaticon-question-tooltip lowered"
                       />
                     </div>
@@ -56,7 +56,7 @@
                       <b-form-radio value="not_corrupted">Not corrupted </b-form-radio>
                       <div
                         v-b-tooltip.hover
-                        title="Show both confirmed and not yet processed interactions."
+                        title="Show both confirmed and not yet processed transactions."
                         class="flaticon-question-tooltip lowered"
                       />
                     </div>
@@ -68,25 +68,23 @@
                 </b-button>
               </div>
               <div>
-                <TxList :paging="pages" v-if="interactionsLoaded" @page-clicked="onPageClicked">
+                <TxList :paging="pages" v-if="transactionsLoaded" @page-clicked="onPageClicked">
                   <b-table
-                    v-if="interactions?.length > 0"
+                    v-if="transactions?.length > 0"
                     ref="table"
-                    id="interactions-table"
+                    id="transactions-table"
                     stacked="md"
                     hover
-                    :items="interactions"
+                    :items="transactions"
                     :fields="fields"
                     @row-clicked="rowClicked"
-                    :busy="!interactionsLoaded"
+                    :busy="!transactionsLoaded"
                   >
                     <template #table-busy></template>
 
                     <template #cell(id)="data">
                       <div class="d-flex">
-                        <a
-                          :href="`/#/app/interaction/${data.item.id}${isTestnet ? '?network=testnet' : ''}`"
-                        >
+                        <a :href="`/#/app/interaction/${data.item.id}${isTestnet ? '?network=testnet' : ''}`">
                           {{ data.item.id | tx }}</a
                         >
                         <div
@@ -196,12 +194,12 @@
                     </template>
                   </b-table>
                 </TxList>
-                <div v-if="!interactionsLoaded">
+                <div v-if="!transactionsLoaded">
                   <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
                 </div>
               </div>
             </div>
-            <div v-else class="interactions-wrapper">Contract has no interactions!</div>
+            <div v-else class="transactions-wrapper">Contract has no transactions!</div>
           </div>
           <!-- <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
@@ -233,11 +231,11 @@ export default {
 
   data() {
     return {
-      interactions: [],
+      transactions: [],
       correct: false,
       total: null,
       paging: null,
-      noInteractionsDetected: false,
+      noTransactionsDetected: false,
       selected: null,
       epochs: [
         ['year', 31536000],
@@ -272,17 +270,24 @@ export default {
       this.correct = true;
     }
 
-    this.getCreator();
+    this.getTransactions();
   },
   methods: {
-    async getCreator() {
+    async getTransactions() {
+      this.transactions = [];
+      this.total = null;
+
       const response = await fetch(`${this.gatewayUrl}/gateway/creator?id=${this.contractId}`);
       if (!response.ok) {
         this.correct = false;
       }
+
       const data = await response.json();
+
+      console.log(data.transactions);
+      this.total = data.total;
       for (let t of data.transactions) {
-        this.interactions.push({
+        this.transactions.push({
           id: t.id,
           bundlerId: t.bundler_id,
           blockHeight: t.block_height,
@@ -330,13 +335,13 @@ export default {
       this.$set(record, '_showDetails', !record._showDetails);
     },
     async onPageClicked(pageNumber) {
-    //   this.currentPage = pageNumber;
-    //   if (this.selected == 'all') {
-    //     this.getInteractions(this.currentPage);
-    //   } else {
-    //     this.getInteractions(this.currentPage, this.selected);
-    //   }
-    console.log('onPageClicked')
+      //   this.currentPage = pageNumber;
+      //   if (this.selected == 'all') {
+      //     this.getTransactions(this.currentPage);
+      //   } else {
+      //     this.getTransactions(this.currentPage, this.selected);
+      //   }
+      console.log('onPageClicked');
     },
     onCopy() {
       this.copiedDisplay = true;
@@ -356,12 +361,12 @@ export default {
       }
     },
     refreshData() {
-    //   this.currentPage = 1;
-    //   this.$router.push({ query: {} });
-    //   this.selected == 'all'
-    //     ? this.getInteractions(this.currentPage)
-    //     : this.getInteractions(this.currentPage, this.selected);
-    window.reload;
+      //   this.currentPage = 1;
+      //   this.$router.push({ query: {} });
+      //   this.selected == 'all'
+      //     ? this.getTransactions(this.currentPage)
+      //     : this.getTransactions(this.currentPage, this.selected);
+      window.reload;
     },
   },
 
@@ -370,8 +375,8 @@ export default {
     contractId() {
       return this.$route.params.id;
     },
-    interactionsLoaded() {
-      return this.interactions !== null && this.total !== null;
+    transactionsLoaded() {
+      return this.transactions !== null && this.total !== null;
     },
     pages() {
       return this.paging ? this.paging : null;
@@ -379,3 +384,24 @@ export default {
   },
 };
 </script>
+
+<style src="../Contract/Contract.scss" lang="scss" scoped></style>
+<style lang="scss" scoped>
+.contract-tabs > .tabs > div:first-of-type {
+  height: 44px;
+}
+
+.table thead th:nth-of-type(2),
+.table thead th:nth-of-type(5),
+.table thead th:nth-of-type(6) {
+  width: 10%;
+}
+
+#confirmation-status-group {
+  .custom-control-input:checked ~ .custom-control-label:after {
+    background-color: var(--warp-blue-color) !important;
+    border-color: var(--warp-blue-color) !important;
+    border-radius: 50%;
+  }
+}
+</style>
