@@ -2,7 +2,7 @@ import Transaction from 'arweave/node/lib/transaction';
 
 
 export function interactionTagsParser(tx) {
-    const contractTx = new Transaction(tx.contractTx);
+    const contractTx = new Transaction(tx);
     let tags = [];
     contractTx.get('tags').forEach((tag) => {
       let key = tag.get('name', { decode: true, string: true });

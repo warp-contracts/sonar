@@ -382,7 +382,7 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
-              <ContractTags v-if="this.tags.length > 0" :contractTags="tags"></ContractTags>
+              <ContractTags :contractTags="tags"></ContractTags>
             </div>
           </div>
         </div>
@@ -601,12 +601,10 @@ export default {
       const response = await fetch(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`);
       if (!response.ok) {
         this.correct = false;
-        const error = `An error has occured: ${response.status}`;
-        throw new Error(error);
       }
       const data = await response.json();
 
-      this.tags = await interactionTagsParser(data);
+      this.tags = await interactionTagsParser(data.contractTx);
       this.owner = data.owner;
       this.pst_ticker = data.pstTicker;
       this.pst_name = data.pstName;
