@@ -1,9 +1,35 @@
 <template>
-  <div class="contract-wrapper">
-    <div v-if="!correct">
-      <Error />
-    </div>
-    <div v-else>
+  <div>
+    <div v-if="correct" class="contract-wrapper">
+      <div class="d-block d-md-flex pl-3">
+        <div class="contract-header-wrapper">
+          <div class="flaticon-file-signature m-0-auto"></div>
+          <div class="align-self-end contract-header">
+            <span>Creator</span>
+          </div>
+        </div>
+        <div class="align-self-end pl-md-3 pl-5 contract-id d-flex">
+          <span class="d-none d-sm-block">{{ contractId }}</span
+          ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
+          <div
+            class="flaticon-copy-to-clipboard"
+            v-clipboard="contractId"
+            v-clipboard:success="onCopy"
+            title="Copy to clipboard"
+          ></div>
+          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
+        </div>
+      </div>
+      <div class="contract-details-wrapper pb-5">
+        <div class="d-block d-md-flex">
+          <div class="col-6 p-0">
+            <div class="cell">
+              <div class="cell-header">Total transactions</div>
+              <div>{{ total }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
           <b-nav-item
@@ -88,7 +114,16 @@
 
                     <template #cell(id)="data">
                       <div class="d-flex">
-                        <a :href="`/#/app/interaction/${data.item.id}${isTestnet ? '?network=testnet' : ''}`">
+                        <a
+                          v-if="data.item.transactionType == 'contract'"
+                          :href="`/#/app/contract/${data.item.id}${isTestnet ? '?network=testnet' : ''}`"
+                        >
+                          {{ data.item.id | tx }}</a
+                        >
+                        <a
+                          v-if="data.item.transactionType == 'interaction'"
+                          :href="`/#/app/interaction/${data.item.id}${isTestnet ? '?network=testnet' : ''}`"
+                        >
                           {{ data.item.id | tx }}</a
                         >
                         <div
@@ -217,6 +252,9 @@
           </div> -->
         </div>
       </div>
+    </div>
+    <div v-if="!correct">
+      <Error />
     </div>
   </div>
 </template>
@@ -372,7 +410,7 @@ export default {
       //   this.selected == 'all'
       //     ? this.getTransactions(this.currentPage)
       //     : this.getTransactions(this.currentPage, this.selected);
-      window.reload;
+      this.getTransactions();
     },
   },
 
