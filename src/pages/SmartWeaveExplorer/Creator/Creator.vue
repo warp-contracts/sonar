@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="contract-wrapper">
     <div v-if="!correct">
       <Error />
     </div>
@@ -81,6 +81,10 @@
                     :busy="!transactionsLoaded"
                   >
                     <template #table-busy></template>
+
+                    <template #cell(type)="data">
+                      <div>{{ data.item.transactionType }}</div></template
+                    >
 
                     <template #cell(id)="data">
                       <div class="d-flex">
@@ -246,6 +250,7 @@ export default {
         ['second', 1],
       ],
       fields: [
+        'type',
         'id',
         'bundlerId',
         // {
@@ -292,7 +297,7 @@ export default {
           bundlerId: t.bundler_id,
           blockHeight: t.block_height,
           timestamp: t.block_timestamp,
-          interactionType: t.type,
+          transactionType: t.type,
           age: this.timeAgo(dayjs.unix(t.block_timestamp)),
         });
       }
