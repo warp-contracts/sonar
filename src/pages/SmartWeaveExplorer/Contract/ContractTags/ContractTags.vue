@@ -1,10 +1,10 @@
 <template>
   <div class="tags-container">
-    <div v-if="contractTags.length > 0" class="mt-6">
+    <div v-if="contractTags?.length > 0" class="mt-6">
       <p class="json-header">Contract tags:</p>
     </div>
     <json-viewer
-      v-if="contractTags.length > 0"
+      v-if="contractTags?.length > 0"
       :value="contractTags"
       :expand-depth="2"
       copyable

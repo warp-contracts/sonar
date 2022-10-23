@@ -604,7 +604,12 @@ export default {
       }
       const data = await response.json();
 
-      this.tags = await interactionTagsParser(data.contractTx);
+      if (data.contractTx == null) {
+        this.tags = null;
+      } else {
+        this.tags = await interactionTagsParser(data.contractTx);
+      }
+
       this.owner = data.owner;
       this.pst_ticker = data.pstTicker;
       this.pst_name = data.pstName;
