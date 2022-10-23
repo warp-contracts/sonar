@@ -25,7 +25,10 @@
           <div class="col-6 p-0">
             <div class="cell">
               <div class="cell-header">Total transactions</div>
-              <div>{{ total }}</div>
+              <div v-if="total">{{ total }}</div>
+              <div v-else class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -43,7 +46,7 @@
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noTransactionsDetected">
-              <div class="d-block d-sm-flex justify-content-between">
+              <div class="d-block d-sm-flex justify-content-between mt-3 mb-4">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
                   <!-- <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p> -->
                   <!-- <b-form-radio-group
@@ -89,8 +92,13 @@
                   </b-form-radio-group> -->
                 </b-col>
 
-                <b-button class="btn btn-refresh rounded-pill mb-3 mb-sm-0" @click="refreshData"
-                  >Refresh data
+                <b-button
+                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
+                  @click="refreshData"
+                  ><p class="m-0" v-if="transactionsLoaded">Refresh data</p>
+                  <div v-else>
+                    <div class="dot-flashing"></div>
+                  </div>
                 </b-button>
               </div>
               <div>
@@ -433,6 +441,11 @@ export default {
 <style lang="scss" scoped>
 .contract-tabs > .tabs > div:first-of-type {
   height: 44px;
+}
+
+.btn-refresh {
+  min-width: 163px;
+  min-height: 42px;
 }
 
 .table thead th:nth-of-type(2),
