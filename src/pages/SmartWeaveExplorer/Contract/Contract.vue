@@ -604,7 +604,7 @@ export default {
       }
       const data = await response.json();
 
-      if (data.contractTx == null) {
+      if (data.contractTx == null || data.contractTx.tags == null) {
         this.tags = null;
       } else {
         this.tags = await interactionTagsParser(data.contractTx);
