@@ -30,6 +30,14 @@
                 <div class="dot-flashing"></div>
               </div>
             </div>
+            <div class="cell">
+              <div class="cell-header">Viewblock link</div>
+              <span class="d-none d-sm-block"
+                ><a target="_blank" :href="`https://v2.viewblock.io/arweave/address/${contractId}${isTestnet ? '?network=testnet' : ''}`">{{
+                  contractId
+                }}</a></span
+              ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -272,6 +280,7 @@ import { mapState } from 'vuex';
 import Error from '@/components/Error/Error';
 import dayjs from 'dayjs';
 import TxList from '@/components/TxList/TxList';
+// import constants from '@/constants';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -287,6 +296,7 @@ export default {
       paging: null,
       noTransactionsDetected: false,
       selected: null,
+      copiedDisplay: false,
       epochs: [
         ['year', 31536000],
         ['month', 2592000],
@@ -335,7 +345,6 @@ export default {
 
       const data = await response.json();
 
-      console.log(data.transactions);
       this.total = data.total;
       for (let t of data.transactions) {
         this.transactions.push({

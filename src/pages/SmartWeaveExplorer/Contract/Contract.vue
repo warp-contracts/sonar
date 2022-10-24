@@ -24,10 +24,11 @@
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
             <div class="cell">
-              <div class="cell-header">Owner</div>
+              <div class="cell-header">Creator</div>
               <div class="d-flex">
                 <div v-if="owner" class="align-self-end d-flex">
-                  <span class="d-none d-sm-block">{{ owner }}</span
+                  <span class="d-none d-sm-block"
+                    ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{ owner }}</a></span
                   ><span class="d-block d-sm-none">{{ owner | tx }}</span>
                   <div
                     class="flaticon-copy-to-clipboard"
