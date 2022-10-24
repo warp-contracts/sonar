@@ -173,6 +173,13 @@
           >
             State
           </b-nav-item>
+          <b-nav-item
+            :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
+            :active="$route.hash === '#tags'"
+            @click="onInput($route.hash)"
+          >
+            Tags
+          </b-nav-item>
         </b-nav>
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
@@ -373,6 +380,11 @@
               <ContractState v-if="initState" :contractId="contractId" :initState="initState"></ContractState>
             </div>
           </div>
+          <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
+            <div>
+              <ContractTags :contractTags="tags"></ContractTags>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -394,6 +406,8 @@ import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
+import ContractTags from './ContractTags/ContractTags.vue';
+import { interactionTagsParser } from '@/utils';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -456,6 +470,7 @@ export default {
       sourceTxId: null,
       loadedContractData: false,
       contractData: null,
+      tags: [],
     };
   },
   watch: {
@@ -483,6 +498,7 @@ export default {
     Error,
     ContractState,
     ContractCode,
+    ContractTags,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
@@ -580,22 +596,29 @@ export default {
         this.getInteractions(this.currentPage, this.selected);
       }
     },
+
     async getContract() {
-      axios
-        .get(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`)
-        .then((fetchedContract) => {
-          this.owner = fetchedContract.data.owner;
-          this.pst_ticker = fetchedContract.data.pstTicker;
-          this.pst_name = fetchedContract.data.pstName;
-          this.wasmLang = fetchedContract.data.srcWasmLang;
-          this.initState = fetchedContract.data.initState;
-          this.loadedContract = true;
-          this.sourceTxId = fetchedContract.data.srcTxId;
-        })
-        .catch((e) => {
-          this.correct = false;
-        });
+      const response = await fetch(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`);
+      if (!response.ok) {
+        this.correct = false;
+      }
+      const data = await response.json();
+
+      if (data.contractTx == null || data.contractTx.tags == null) {
+        this.tags = null;
+      } else {
+        this.tags = await interactionTagsParser(data.contractTx);
+      }
+
+      this.owner = data.owner;
+      this.pst_ticker = data.pstTicker;
+      this.pst_name = data.pstName;
+      this.wasmLang = data.srcWasmLang;
+      this.initState = data.initState;
+      this.loadedContract = true;
+      this.sourceTxId = data.srcTxId;
     },
+
     async getInteractions(page, confirmationStatus) {
       if (this.axiosSource) {
         this.axiosSource.cancel('Cancel previous request');
