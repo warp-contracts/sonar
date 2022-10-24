@@ -317,10 +317,10 @@
                       {{ data.item.blockHeight }}
                     </template>
 
-                    <template #cell(owner)="data">
+                    <template #cell(creator)="data">
                       <a
                         v-if="!isTestnet"
-                        :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`"
+                        :href="`#/app/creator/${data.item.owner}`"
                         target="_blank"
                       >
                         {{ data.item.owner | tx }}</a
@@ -439,7 +439,7 @@ export default {
         'block_id',
         'block_height',
         'age',
-        'owner',
+        'creator',
         'function',
         'status',
         { key: 'actions', label: '' },
