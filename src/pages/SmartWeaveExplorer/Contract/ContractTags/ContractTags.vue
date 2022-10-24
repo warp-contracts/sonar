@@ -11,7 +11,7 @@
       sort
       theme="json-theme"
     ></json-viewer>
-    <p v-else>Tags are unavailable for this contract</p>
+    <p class="notags-info" v-else>Tags are unavailable for this contract</p>
   </div>
 </template>
 
@@ -26,3 +26,11 @@ export default {
   props: { contractTags: Array },
 };
 </script>
+
+<style lang="scss" scoped>
+
+.notags-info {
+  padding-top: 2rem;
+}
+
+</style>
