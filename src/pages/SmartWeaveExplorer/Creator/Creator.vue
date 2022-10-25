@@ -33,9 +33,11 @@
             <div class="cell">
               <div class="cell-header">Viewblock link</div>
               <span class="d-none d-sm-block"
-                ><a target="_blank" :href="`https://v2.viewblock.io/arweave/address/${contractId}${isTestnet ? '?network=testnet' : ''}`">{{
-                  contractId
-                }}</a></span
+                ><a
+                  target="_blank"
+                  :href="`https://v2.viewblock.io/arweave/address/${contractId}${isTestnet ? '?network=testnet' : ''}`"
+                  >{{ contractId }}</a
+                ></span
               ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
             </div>
           </div>
@@ -55,50 +57,7 @@
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noTransactionsDetected">
               <div class="d-block d-sm-flex justify-content-between mt-3 mb-4">
-                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                  <!-- <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p> -->
-                  <!-- <b-form-radio-group
-                    id="confirmation-status-group"
-                    name="confirmation-status-group"
-                    @change="refreshData"
-                    v-model="selected"
-                    class="confirmation-status-group"
-                    v-if="!isTestnet"
-                  >
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="all">All</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show all contract transactions."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="confirmed">Confirmed</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show contract transactions which have been positively confirmed by at least three different nodes."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="corrupted">Corrupted</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show corruptetransactions which are not part of any block but are still returned by Arweave GQL endpoint."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="not_corrupted">Not corrupted </b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show both confirmed and not yet processed transactions."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                  </b-form-radio-group> -->
-                </b-col>
+                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0"> </b-col>
 
                 <b-button
                   class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
@@ -172,81 +131,9 @@
                       <span v-else>N/A</span>
                     </template>
 
-                    <!-- <template #cell(validity)="data">
-                      <div
-                        v-show="validity && validity[data.item.interactionId] == true"
-                        class="flaticon-check centered"
-                      />
-                      <div
-                        v-show="validity && validity[data.item.interactionId] == false"
-                        class="flaticon-cross centered"
-                      />
-                      <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
-                      <div v-show="!loadedValidity" class="dot-flashing centered"></div>
-                    </template> -->
-
-                    <!-- <template #cell(block_id)="data">
-                      <a
-                        :href="`${
-                          isTestnet
-                            ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
-                            : `https://v2.viewblock.io/arweave/block/${data.item.blockId}`
-                        }`"
-                        target="_blank"
-                      >
-                        {{ data.item.blockId | tx }}
-                      </a>
-                    </template> -->
-
                     <template #cell(block_height)="data">
                       {{ data.item.blockHeight }}
                     </template>
-
-                    <!-- <template #cell(owner)="data">
-                      <a
-                        v-if="!isTestnet"
-                        :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`"
-                        target="_blank"
-                      >
-                        {{ data.item.owner | tx }}</a
-                      >
-                      <span v-else> {{ data.item.owner | tx }}</span>
-                    </template> -->
-
-                    <!-- <template #cell(function)="data">
-                      {{ data.item.function }}
-                    </template> -->
-
-                    <!-- <template #cell(status)="data">
-                      {{ data.item.status }}
-                    </template> -->
-
-                    <!-- <template #cell(actions)="data">
-                      <div v-if="!data.item._showDetails" class="flaticon-chevron-down" />
-                      <div v-else class="flaticon-chevron-up" />
-                    </template> -->
-
-                    <!-- <template slot="row-details" slot-scope="data">
-                      <div>
-                        <p class="json-header">Contract Input:</p>
-                        <json-viewer
-                          :value="data.item.tags"
-                          :expand-depth="1"
-                          copyable
-                          sort
-                          theme="json-theme"
-                        ></json-viewer>
-                        <hr />
-                        <p class="json-header">Full transaction:</p>
-                        <json-viewer
-                          :value="data.item.interaction"
-                          :expand-depth="1"
-                          copyable
-                          sort
-                          theme="json-theme"
-                        ></json-viewer>
-                      </div>
-                    </template> -->
                   </b-table>
                 </TxList>
                 <div v-if="!transactionsLoaded">
@@ -256,16 +143,6 @@
             </div>
             <div v-else class="transactions-wrapper">Contract has no transactions!</div>
           </div>
-          <!-- <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
-            <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedContract" :sourceId="sourceTxId" :wasm="!!wasmLang"></ContractCode>
-            </div>
-          </div>
-          <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
-            <div>
-              <ContractState v-if="initState" :contractId="contractId" :initState="initState"></ContractState>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
@@ -290,13 +167,16 @@ export default {
 
   data() {
     return {
+      visitedTabs: [],
       transactions: [],
       correct: false,
       total: null,
       paging: null,
       noTransactionsDetected: false,
-      selected: null,
+      selected: 'all',
       copiedDisplay: false,
+      currentPage: 1,
+      limit: 15,
       epochs: [
         ['year', 31536000],
         ['month', 2592000],
@@ -305,19 +185,7 @@ export default {
         ['minute', 60],
         ['second', 1],
       ],
-      fields: [
-        'type',
-        'id',
-        'bundlerId',
-        // {
-        //   key: 'validity',
-        //   label: 'valid',
-        //   thClass: 'text-center',
-        // },
-        'block_height',
-        'age',
-        { key: 'actions', label: '' },
-      ],
+      fields: ['type', 'id', 'bundlerId', 'block_height', 'age', { key: 'actions', label: '' }],
     };
   },
   components: {
@@ -331,21 +199,29 @@ export default {
       this.correct = true;
     }
 
-    this.getTransactions();
+    this.getTransactions(this.$route.query.page ? this.$route.query.page : this.currentPage);
+    this.visitedTabs.push(this.$route.hash);
   },
   methods: {
-    async getTransactions() {
+    async getTransactions(page) {
       this.transactions = [];
       this.total = null;
 
-      const response = await fetch(`${this.gatewayUrl}/gateway/creator?id=${this.contractId}`);
+      const response = await fetch(
+        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}`
+      );
       if (!response.ok) {
         this.correct = false;
       }
 
       const data = await response.json();
-
       this.total = data.total;
+      this.paging = data.paging;
+      if (this.selected == 'all') {
+            this.total = data.paging.total;
+          } else {
+            this.total = 0;
+          }
       for (let t of data.transactions) {
         this.transactions.push({
           id: t.id,
@@ -357,6 +233,7 @@ export default {
         });
       }
     },
+    
     convertTZ(date, tzString) {
       return new Date(
         (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
@@ -396,13 +273,12 @@ export default {
       this.$set(record, '_showDetails', !record._showDetails);
     },
     async onPageClicked(pageNumber) {
-      //   this.currentPage = pageNumber;
-      //   if (this.selected == 'all') {
-      //     this.getTransactions(this.currentPage);
-      //   } else {
-      //     this.getTransactions(this.currentPage, this.selected);
-      //   }
-      console.log('onPageClicked');
+      this.currentPage = pageNumber;
+      if (this.selected == 'all') {
+        this.getTransactions(this.currentPage);
+      } else {
+        this.getTransactions(this.currentPage, this.selected);
+      }
     },
     onCopy() {
       this.copiedDisplay = true;
@@ -422,12 +298,11 @@ export default {
       }
     },
     refreshData() {
-      //   this.currentPage = 1;
-      //   this.$router.push({ query: {} });
-      //   this.selected == 'all'
-      //     ? this.getTransactions(this.currentPage)
-      //     : this.getTransactions(this.currentPage, this.selected);
-      this.getTransactions();
+      this.currentPage = 1;
+      this.$router.push({ query: {} });
+      this.selected == 'all'
+        ? this.getTransactions(this.currentPage)
+        : this.getTransactions(this.currentPage, this.selected);
     },
   },
 
