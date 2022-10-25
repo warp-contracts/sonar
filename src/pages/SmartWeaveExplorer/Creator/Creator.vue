@@ -31,14 +31,13 @@
               </div>
             </div>
             <div class="cell">
-              <div class="cell-header">Viewblock link</div>
-              <span class="d-none d-sm-block"
-                ><a
+              <div class="cell-header">
+                <a
                   target="_blank"
                   :href="`https://v2.viewblock.io/arweave/address/${contractId}${isTestnet ? '?network=testnet' : ''}`"
-                  >{{ contractId }}</a
-                ></span
-              ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
+                  >Viewblock link</a
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -84,7 +83,23 @@
                     <template #table-busy></template>
 
                     <template #cell(type)="data">
-                      <div>{{ data.item.transactionType }}</div></template
+                      <div class="d-flex align-items-center">
+                        <img
+                          v-if="data.item.transactionType == 'interaction'"
+                          class="type-icon"
+                          src="@/assets/icons/interaction.svg"
+                          alt=""
+                          srcset=""
+                        />
+                        <img
+                          v-if="data.item.transactionType == 'contract'"
+                          class="type-icon"
+                          src="@/assets/icons/contract-ico.svg"
+                          alt=""
+                          srcset=""
+                        />
+                        <p class="mb-0 ml-2">{{ data.item.transactionType.toUpperCase() }}</p>
+                      </div></template
                     >
 
                     <template #cell(id)="data">
@@ -157,7 +172,6 @@ import { mapState } from 'vuex';
 import Error from '@/components/Error/Error';
 import dayjs from 'dayjs';
 import TxList from '@/components/TxList/TxList';
-// import constants from '@/constants';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -218,10 +232,10 @@ export default {
       this.total = data.total;
       this.paging = data.paging;
       if (this.selected == 'all') {
-            this.total = data.paging.total;
-          } else {
-            this.total = 0;
-          }
+        this.total = data.paging.total;
+      } else {
+        this.total = 0;
+      }
       for (let t of data.transactions) {
         this.transactions.push({
           id: t.id,
@@ -233,7 +247,7 @@ export default {
         });
       }
     },
-    
+
     convertTZ(date, tzString) {
       return new Date(
         (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
@@ -325,6 +339,11 @@ export default {
 <style lang="scss" scoped>
 .contract-tabs > .tabs > div:first-of-type {
   height: 44px;
+}
+
+.type-icon {
+  filter: invert(44%) sepia(59%) saturate(865%) hue-rotate(193deg) brightness(101%) contrast(89%);
+  width: 24px;
 }
 
 .btn-refresh {
