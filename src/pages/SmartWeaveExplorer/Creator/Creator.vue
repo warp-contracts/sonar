@@ -55,7 +55,7 @@
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noTransactionsDetected">
-              <div class="d-block d-sm-flex justify-content-between mt-3 mb-4">
+              <div class="d-block d-sm-flex justify-content-between mb-4">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0"> </b-col>
 
                 <b-button
@@ -343,7 +343,8 @@ export default {
 
 .type-icon {
   filter: invert(44%) sepia(59%) saturate(865%) hue-rotate(193deg) brightness(101%) contrast(89%);
-  width: 24px;
+  width: 18px;
+  opacity: 0.8;
 }
 
 .btn-refresh {

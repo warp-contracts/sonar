@@ -231,8 +231,13 @@
                   </b-form-radio-group>
                 </b-col>
 
-                <b-button class="btn btn-refresh rounded-pill mb-3 mb-sm-0" @click="refreshData"
-                  >Refresh data
+                <b-button
+                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
+                  @click="refreshData"
+                  ><p class="m-0" v-if="interactionsLoaded">Refresh data</p>
+                  <div v-else>
+                    <div class="dot-flashing"></div>
+                  </div>
                 </b-button>
               </div>
               <div>
@@ -318,11 +323,7 @@
                     </template>
 
                     <template #cell(creator)="data">
-                      <a
-                        v-if="!isTestnet"
-                        :href="`#/app/creator/${data.item.owner}`"
-                        target="_blank"
-                      >
+                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" target="_blank">
                         {{ data.item.owner | tx }}</a
                       >
                       <span v-else> {{ data.item.owner | tx }}</span>
@@ -714,6 +715,11 @@ export default {
 .table thead th:nth-of-type(5),
 .table thead th:nth-of-type(6) {
   width: 10%;
+}
+
+.btn-refresh {
+  min-width: 163px;
+  min-height: 42px;
 }
 
 #confirmation-status-group {
