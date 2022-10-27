@@ -103,7 +103,7 @@
                 :href="
                   `${
                     interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interactionId}/status`
                       : `https://node1.bundlr.network`
                   }`
                 "
