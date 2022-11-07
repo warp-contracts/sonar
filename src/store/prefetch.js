@@ -18,11 +18,6 @@ export default {
         state.arweave = arweave;
       }
     },
-    setArweaveTest(state, arweaveTest) {
-      if (!state.arweaveTest) {
-        state.arweaveTest = arweaveTest;
-      }
-    },
     setWarp(state, client) {
       state.warp = client;
     },
@@ -35,9 +30,11 @@ export default {
   },
   getters: {},
   actions: {
-    loadGateway({ commit }, payload) {
-      commit('setGatewayUrl', payload);
-      commit('setIsTestnet', payload == constants.gatewayTestUrl);
+    setGatewayUrl({ commit }) {
+      commit('setGatewayUrl', constants.gatewayProdUrl);
+    },
+    setIsTestnet({ commit }, payload) {
+      commit('setIsTestnet', payload == 'testnet');
     },
     async prefetchAll({ dispatch }) {
       dispatch('initArweave').then(() => {
@@ -52,15 +49,6 @@ export default {
       });
 
       commit('setArweave', arweaveObject);
-    },
-    initArweaveTest({ commit }) {
-      const arweaveObject = Arweave.init({
-        host: 'testnet.redstone.tools',
-        protocol: 'https',
-        port: 443,
-      });
-
-      commit('setArweaveTest', arweaveObject);
     },
     warp({ commit, state }) {
       const arweave = state.arweave;

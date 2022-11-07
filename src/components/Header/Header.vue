@@ -109,7 +109,7 @@ export default {
     };
   },
   async mounted() {
-    this.switchNetworkText = this.gatewayUrl == constants.gatewayProdUrl ? 'Switch to Testnet' : 'Switch to Mainnet';
+    this.switchNetworkText = this.isTestnet ? 'Switch to Mainnet' : 'Switch to Testnet';
     await this.getNetworkHeight();
   },
   computed: {
@@ -119,7 +119,7 @@ export default {
       return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
     logoUrl() {
-      return this.gatewayUrl == constants.gatewayProdUrl ? '/' : '/#/app/contracts?network=testnet';
+      return this.isTestnet ? '/#/app/contracts?network=testnet' : '/';
     },
     findMoreText() {
       return screen.width >= 768 ? 'Find out more' : 'More';
@@ -153,31 +153,19 @@ export default {
     ...mapActions('layout', ['updateSearchTerm']),
     ...mapActions('prefetch', ['loadGateway']),
     async toggleGateway() {
-      if (this.gatewayUrl == constants.gatewayProdUrl) {
-        this.loadGateway(constants.gatewayTestUrl);
+      if (!this.isTestnet) {
+        this.loadGateway('testnet');
         this.switchNetworkText = 'Switch to Mainnet';
         this.$router.push('/app/contracts?network=testnet');
-        await this.getNetworkHeight();
       } else {
-        this.loadGateway(constants.gatewayProdUrl);
+        this.loadGateway('mainnet');
         this.switchNetworkText = 'Switch to Testnet';
         this.$router.push('/app/contracts');
-        await this.getNetworkHeight();
       }
     },
     async getNetworkHeight() {
-      if (this.isTestnet) {
-        fetch(constants.testnetUrl)
-          .then((res) => {
-            return res.json();
-          })
-          .then((data) => {
-            this.networkHeight = data.height;
-          });
-      } else {
-        const info = await this.arweave.network.getInfo();
-        this.networkHeight = info.height;
-      }
+      const info = await this.arweave.network.getInfo();
+      this.networkHeight = info.height;
     },
     goToContract(data) {
       if (data.type == 'contract' || data.type == 'pst') {
