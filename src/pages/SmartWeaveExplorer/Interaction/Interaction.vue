@@ -1,25 +1,9 @@
 <template>
   <div :key="interactionId">
     <div v-if="correct" class="contract-wrapper">
-      <div class="d-block d-sm-flex pl-2">
-        <div class="contract-header-wrapper">
-          <div class="flaticon-interaction"></div>
-          <div class="align-self-end contract-header">Interaction</div>
-        </div>
-        <div class="align-self-end pl-3 contract-id d-flex">
-          <span class="d-none d-sm-block">{{ interactionId }}</span
-          ><span class="d-block d-sm-none">{{ interactionId | tx }}</span>
-          <div
-            class="flaticon-copy-to-clipboard"
-            v-clipboard="interactionId"
-            v-clipboard:success="onCopy"
-            title="Copy to clipboard"
-          ></div>
-          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
-        </div>
-      </div>
+     <BaseCardHeader :id="interactionId" :cardTitle="'Interaction'"></BaseCardHeader>
       <div class="row">
-        <div v-if="loaded" style="marginTop: 50px" class="pl-3 col-lg-7 col-12">
+        <div v-if="loaded" style="margin-top: 50px" class="pl-3 col-lg-7 col-12">
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
@@ -36,7 +20,7 @@
               class="clipboard-success"
               v-bind:class="{
                 hidden: !copiedContractIdDisplay,
-                visible: copiedContractIdDisplay
+                visible: copiedContractIdDisplay,
               }"
             >
               Copied
@@ -61,24 +45,20 @@
             <div>Bundler id</div>
             <div v-if="interaction.bundlerTxId">
               <a
-                :href="
-                  `${
-                    daysAgo(interaction.timestamp) > 1
-                      ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
-                      : `https://arweave.net/${interaction.bundlerTxId}`
-                  }`
-                "
+                :href="`${
+                  daysAgo(interaction.timestamp) > 1
+                    ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                    : `https://arweave.net/${interaction.bundlerTxId}`
+                }`"
                 target="_blank"
                 class="d-none d-sm-block"
                 >{{ interaction.bundlerTxId }}</a
               ><a
-                :href="
-                  `${
-                    daysAgo(interaction.timestamp) > 1
-                      ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
-                      : `https://arweave.net/${interaction.bundlerTxId}`
-                  }`
-                "
+                :href="`${
+                  daysAgo(interaction.timestamp) > 1
+                    ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                    : `https://arweave.net/${interaction.bundlerTxId}`
+                }`"
                 target="_blank"
                 class="d-block d-sm-none"
                 >{{ interaction.bundlerTxId | tx }}</a
@@ -100,39 +80,33 @@
             <div>Confirming peers</div>
             <div v-if="interaction.confirmingPeer && interaction.confirmingPeer[0] != '-'">
               <a
-                :href="
-                  `${
-                    interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
-                      : `https://node1.bundlr.network`
-                  }`
-                "
+                :href="`${
+                  interaction.source && interaction.source == 'arweave'
+                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                    : `https://node1.bundlr.network`
+                }`"
                 target="_blank"
                 class="mr-1"
               >
                 {{ interaction.confirmingPeer[0] }}</a
               >
               <a
-                :href="
-                  `${
-                    interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
-                      : `https://node1.bundlr.network`
-                  }`
-                "
+                :href="`${
+                  interaction.source && interaction.source == 'arweave'
+                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                    : `https://node1.bundlr.network`
+                }`"
                 target="_blank"
                 class="mr-1"
               >
                 {{ interaction.confirmingPeer[1] }}</a
               >
               <a
-                :href="
-                  `${
-                    interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
-                      : `https://node1.bundlr.network`
-                  }`
-                "
+                :href="`${
+                  interaction.source && interaction.source == 'arweave'
+                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                    : `https://node1.bundlr.network`
+                }`"
                 target="_blank"
                 class="mr-1"
               >
@@ -170,13 +144,11 @@
           <div class="interaction-item">
             <div>Block id</div>
             <a
-              :href="
-                `${
-                  isTestnet
-                    ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
-                    : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
-                }`
-              "
+              :href="`${
+                isTestnet
+                  ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
+                  : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
+              }`"
               target="_blank"
             >
               <span class="d-none d-sm-block">{{ interaction?.blockId }}</span
@@ -232,6 +204,7 @@ import utc from 'dayjs/plugin/utc';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { mapState } from 'vuex';
 import { TagsParser } from 'warp-contracts';
+import BaseCardHeader from '../../../components/BaseCard/BaseCardHeader.vue';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
@@ -249,7 +222,7 @@ export default {
         ['day', 86400],
         ['hour', 3600],
         ['minute', 60],
-        ['second', 1]
+        ['second', 1],
       ],
       interactions: [],
       currentPage: 1,
@@ -259,14 +232,13 @@ export default {
       corrupted: 0,
       limit: 15,
       selected: 'all',
-      copiedDisplay: false,
       copiedDisplayOwner: false,
       copiedContractIdDisplay: false,
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
       usdPrice: 0,
-      qty: 0
+      qty: 0,
     };
   },
 
@@ -274,11 +246,11 @@ export default {
     await this.loadInteractionData();
   },
   watch: {
-    interactionId: function() {
+    interactionId: function () {
       this.loadInteractionData();
-    }
+    },
   },
-  components: { JsonViewer, Error },
+  components: { JsonViewer, Error, BaseCardHeader },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     interactionId() {
@@ -293,7 +265,7 @@ export default {
         this.total &&
         this.interactions.length == (this.paging.items > this.limit ? this.limit : this.paging.items)
       );
-    }
+    },
   },
 
   methods: {
@@ -320,7 +292,7 @@ export default {
         if (interval >= 1) {
           return {
             interval: interval,
-            epoch: name
+            epoch: name,
           };
         }
       }
@@ -339,10 +311,7 @@ export default {
 
       return daysDifference;
     },
-    onCopy() {
-      this.copiedDisplay = true;
-      setTimeout(() => (this.copiedDisplay = false), 2000);
-    },
+ 
     onCopyOwner() {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
@@ -356,12 +325,12 @@ export default {
       axios
         .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
-        .then(fetchedInteractions => {
+        .then((fetchedInteractions) => {
           const tagsParser = new TagsParser();
 
           const interactionInterface = {
             cursor: '',
-            node: fetchedInteractions.data.interaction
+            node: fetchedInteractions.data.interaction,
           };
           this.correct = true;
           this.correct = !_.isEmpty(fetchedInteractions.data);
@@ -373,7 +342,7 @@ export default {
             blockHeight: fetchedInteractions.data.blockheight,
             contractId: fetchedInteractions.data.contractid,
             func: fetchedInteractions.data.function,
-            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find(t => t.name == 'Input').value).qty,
+            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find((t) => t.name == 'Input').value).qty,
             confirmationStatus: fetchedInteractions.data.confirmationstatus,
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
@@ -395,18 +364,18 @@ export default {
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
                 ? 'N/A'
-                : fetchedInteractions.data.interaction.recipient
+                : fetchedInteractions.data.interaction.recipient,
           };
           this.loaded = true;
         })
-        .catch(e => {
+        .catch((e) => {
           this.correct = false;
         });
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
-    }
-  }
+    },
+  },
 };
 </script>
 

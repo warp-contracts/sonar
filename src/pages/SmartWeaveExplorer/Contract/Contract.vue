@@ -1,25 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
-      <div class="d-block d-md-flex pl-3">
-        <div class="contract-header-wrapper">
-          <div class="flaticon-file-signature m-0-auto"></div>
-          <div class="align-self-end contract-header">
-            <span>Contract</span>
-          </div>
-        </div>
-        <div class="align-self-end pl-md-3 pl-5 contract-id d-flex">
-          <span class="d-none d-sm-block">{{ contractId }}</span
-          ><span class="d-block d-sm-none">{{ contractId | tx }}</span>
-          <div
-            class="flaticon-copy-to-clipboard"
-            v-clipboard="contractId"
-            v-clipboard:success="onCopy"
-            title="Copy to clipboard"
-          ></div>
-          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
-        </div>
-      </div>
+      <BaseCardHeader :id="contractId" :cardTitle="'Contract'"></BaseCardHeader>
       <div class="contract-details-wrapper pb-5">
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
@@ -408,6 +390,7 @@ import { mapState } from 'vuex';
 import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
+import BaseCardHeader from '../../../components/BaseCard/BaseCardHeader.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -452,7 +435,6 @@ export default {
       corrupted: 0,
       limit: 15,
       selected: 'all',
-      copiedDisplay: false,
       copiedDisplayOwner: false,
       copiedDisplaySourceTxId: false,
       copiedDisplayInteraction: [],
@@ -499,7 +481,8 @@ export default {
     ContractState,
     ContractCode,
     ContractTags,
-  },
+    BaseCardHeader
+},
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     contractId() {
@@ -568,10 +551,7 @@ export default {
         ? this.getInteractions(this.currentPage)
         : this.getInteractions(this.currentPage, this.selected);
     },
-    onCopy() {
-      this.copiedDisplay = true;
-      setTimeout(() => (this.copiedDisplay = false), 2000);
-    },
+
     onCopyOwner() {
       this.copiedDisplayOwner = true;
       setTimeout(() => (this.copiedDisplayOwner = false), 2000);
