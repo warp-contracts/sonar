@@ -17,12 +17,14 @@
           </div>
           <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
           <div class="d-flex justify-content-center item-text">
-            <div>Total:&nbsp;</div>
-            <div v-if="totalInteractionsLoaded">
-              <div>{{ totalInteractions }}</div>
-            </div>
-            <div v-else class="align-self-center">
-              <div class="dot-flashing ml-4"></div>
+            <div class="d-flex flex-row justify-content-between">
+              <div>Total:&nbsp;</div>
+              <div class="total-field d-flex justify-content-center">
+                <div class="d-flex justify-content-center align-self-center" v-if="totalInteractionsLoaded">
+                  {{ totalInteractions }}
+                </div>
+                <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
+              </div>
             </div>
           </div>
         </div>
@@ -41,12 +43,14 @@
           </div>
           <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
           <div class="d-flex justify-content-center item-text">
-            <div>Total:&nbsp;</div>
-            <div v-if="totalContractsLoaded">
-              <div>{{ totalContracts }}</div>
-            </div>
-            <div v-else class="align-self-center">
-              <div class="dot-flashing ml-4"></div>
+            <div class="d-flex flex-row justify-content-between">
+              <div>Total:&nbsp;</div>
+              <div class="total-field d-flex justify-content-center">
+                <div class="d-flex justify-content-center align-self-center" v-if="totalContractsLoaded">
+                  {{ totalContracts }}
+                </div>
+                <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
+              </div>
             </div>
           </div>
         </div>
@@ -386,5 +390,10 @@ export default {
 <style src="./Contracts.scss" lang="scss" scoped>
 .table-icon-handler {
   width: 100%;
+}
+</style>
+<style lang="scss" scoped>
+.total-field {
+  min-width: 80px;
 }
 </style>
