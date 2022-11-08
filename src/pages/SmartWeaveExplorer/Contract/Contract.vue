@@ -5,41 +5,36 @@
       <div class="contract-details-wrapper pb-5">
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
-            <div class="cell">
-              <div class="cell-header">Owner</div>
-              <div class="d-flex">
-                <div v-if="owner" class="align-self-end d-flex">
-                  <span class="d-none d-sm-block">{{ owner }}</span
-                  ><span class="d-block d-sm-none">{{ owner | tx }}</span>
-                  <div
-                    class="flaticon-copy-to-clipboard"
-                    v-clipboard="owner"
-                    v-clipboard:success="onCopyOwner"
-                    title="Copy to clipboard"
-                  ></div>
-                  <p
-                    class="clipboard-success"
-                    v-bind:class="{
-                      hidden: !copiedDisplayOwner,
-                      visible: copiedDisplayOwner,
-                    }"
-                  >
-                    Copied
-                  </p>
+            <BaseCardCell :header="'Owner'">
+              <template>
+                <div class="d-flex">
+                  <div v-if="owner" class="align-self-end d-flex">
+                    <span class="d-none d-sm-block">{{ owner }}</span
+                    ><span class="d-block d-sm-none">{{ owner | tx }}</span>
+                    <div
+                      class="flaticon-copy-to-clipboard"
+                      v-clipboard="owner"
+                      v-clipboard:success="onCopyOwner"
+                      title="Copy to clipboard"
+                    ></div>
+                    <p
+                      class="clipboard-success"
+                      v-bind:class="{
+                        hidden: !copiedDisplayOwner,
+                        visible: copiedDisplayOwner,
+                      }"
+                    >
+                      Copied
+                    </p>
+                  </div>
+                  <div v-else class="pl-3 pt-3">
+                    <div class="dot-flashing"></div>
+                  </div>
                 </div>
-                <div v-else class="pl-3 pt-3">
-                  <div class="dot-flashing"></div>
-                </div>
-              </div>
-            </div>
-            <div class="cell">
-              <div class="cell-header">Total interactions</div>
-              <div>{{ total }}</div>
-            </div>
-            <div v-if="pst_ticker" class="cell">
-              <div class="cell-header">PST Ticker</div>
-              <div>{{ pst_ticker }}</div>
-            </div>
+              </template>
+            </BaseCardCell>
+            <BaseCardCell :header="'Total interactions'" :value="total"></BaseCardCell>
+            <BaseCardCell v-if="pst_ticker" :header="'PST Ticker'" :value="pst_ticker"></BaseCardCell>
             <div class="cell">
               <div class="d-flex">
                 <div class="cell-header pb-2">State evaluated</div>
@@ -79,14 +74,16 @@
             </div>
           </div>
           <div class="col-6 p-0">
-            <div class="cell">
+            <!-- <div class="cell">
               <div class="cell-header">Confirmed interactions</div>
               <div>{{ confirmed }}</div>
-            </div>
-            <div class="cell">
+            </div> -->
+            <BaseCardCell :header="'Confirmed interactions'" :value="confirmed"></BaseCardCell>
+            <!-- <div class="cell">
               <div class="cell-header">Corrupted interactions</div>
               <div>{{ corrupted }}</div>
-            </div>
+            </div> -->
+            <BaseCardCell :header="'Corrupted interactions'" :value="corrupted"></BaseCardCell>
             <div class="cell">
               <div class="cell-header">Source transaction id</div>
               <div class="d-flex">
@@ -121,14 +118,16 @@
                 </div>
               </div>
             </div>
-            <div v-if="pst_name" class="cell">
+            <!-- <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
-            </div>
-            <div v-if="wasmLang" class="cell">
+            </div> -->
+            <BaseCardCell v-if="pst_name" :header="'PST Name'" :value="pst_name"></BaseCardCell>
+            <!-- <div v-if="wasmLang" class="cell">
               <div class="cell-header">WASM</div>
               <div>{{ wasmLang }}</div>
-            </div>
+            </div> -->
+            <BaseCardCell v-if="wasmLang" :header="'WASM'" :value="wasmLang"></BaseCardCell>
           </div>
         </div>
       </div>
@@ -391,6 +390,7 @@ import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
 import BaseCardHeader from '../../../components/BaseCard/BaseCardHeader.vue';
+import BaseCardCell from '../../../components/BaseCard/BaseCardCell.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -481,8 +481,9 @@ export default {
     ContractState,
     ContractCode,
     ContractTags,
-    BaseCardHeader
-},
+    BaseCardHeader,
+    BaseCardCell,
+  },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     contractId() {
