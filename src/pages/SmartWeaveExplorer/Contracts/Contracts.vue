@@ -45,7 +45,7 @@
             <div v-if="totalContractsLoaded">
               <div>{{ totalContracts }}</div>
             </div>
-            <div v-else class="align-self-center" >
+            <div v-else class="align-self-center">
               <div class="dot-flashing ml-4"></div>
             </div>
           </div>
@@ -136,8 +136,9 @@
         >
           <template #table-busy> </template>
           <template #cell(contractId)="data" class="text-right">
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
               <router-link
+                style="min-width: 126px"
                 :to="{
                   path: '/app/contract/' + data.item.contractId,
                   query: isTestnet ? { network: 'testnet' } : '',
@@ -145,11 +146,13 @@
               >
                 {{ data.item.contractId | tx }}
               </router-link>
-              <div
-                class="flaticon-copy-to-clipboard small"
-                v-clipboard="data.item.contractId"
-                title="Copy to clipboard"
-              ></div>
+              <div class="table-icon-handler">
+                <div
+                  class="flaticon-copy-to-clipboard small"
+                  v-clipboard="data.item.contractId"
+                  title="Copy to clipboard"
+                ></div>
+              </div>
               <span v-if="data.item.pst_ticker" class="pl-3">{{ data.item.pst_ticker }}</span>
             </div>
           </template>
@@ -380,4 +383,8 @@ export default {
 };
 </script>
 
-<style src="./Contracts.scss" lang="scss" scoped></style>
+<style src="./Contracts.scss" lang="scss" scoped>
+.table-icon-handler {
+  width: 100%;
+}
+</style>
