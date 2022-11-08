@@ -90,6 +90,7 @@
             </div>
             <div v-else>N/A</div>
             <div
+              v-if="interaction.bundlerTxId"
               class="flaticon-copy-to-clipboard"
               v-clipboard="interaction?.bundlerTxId"
               v-clipboard:success="onCopyBundlerId"
@@ -219,7 +220,14 @@
           <div v-if="interaction">
             <p class="json-header">Interaction Tags</p>
             <json-viewer v-if="!loaded" :value="''" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
-            <json-viewer v-else :value="interaction.tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+            <json-viewer
+              v-else
+              :value="interaction.tags"
+              :expand-depth="2"
+              copyable
+              sort
+              theme="json-theme"
+            ></json-viewer>
           </div>
         </div>
       </div>
