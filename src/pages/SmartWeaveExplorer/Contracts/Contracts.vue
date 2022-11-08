@@ -21,8 +21,8 @@
             <div v-if="totalInteractionsLoaded">
               <div>{{ totalInteractions }}</div>
             </div>
-            <div v-else class="align-self-center" style="marginleft: 47px">
-              <div class="dot-flashing"></div>
+            <div v-else class="align-self-center">
+              <div class="dot-flashing ml-4"></div>
             </div>
           </div>
         </div>
@@ -45,8 +45,8 @@
             <div v-if="totalContractsLoaded">
               <div>{{ totalContracts }}</div>
             </div>
-            <div v-else class="align-self-center" style="marginleft: 47px">
-              <div class="dot-flashing"></div>
+            <div v-else class="align-self-center" >
+              <div class="dot-flashing ml-4"></div>
             </div>
           </div>
         </div>
