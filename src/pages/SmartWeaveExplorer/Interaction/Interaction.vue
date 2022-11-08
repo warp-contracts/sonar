@@ -218,7 +218,8 @@
         <div class="col-lg-5 col-12 pt-4">
           <div v-if="interaction">
             <p class="json-header">Interaction Tags</p>
-            <json-viewer :value="interaction.tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+            <json-viewer v-if="!loaded" :value="''" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+            <json-viewer v-else :value="interaction.tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
           </div>
         </div>
       </div>
