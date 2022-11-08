@@ -212,7 +212,7 @@
             <div>{{ interaction.interaction?.quantity.winston }}</div>
           </div>
         </div>
-        <div class="pl-3 col-lg-7 col-12" style="margintop: 50px" v-if="!loaded">
+        <div class="pl-3 col-lg-7 col-12 info-container" v-if="!loaded">
           <div v-for="n in 11" :key="n" class="preloader text-preloader tx-preloader"></div>
         </div>
         <div class="col-lg-5 col-12 pt-4">
