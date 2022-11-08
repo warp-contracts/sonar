@@ -3,7 +3,7 @@
     <div v-if="correct" class="contract-wrapper">
      <BaseCardHeader :id="interactionId" :cardTitle="'Interaction'"></BaseCardHeader>
       <div class="row">
-        <div v-if="loaded" style="margin-top: 50px" class="pl-3 col-lg-7 col-12">
+        <div v-if="loaded" class="pl-3 col-lg-7 col-12 info-container">
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
@@ -27,12 +27,8 @@
             </p>
           </div>
           <div class="interaction-item">
-            <div>Owner</div>
-            <a
-              v-if="!isTestnet"
-              :href="`https://v2.viewblock.io/arweave/address/${interaction.interaction?.owner.address}`"
-              target="_blank"
-            >
+            <div>Creator</div>
+            <a v-if="!isTestnet" :href="`#/app/creator/${interaction.interaction?.owner.address}`">
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>
@@ -40,6 +36,18 @@
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </div>
+            <div
+              class="flaticon-copy-to-clipboard"
+              v-clipboard="interaction.interaction?.owner.address"
+              v-clipboard:success="onCopyCreator"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success"
+              v-bind:class="{ hidden: !copiedDisplayCreator, visible: copiedDisplayCreator }"
+            >
+              Copied
+            </p>
           </div>
           <div class="interaction-item">
             <div>Bundler id</div>
@@ -65,6 +73,18 @@
               >
             </div>
             <div v-else>N/A</div>
+            <div
+              class="flaticon-copy-to-clipboard"
+              v-clipboard="interaction?.bundlerTxId"
+              v-clipboard:success="onCopyBundlerId"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success"
+              v-bind:class="{ hidden: !copiedDisplayBundlerId, visible: copiedDisplayBundlerId }"
+            >
+              Copied
+            </p>
           </div>
           <div class="interaction-item">
             <div>Sort key</div>
@@ -82,7 +102,7 @@
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
-                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                    ? `${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
                     : `https://node1.bundlr.network`
                 }`"
                 target="_blank"
@@ -93,7 +113,7 @@
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
-                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                    ? `http://${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
                     : `https://node1.bundlr.network`
                 }`"
                 target="_blank"
@@ -104,7 +124,7 @@
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
-                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
+                    ? `http://${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
                     : `https://node1.bundlr.network`
                 }`"
                 target="_blank"
@@ -234,6 +254,8 @@ export default {
       selected: 'all',
       copiedDisplayOwner: false,
       copiedContractIdDisplay: false,
+      copiedDisplayCreator: false,
+      copiedDisplayBundlerId: false,
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
@@ -320,6 +342,14 @@ export default {
       this.copiedContractIdDisplay = true;
       setTimeout(() => (this.copiedContractIdDisplay = false), 2000);
     },
+    onCopyCreator() {
+      this.copiedDisplayCreator = true;
+      setTimeout(() => (this.copiedDisplayCreator = false), 2000);
+    },
+    onCopyBundlerId() {
+      this.copiedDisplayBundlerId = true;
+      setTimeout(() => (this.copiedDisplayBundlerId = false), 2000);
+    },
     async getInteraction() {
       this.interactions = [];
       axios
@@ -394,5 +424,9 @@ export default {
 .vrf-container {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.info-container {
+  margin-top: 50px;
 }
 </style>
