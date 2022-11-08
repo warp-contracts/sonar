@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="row">
-        <div v-if="loaded" style="marginTop: 50px" class="pl-3 col-lg-7 col-12">
+        <div v-if="loaded" class="pl-3 col-lg-7 col-12 info-container">
           <div class="interaction-item">
             <div>Contract id</div>
             <a :href="`/#/app/contract/${interaction?.contractId}`">
@@ -36,19 +36,15 @@
               class="clipboard-success"
               v-bind:class="{
                 hidden: !copiedContractIdDisplay,
-                visible: copiedContractIdDisplay
+                visible: copiedContractIdDisplay,
               }"
             >
               Copied
             </p>
           </div>
           <div class="interaction-item">
-            <div>Owner</div>
-            <a
-              v-if="!isTestnet"
-              :href="`https://v2.viewblock.io/arweave/address/${interaction.interaction?.owner.address}`"
-              target="_blank"
-            >
+            <div>Creator</div>
+            <a v-if="!isTestnet" :href="`#/app/creator/${interaction.interaction?.owner.address}`">
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>
@@ -56,35 +52,55 @@
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </div>
+            <div
+              class="flaticon-copy-to-clipboard"
+              v-clipboard="interaction.interaction?.owner.address"
+              v-clipboard:success="onCopyCreator"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success"
+              v-bind:class="{ hidden: !copiedDisplayCreator, visible: copiedDisplayCreator }"
+            >
+              Copied
+            </p>
           </div>
           <div class="interaction-item">
             <div>Bundler id</div>
             <div v-if="interaction.bundlerTxId">
               <a
-                :href="
-                  `${
-                    daysAgo(interaction.timestamp) > 1
-                      ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
-                      : `https://arweave.net/${interaction.bundlerTxId}`
-                  }`
-                "
+                :href="`${
+                  daysAgo(interaction.timestamp) > 1
+                    ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                    : `https://arweave.net/${interaction.bundlerTxId}`
+                }`"
                 target="_blank"
                 class="d-none d-sm-block"
                 >{{ interaction.bundlerTxId }}</a
               ><a
-                :href="
-                  `${
-                    daysAgo(interaction.timestamp) > 1
-                      ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
-                      : `https://arweave.net/${interaction.bundlerTxId}`
-                  }`
-                "
+                :href="`${
+                  daysAgo(interaction.timestamp) > 1
+                    ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                    : `https://arweave.net/${interaction.bundlerTxId}`
+                }`"
                 target="_blank"
                 class="d-block d-sm-none"
                 >{{ interaction.bundlerTxId | tx }}</a
               >
             </div>
             <div v-else>N/A</div>
+            <div
+              class="flaticon-copy-to-clipboard"
+              v-clipboard="interaction?.bundlerTxId"
+              v-clipboard:success="onCopyBundlerId"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success"
+              v-bind:class="{ hidden: !copiedDisplayBundlerId, visible: copiedDisplayBundlerId }"
+            >
+              Copied
+            </p>
           </div>
           <div class="interaction-item">
             <div>Sort key</div>
@@ -100,39 +116,33 @@
             <div>Confirming peers</div>
             <div v-if="interaction.confirmingPeer && interaction.confirmingPeer[0] != '-'">
               <a
-                :href="
-                  `${
-                    interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
-                      : `https://node1.bundlr.network`
-                  }`
-                "
+                :href="`${
+                  interaction.source && interaction.source == 'arweave'
+                    ? `${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
+                    : `https://node1.bundlr.network`
+                }`"
                 target="_blank"
                 class="mr-1"
               >
                 {{ interaction.confirmingPeer[0] }}</a
               >
               <a
-                :href="
-                  `${
-                    interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
-                      : `https://node1.bundlr.network`
-                  }`
-                "
+                :href="`${
+                  interaction.source && interaction.source == 'arweave'
+                    ? `http://${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
+                    : `https://node1.bundlr.network`
+                }`"
                 target="_blank"
                 class="mr-1"
               >
                 {{ interaction.confirmingPeer[1] }}</a
               >
               <a
-                :href="
-                  `${
-                    interaction.source && interaction.source == 'arweave'
-                      ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interaction.interactionId}/status`
-                      : `https://node1.bundlr.network`
-                  }`
-                "
+                :href="`${
+                  interaction.source && interaction.source == 'arweave'
+                    ? `http://${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
+                    : `https://node1.bundlr.network`
+                }`"
                 target="_blank"
                 class="mr-1"
               >
@@ -170,13 +180,11 @@
           <div class="interaction-item">
             <div>Block id</div>
             <a
-              :href="
-                `${
-                  isTestnet
-                    ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
-                    : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
-                }`
-              "
+              :href="`${
+                isTestnet
+                  ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
+                  : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
+              }`"
               target="_blank"
             >
               <span class="d-none d-sm-block">{{ interaction?.blockId }}</span
@@ -249,7 +257,7 @@ export default {
         ['day', 86400],
         ['hour', 3600],
         ['minute', 60],
-        ['second', 1]
+        ['second', 1],
       ],
       interactions: [],
       currentPage: 1,
@@ -260,13 +268,14 @@ export default {
       limit: 15,
       selected: 'all',
       copiedDisplay: false,
-      copiedDisplayOwner: false,
       copiedContractIdDisplay: false,
+      copiedDisplayCreator: false,
+      copiedDisplayBundlerId: false,
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
       usdPrice: 0,
-      qty: 0
+      qty: 0,
     };
   },
 
@@ -274,9 +283,9 @@ export default {
     await this.loadInteractionData();
   },
   watch: {
-    interactionId: function() {
+    interactionId: function () {
       this.loadInteractionData();
-    }
+    },
   },
   components: { JsonViewer, Error },
   computed: {
@@ -293,7 +302,7 @@ export default {
         this.total &&
         this.interactions.length == (this.paging.items > this.limit ? this.limit : this.paging.items)
       );
-    }
+    },
   },
 
   methods: {
@@ -320,7 +329,7 @@ export default {
         if (interval >= 1) {
           return {
             interval: interval,
-            epoch: name
+            epoch: name,
           };
         }
       }
@@ -343,25 +352,29 @@ export default {
       this.copiedDisplay = true;
       setTimeout(() => (this.copiedDisplay = false), 2000);
     },
-    onCopyOwner() {
-      this.copiedDisplayOwner = true;
-      setTimeout(() => (this.copiedDisplayOwner = false), 2000);
-    },
     onCopyContractId() {
       this.copiedContractIdDisplay = true;
       setTimeout(() => (this.copiedContractIdDisplay = false), 2000);
+    },
+    onCopyCreator() {
+      this.copiedDisplayCreator = true;
+      setTimeout(() => (this.copiedDisplayCreator = false), 2000);
+    },
+    onCopyBundlerId() {
+      this.copiedDisplayBundlerId = true;
+      setTimeout(() => (this.copiedDisplayBundlerId = false), 2000);
     },
     async getInteraction() {
       this.interactions = [];
       axios
         .get(`${this.gatewayUrl}/gateway/interactions/${this.interactionId}`)
 
-        .then(fetchedInteractions => {
+        .then((fetchedInteractions) => {
           const tagsParser = new TagsParser();
 
           const interactionInterface = {
             cursor: '',
-            node: fetchedInteractions.data.interaction
+            node: fetchedInteractions.data.interaction,
           };
           this.correct = true;
           this.correct = !_.isEmpty(fetchedInteractions.data);
@@ -373,7 +386,7 @@ export default {
             blockHeight: fetchedInteractions.data.blockheight,
             contractId: fetchedInteractions.data.contractid,
             func: fetchedInteractions.data.function,
-            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find(t => t.name == 'Input').value).qty,
+            pstQty: JSON.parse(fetchedInteractions.data.interaction.tags.find((t) => t.name == 'Input').value).qty,
             confirmationStatus: fetchedInteractions.data.confirmationstatus,
             confirmingPeer: fetchedInteractions.data.confirmingpeer
               ? fetchedInteractions.data.confirmingpeer.split(',')
@@ -395,18 +408,18 @@ export default {
             recipient:
               fetchedInteractions.data.interaction.recipient == ''
                 ? 'N/A'
-                : fetchedInteractions.data.interaction.recipient
+                : fetchedInteractions.data.interaction.recipient,
           };
           this.loaded = true;
         })
-        .catch(e => {
+        .catch((e) => {
           this.correct = false;
         });
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -425,5 +438,9 @@ export default {
 .vrf-container {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.info-container {
+  margin-top: 50px;
 }
 </style>
