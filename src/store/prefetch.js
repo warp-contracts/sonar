@@ -6,7 +6,6 @@ export default {
   namespaced: true,
   state: {
     arweave: null,
-    arweaveTest: null,
     warp: null,
     gatewayUrl: null,
     switchText: null,

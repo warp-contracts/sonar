@@ -151,14 +151,14 @@ export default {
   },
   methods: {
     ...mapActions('layout', ['updateSearchTerm']),
-    ...mapActions('prefetch', ['loadGateway']),
+    ...mapActions('prefetch', ['setIsTestnet']),
     async toggleGateway() {
       if (!this.isTestnet) {
-        this.loadGateway('testnet');
+        this.setIsTestnet('testnet');
         this.switchNetworkText = 'Switch to Mainnet';
         this.$router.push('/app/contracts?network=testnet');
       } else {
-        this.loadGateway('mainnet');
+        this.setIsTestnet('mainnet');
         this.switchNetworkText = 'Switch to Testnet';
         this.$router.push('/app/contracts');
       }
