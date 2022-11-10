@@ -118,15 +118,7 @@
                 </div>
               </div>
             </div>
-            <!-- <div v-if="pst_name" class="cell">
-              <div class="cell-header">PST Name</div>
-              <div>{{ pst_name }}</div>
-            </div> -->
             <BaseCardCell v-if="pst_name" :header="'PST Name'" :value="pst_name"></BaseCardCell>
-            <!-- <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
-            </div> -->
             <BaseCardCell v-if="wasmLang" :header="'WASM'" :value="wasmLang"></BaseCardCell>
           </div>
         </div>

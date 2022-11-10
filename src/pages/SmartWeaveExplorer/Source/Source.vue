@@ -1,25 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
-      <div class="d-block d-md-flex pl-3">
-        <div class="contract-header-wrapper">
-          <div class="flaticon-file-signature m-0-auto"></div>
-          <div class="align-self-end contract-header">
-            <span>Contract Source</span>
-          </div>
-        </div>
-        <div class="align-self-end pl-md-3 pl-5 contract-id d-flex">
-          <span class="d-none d-sm-block">{{ sourceId }}</span
-          ><span class="d-block d-sm-none">{{ sourceId | tx }}</span>
-          <div
-            class="flaticon-copy-to-clipboard"
-            v-clipboard="sourceId"
-            v-clipboard:success="onCopy"
-            title="Copy to clipboard"
-          ></div>
-          <p class="clipboard-success" v-bind:class="{ hidden: !copiedDisplay, visible: copiedDisplay }">Copied</p>
-        </div>
-      </div>
+      <BaseCardHeader :cardTitle="'Source'" :id="sourceId"></BaseCardHeader>
       <div class="contract-details-wrapper pb-5">
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
@@ -247,6 +229,7 @@ import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
+import BaseCardHeader from '../../../components/BaseCard/BaseCardHeader.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -329,8 +312,9 @@ export default {
     TxList,
     JsonViewer,
     Error,
-    ContractCode
-  },
+    ContractCode,
+    BaseCardHeader
+},
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     sourceId() {

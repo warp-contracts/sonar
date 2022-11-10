@@ -1,7 +1,7 @@
 <template>
-  <div :class="[cardTitle === 'Contract' ? 'pl-3' : 'pl-2', 'd-block', 'd-md-flex']">
+  <div :class="[cardTitle === 'Contract' || 'Source' ?  'pl-3' : 'pl-2', 'd-block', 'd-md-flex']">
     <div class="contract-header-wrapper">
-      <div :class="[cardTitle === 'Contract' ? 'flaticon-file-signature' : 'flaticon-interaction', 'm-0-auto']"></div>
+      <div :class="[cardTitle === 'Contract' || 'Source' ? 'flaticon-file-signature' : 'flaticon-interaction', 'm-0-auto']"></div>
       <div class="align-self-end contract-header">
         <span>{{ cardTitle }}</span>
       </div>
