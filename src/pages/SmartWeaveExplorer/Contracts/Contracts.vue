@@ -278,7 +278,7 @@ export default {
   },
   components: { TxList, Charts },
   watch: {
-    gatewayUrl() {
+    isTestnet() {
       this.refreshData();
       this.loadStats();
     },
@@ -315,7 +315,7 @@ export default {
       );
     },
     async getStats() {
-      axios.get(`${this.gatewayUrl}/gateway/stats`).then((fetchedData) => {
+      axios.get(`${this.gatewayUrl}/gateway/stats${this.isTestnet ? '?testnet=true' : ''}`).then((fetchedData) => {
         this.totalContracts = fetchedData.data.total_contracts;
         this.totalInteractions = fetchedData.data.total_interactions;
         this.totalContractsLoaded = true;
@@ -323,10 +323,12 @@ export default {
       });
     },
     async getStatsPerDay() {
-      axios.get(`${this.gatewayUrl}/gateway/stats/per-day`).then((fetchedData) => {
-        this.contractsPerDay = fetchedData.data.contracts_per_day;
-        this.interactionsPerDay = fetchedData.data.interactions_per_day;
-      });
+      axios
+        .get(`${this.gatewayUrl}/gateway/stats/per-day${this.isTestnet ? '?testnet=true' : ''}`)
+        .then((fetchedData) => {
+          this.contractsPerDay = fetchedData.data.contracts_per_day;
+          this.interactionsPerDay = fetchedData.data.interactions_per_day;
+        });
     },
     loadStats() {
       this.getStatsPerDay();
@@ -352,7 +354,7 @@ export default {
         .get(
           `${this.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}${
             type != null ? `&contractType=${type}` : ''
-          }${sourceType != null ? `&sourceType=${sourceType}` : ''}`,
+          }${sourceType != null ? `&sourceType=${sourceType}` : ''}${this.isTestnet ? '&testnet=true' : ''}`,
           {
             cancelToken: this.axiosSource.token,
           }

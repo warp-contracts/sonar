@@ -30,7 +30,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl']),
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     perDay() {
       return this.$route.params.id == 'contracts' ? this.contractsPerDay : this.interactionsPerDay;
     },
@@ -38,14 +38,16 @@ export default {
       return this.$route.params.id == 'contracts' ? 'Contracts' : 'Interactions';
     },
     returnUrl() {
-      return this.gatewayUrl == constants.gatewayProdUrl ? '/' : '/#/app/contracts?network=testnet';
+      return this.isTestnet ? '/#/app/contracts?network=testnet' : '/';
     },
   },
   async mounted() {
-    axios.get(`${this.gatewayUrl}/gateway/stats/per-day`).then((fetchedData) => {
-      this.contractsPerDay = fetchedData.data.contracts_per_day;
-      this.interactionsPerDay = fetchedData.data.interactions_per_day;
-    });
+    axios
+      .get(`${this.gatewayUrl}/gateway/stats/per-day${this.isTestnet ? '?testnet=true' : ''}`)
+      .then((fetchedData) => {
+        this.contractsPerDay = fetchedData.data.contracts_per_day;
+        this.interactionsPerDay = fetchedData.data.interactions_per_day;
+      });
   },
 };
 </script>

@@ -180,14 +180,7 @@
           </div>
           <div class="interaction-item">
             <div>Block id</div>
-            <a
-              :href="`${
-                isTestnet
-                  ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
-                  : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
-              }`"
-              target="_blank"
-            >
+            <a :href="`https://v2.viewblock.io/arweave/block/${interaction.blockId}`" target="_blank">
               <span class="d-none d-sm-block">{{ interaction?.blockId }}</span
               ><span class="d-block d-sm-none">{{ interaction?.blockId | tx }}</span>
             </a>
