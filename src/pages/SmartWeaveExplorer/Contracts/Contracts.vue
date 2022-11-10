@@ -17,12 +17,14 @@
           </div>
           <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
           <div class="d-flex justify-content-center item-text">
-            <div>Total:&nbsp;</div>
-            <div v-if="totalInteractionsLoaded">
-              <div>{{ totalInteractions }}</div>
-            </div>
-            <div v-else class="align-self-center" style="marginleft: 47px">
-              <div class="dot-flashing"></div>
+            <div class="d-flex flex-row justify-content-between">
+              <div>Total:&nbsp;</div>
+              <div class="total-field d-flex justify-content-center">
+                <div class="d-flex justify-content-center align-self-center" v-if="totalInteractionsLoaded">
+                  {{ totalInteractions }}
+                </div>
+                <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
+              </div>
             </div>
           </div>
         </div>
@@ -41,12 +43,14 @@
           </div>
           <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
           <div class="d-flex justify-content-center item-text">
-            <div>Total:&nbsp;</div>
-            <div v-if="totalContractsLoaded">
-              <div>{{ totalContracts }}</div>
-            </div>
-            <div v-else class="align-self-center" style="marginleft: 47px">
-              <div class="dot-flashing"></div>
+            <div class="d-flex flex-row justify-content-between">
+              <div>Total:&nbsp;</div>
+              <div class="total-field d-flex justify-content-center">
+                <div class="d-flex justify-content-center align-self-center" v-if="totalContractsLoaded">
+                  {{ totalContracts }}
+                </div>
+                <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
+              </div>
             </div>
           </div>
         </div>
@@ -136,8 +140,9 @@
         >
           <template #table-busy> </template>
           <template #cell(contractId)="data" class="text-right">
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
               <router-link
+                style="min-width: 126px"
                 :to="{
                   path: '/app/contract/' + data.item.contractId,
                   query: isTestnet ? { network: 'testnet' } : '',
@@ -145,11 +150,13 @@
               >
                 {{ data.item.contractId | tx }}
               </router-link>
-              <div
-                class="flaticon-copy-to-clipboard small"
-                v-clipboard="data.item.contractId"
-                title="Copy to clipboard"
-              ></div>
+              <div class="table-icon-handler">
+                <div
+                  class="flaticon-copy-to-clipboard small"
+                  v-clipboard="data.item.contractId"
+                  title="Copy to clipboard"
+                ></div>
+              </div>
               <span v-if="data.item.pst_ticker" class="pl-3">{{ data.item.pst_ticker }}</span>
             </div>
           </template>
@@ -271,7 +278,7 @@ export default {
   },
   components: { TxList, Charts },
   watch: {
-    gatewayUrl() {
+    isTestnet() {
       this.refreshData();
       this.loadStats();
     },
@@ -308,7 +315,7 @@ export default {
       );
     },
     async getStats() {
-      axios.get(`${this.gatewayUrl}/gateway/stats`).then((fetchedData) => {
+      axios.get(`${this.gatewayUrl}/gateway/stats${this.isTestnet ? '?testnet=true' : ''}`).then((fetchedData) => {
         this.totalContracts = fetchedData.data.total_contracts;
         this.totalInteractions = fetchedData.data.total_interactions;
         this.totalContractsLoaded = true;
@@ -316,10 +323,12 @@ export default {
       });
     },
     async getStatsPerDay() {
-      axios.get(`${this.gatewayUrl}/gateway/stats/per-day`).then((fetchedData) => {
-        this.contractsPerDay = fetchedData.data.contracts_per_day;
-        this.interactionsPerDay = fetchedData.data.interactions_per_day;
-      });
+      axios
+        .get(`${this.gatewayUrl}/gateway/stats/per-day${this.isTestnet ? '?testnet=true' : ''}`)
+        .then((fetchedData) => {
+          this.contractsPerDay = fetchedData.data.contracts_per_day;
+          this.interactionsPerDay = fetchedData.data.interactions_per_day;
+        });
     },
     loadStats() {
       this.getStatsPerDay();
@@ -345,7 +354,7 @@ export default {
         .get(
           `${this.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}${
             type != null ? `&contractType=${type}` : ''
-          }${sourceType != null ? `&sourceType=${sourceType}` : ''}`,
+          }${sourceType != null ? `&sourceType=${sourceType}` : ''}${this.isTestnet ? '&testnet=true' : ''}`,
           {
             cancelToken: this.axiosSource.token,
           }
@@ -380,4 +389,13 @@ export default {
 };
 </script>
 
-<style src="./Contracts.scss" lang="scss" scoped></style>
+<style src="./Contracts.scss" lang="scss" scoped>
+.table-icon-handler {
+  width: 100%;
+}
+</style>
+<style lang="scss" scoped>
+.total-field {
+  min-width: 80px;
+}
+</style>

@@ -17,17 +17,17 @@ export default {
       this.$router.push('/app/contracts');
     }
     if (this.$route.query.network === 'testnet') {
-      currentGateway = constants.gatewayTestUrl;
+      currentGateway = 'testnet';
     } else {
-      currentGateway = constants.gatewayProdUrl;
+      currentGateway = 'mainnet';
     }
-    this.loadGateway(currentGateway);
-    this.initArweaveTest();
+    this.setIsTestnet(currentGateway);
+    this.setGatewayUrl();
     this.initArweave();
     this.prefetchAll();
   },
   methods: {
-    ...mapActions('prefetch', ['loadGateway', 'prefetchAll', 'initArweave', 'initArweaveTest']),
+    ...mapActions('prefetch', ['setIsTestnet', 'prefetchAll', 'initArweave', 'initArweaveTest', 'setGatewayUrl']),
   },
 };
 </script>

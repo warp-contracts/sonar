@@ -27,8 +27,8 @@
             </p>
           </div>
           <div class="interaction-item">
-            <div>Creator</div>
-            <a v-if="!isTestnet" :href="`#/app/creator/${interaction.interaction?.owner.address}`">
+            <div>Owner</div>
+            <a v-if="!isTestnet" target="_blank" :href="`https://v2.viewblock.io/arweave/address/${interaction.interaction?.owner.address}`">
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>
@@ -74,6 +74,7 @@
             </div>
             <div v-else>N/A</div>
             <div
+              v-if="interaction.bundlerTxId"
               class="flaticon-copy-to-clipboard"
               v-clipboard="interaction?.bundlerTxId"
               v-clipboard:success="onCopyBundlerId"
@@ -163,14 +164,7 @@
           </div>
           <div class="interaction-item">
             <div>Block id</div>
-            <a
-              :href="`${
-                isTestnet
-                  ? `https://testnet.redstone.tools/block/hash/${interaction.blockId}`
-                  : `https://v2.viewblock.io/arweave/block/${interaction.blockId}`
-              }`"
-              target="_blank"
-            >
+            <a :href="`https://v2.viewblock.io/arweave/block/${interaction.blockId}`" target="_blank">
               <span class="d-none d-sm-block">{{ interaction?.blockId }}</span
               ><span class="d-block d-sm-none">{{ interaction?.blockId | tx }}</span>
             </a>
@@ -196,13 +190,21 @@
             <div>{{ interaction.interaction?.quantity.winston }}</div>
           </div>
         </div>
-        <div class="pl-3 col-lg-7 col-12" style="margintop: 50px" v-if="!loaded">
+        <div class="pl-3 col-lg-7 col-12 info-container" v-if="!loaded">
           <div v-for="n in 11" :key="n" class="preloader text-preloader tx-preloader"></div>
         </div>
         <div class="col-lg-5 col-12 pt-4">
           <div v-if="interaction">
             <p class="json-header">Interaction Tags</p>
-            <json-viewer :value="interaction.tags" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+            <json-viewer v-if="!loaded" :value="''" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+            <json-viewer
+              v-else
+              :value="interaction.tags"
+              :expand-depth="2"
+              copyable
+              sort
+              theme="json-theme"
+            ></json-viewer>
           </div>
         </div>
       </div>

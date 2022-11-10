@@ -41,7 +41,7 @@ export default {
     wasm: Boolean,
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'arweave', 'arweaveTest']),
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'arweave']),
   },
   data() {
     return {

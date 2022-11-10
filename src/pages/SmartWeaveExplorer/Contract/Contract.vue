@@ -281,14 +281,7 @@
                     </template>
 
                     <template #cell(block_id)="data">
-                      <a
-                        :href="`${
-                          isTestnet
-                            ? `https://testnet.redstone.tools/block/hash/${data.item.blockId}`
-                            : `https://v2.viewblock.io/arweave/block/${data.item.blockId}`
-                        }`"
-                        target="_blank"
-                      >
+                      <a :href="`https://v2.viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
                         {{ data.item.blockId | tx }}
                       </a>
                     </template>
