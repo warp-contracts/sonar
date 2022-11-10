@@ -43,8 +43,8 @@
             </p>
           </div>
           <div class="interaction-item">
-            <div>Owner</div>
-            <a v-if="!isTestnet" target="_blank" :href="`https://v2.viewblock.io/arweave/address/${interaction.interaction?.owner.address}`">
+            <div>Creator</div>
+            <a v-if="!isTestnet" :href="`#/app/creator/${interaction.interaction?.owner.address}`">
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>

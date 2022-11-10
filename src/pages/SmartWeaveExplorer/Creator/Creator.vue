@@ -56,7 +56,27 @@
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noTransactionsDetected">
               <div class="d-block d-sm-flex justify-content-between mb-4">
-                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0"> </b-col>
+                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
+                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Type</p>
+                  <b-form-radio-group
+                    id="confirmation-status-group"
+                    name="confirmation-status-group"
+                    @change="refreshData"
+                    v-model="selected"
+                    class="confirmation-status-group"
+                    v-if="!isTestnet"
+                  >
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="all">All</b-form-radio>
+                    </div>
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="interaction">Interaction</b-form-radio>
+                    </div>
+                    <div class="confirmation-status-item">
+                      <b-form-radio value="contract">Contract</b-form-radio>
+                    </div>
+                  </b-form-radio-group>
+                </b-col>
 
                 <b-button
                   class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
@@ -217,12 +237,12 @@ export default {
     this.visitedTabs.push(this.$route.hash);
   },
   methods: {
-    async getTransactions(page) {
+    async getTransactions(page, txType) {
       this.transactions = [];
       this.total = null;
 
       const response = await fetch(
-        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}`
+        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}${txType ? `&type=${txType}` : ''}`
       );
       if (!response.ok) {
         this.correct = false;

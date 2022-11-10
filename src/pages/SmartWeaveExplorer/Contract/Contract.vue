@@ -323,7 +323,7 @@
                     </template>
 
                     <template #cell(creator)="data">
-                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" target="_blank">
+                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" >
                         {{ data.item.owner | tx }}</a
                       >
                       <span v-else> {{ data.item.owner | tx }}</span>
