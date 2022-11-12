@@ -227,6 +227,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { mapState } from 'vuex';
 import { TagsParser } from 'warp-contracts';
 import BaseCardHeader from '../../../components/BaseCard/BaseCardHeader.vue';
+import BaseCardCell from '../../../components/BaseCard/BaseCardCell.vue';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
@@ -274,7 +275,7 @@ export default {
       this.loadInteractionData();
     },
   },
-  components: { JsonViewer, Error, BaseCardHeader },
+  components: { JsonViewer, Error, BaseCardHeader, BaseCardCell },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     interactionId() {

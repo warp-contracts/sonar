@@ -5,34 +5,34 @@
       <div class="contract-details-wrapper pb-5">
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
-            <BaseCardCell :header="'Owner'">
-              <template>
-                <div class="d-flex">
-                  <div v-if="owner" class="align-self-end d-flex">
-                    <span class="d-none d-sm-block">{{ owner }}</span
-                    ><span class="d-block d-sm-none">{{ owner | tx }}</span>
-                    <div
-                      class="flaticon-copy-to-clipboard"
-                      v-clipboard="owner"
-                      v-clipboard:success="onCopyOwner"
-                      title="Copy to clipboard"
-                    ></div>
-                    <p
-                      class="clipboard-success"
-                      v-bind:class="{
-                        hidden: !copiedDisplayOwner,
-                        visible: copiedDisplayOwner,
-                      }"
-                    >
-                      Copied
-                    </p>
-                  </div>
-                  <div v-else class="pl-3 pt-3">
-                    <div class="dot-flashing"></div>
-                  </div>
+            <div class="cell">
+              <div class="cell-header">Owner</div>
+              <div class="d-flex">
+                <div v-if="owner" class="align-self-end d-flex">
+                  <span class="d-none d-sm-block">{{ owner }}</span
+                  ><span class="d-block d-sm-none">{{ owner | tx }}</span>
+                  <div
+                    class="flaticon-copy-to-clipboard"
+                    v-clipboard="owner"
+                    v-clipboard:success="onCopyOwner"
+                    title="Copy to clipboard"
+                  ></div>
+                  <p
+                    class="clipboard-success"
+                    v-bind:class="{
+                      hidden: !copiedDisplayOwner,
+                      visible: copiedDisplayOwner,
+                    }"
+                  >
+                    Copied
+                  </p>
                 </div>
-              </template>
-            </BaseCardCell>
+                <div v-else class="pl-3 pt-3">
+                  <div class="dot-flashing"></div>
+                </div>
+              </div>
+            </div>
+
             <BaseCardCell :header="'Total interactions'" :value="total"></BaseCardCell>
             <BaseCardCell v-if="pst_ticker" :header="'PST Ticker'" :value="pst_ticker"></BaseCardCell>
             <div class="cell">
@@ -74,15 +74,7 @@
             </div>
           </div>
           <div class="col-6 p-0">
-            <!-- <div class="cell">
-              <div class="cell-header">Confirmed interactions</div>
-              <div>{{ confirmed }}</div>
-            </div> -->
             <BaseCardCell :header="'Confirmed interactions'" :value="confirmed"></BaseCardCell>
-            <!-- <div class="cell">
-              <div class="cell-header">Corrupted interactions</div>
-              <div>{{ corrupted }}</div>
-            </div> -->
             <BaseCardCell :header="'Corrupted interactions'" :value="corrupted"></BaseCardCell>
             <div class="cell">
               <div class="cell-header">Source transaction id</div>

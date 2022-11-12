@@ -2,7 +2,7 @@
   <div class="cell">
     <div class="cell-header">{{ header }}</div>
     <div v-if="value">{{ value }}</div>
-    <slot></slot>
+    <div v-else><p>N/A</p></div>
   </div>
 </template>
 

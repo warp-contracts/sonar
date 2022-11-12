@@ -71,21 +71,11 @@
                 </div>
               </div>
             </div>
-            <div class="cell">
-              <div class="cell-header">Total contracts</div>
-              <div>{{ paging?.total }}</div>
-            </div>
+            <BaseCardCell :header="'Total contracts'" :value="paging?.total"></BaseCardCell>
           </div>
           <div class="col-6 p-0">
-            <div class="cell">
-              <div class="cell-header">Source content type</div>
-              <div>{{ srcContentType }}</div>
-            </div>
-            <div class="cell">
-              <div class="cell-header">WASM</div>
-              <div v-if="wasmLang">{{ wasmLang }}</div>
-              <div v-else>N/A</div>
-            </div>
+            <BaseCardCell :header="'Source content'" :value="srcContentType"></BaseCardCell>
+            <BaseCardCell :header="'WASM'" :value="wasmLang"></BaseCardCell>
           </div>
         </div>
       </div>
@@ -230,6 +220,7 @@ import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
 import BaseCardHeader from '../../../components/BaseCard/BaseCardHeader.vue';
+import BaseCardCell from '../../../components/BaseCard/BaseCardCell.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -313,7 +304,8 @@ export default {
     JsonViewer,
     Error,
     ContractCode,
-    BaseCardHeader
+    BaseCardHeader,
+    BaseCardCell
 },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
