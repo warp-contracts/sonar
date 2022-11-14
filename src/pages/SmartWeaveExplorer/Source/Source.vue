@@ -71,11 +71,11 @@
                 </div>
               </div>
             </div>
-            <BaseCardCell :header="'Total contracts'" :value="paging?.total"></BaseCardCell>
+            <BaseCardCell :header="'Total contracts'" :value="paging?.total" :isLoaded="contractsLoaded"></BaseCardCell>
           </div>
           <div class="col-6 p-0">
-            <BaseCardCell :header="'Source content'" :value="srcContentType"></BaseCardCell>
-            <BaseCardCell :header="'WASM'" :value="wasmLang"></BaseCardCell>
+            <BaseCardCell :header="'Source content'" :value="srcContentType" :isLoaded="contractsLoaded"></BaseCardCell>
+            <BaseCardCell :header="'WASM'" :value="wasmLang" :isLoaded="contractsLoaded"></BaseCardCell>
           </div>
         </div>
       </div>

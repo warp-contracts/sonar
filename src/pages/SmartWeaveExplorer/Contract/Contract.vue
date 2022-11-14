@@ -33,8 +33,8 @@
               </div>
             </div>
 
-            <BaseCardCell :header="'Total interactions'" :value="total"></BaseCardCell>
-            <BaseCardCell v-if="pst_ticker" :header="'PST Ticker'" :value="pst_ticker"></BaseCardCell>
+            <BaseCardCell :header="'Total interactions'" :value="total" :isLoaded="interactionsLoaded"></BaseCardCell>
+            <BaseCardCell v-if="pst_ticker" :header="'PST Ticker'" :value="pst_ticker" :isLoaded="interactionsLoaded"></BaseCardCell>
             <div class="cell">
               <div class="d-flex">
                 <div class="cell-header pb-2">State evaluated</div>
@@ -74,8 +74,8 @@
             </div>
           </div>
           <div class="col-6 p-0">
-            <BaseCardCell :header="'Confirmed interactions'" :value="confirmed"></BaseCardCell>
-            <BaseCardCell :header="'Corrupted interactions'" :value="corrupted"></BaseCardCell>
+            <BaseCardCell :header="'Confirmed interactions'" :value="confirmed" :isLoaded="interactionsLoaded"></BaseCardCell>
+            <BaseCardCell :header="'Corrupted interactions'" :value="corrupted" :isLoaded="interactionsLoaded"></BaseCardCell>
             <div class="cell">
               <div class="cell-header">Source transaction id</div>
               <div class="d-flex">
@@ -110,8 +110,8 @@
                 </div>
               </div>
             </div>
-            <BaseCardCell v-if="pst_name" :header="'PST Name'" :value="pst_name"></BaseCardCell>
-            <BaseCardCell v-if="wasmLang" :header="'WASM'" :value="wasmLang"></BaseCardCell>
+            <BaseCardCell v-if="pst_name" :header="'PST Name'" :value="pst_name" :isLoaded="interactionsLoaded"></BaseCardCell>
+            <BaseCardCell v-if="wasmLang" :header="'WASM'" :value="wasmLang" :isLoaded="interactionsLoaded"></BaseCardCell>
           </div>
         </div>
       </div>
