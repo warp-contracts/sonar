@@ -54,9 +54,30 @@
               <div class="cell-header">Total interactions</div>
               <div>{{ total }}</div>
             </div>
-            <div v-if="pst_ticker" class="cell">
-              <div class="cell-header">PST Ticker</div>
-              <div>{{ pst_ticker }}</div>
+            <div class="cell">
+              <div class="cell-header">Bundler id</div>
+              <div class="d-flex">
+                <div v-if="bundler_id" class="align-self-end d-flex">
+                  <span class="d-none d-sm-block">{{ bundler_id }}</span
+                  ><span class="d-block d-sm-none">{{ bundler_id | tx }}</span>
+                  <div
+                    class="flaticon-copy-to-clipboard"
+                    v-clipboard="bundler_id"
+                    v-clipboard:success="onCopyBundlerId"
+                    title="Copy to clipboard"
+                  ></div>
+                  <p
+                    class="clipboard-success"
+                    v-bind:class="{
+                      hidden: !copiedBundlerId,
+                      visible: copiedBundlerId,
+                    }"
+                  >
+                    Copied
+                  </p>
+                </div>
+                <div v-else>N/A</div>
+              </div>
             </div>
             <div class="cell">
               <div class="d-flex">
@@ -143,30 +164,9 @@
                 </div>
               </div>
             </div>
-            <div class="cell">
-              <div class="cell-header">Bundler id</div>
-              <div class="d-flex">
-                <div v-if="bundler_id" class="align-self-end d-flex">
-                  <span class="d-none d-sm-block">{{ bundler_id }}</span
-                  ><span class="d-block d-sm-none">{{ bundler_id | tx }}</span>
-                  <div
-                    class="flaticon-copy-to-clipboard"
-                    v-clipboard="bundler_id"
-                    v-clipboard:success="onCopyBundlerId"
-                    title="Copy to clipboard"
-                  ></div>
-                  <p
-                    class="clipboard-success"
-                    v-bind:class="{
-                      hidden: !copiedBundlerId,
-                      visible: copiedBundlerId,
-                    }"
-                  >
-                    Copied
-                  </p>
-                </div>
-                <div v-else>N/A</div>
-              </div>
+            <div v-if="pst_ticker" class="cell">
+              <div class="cell-header">PST Ticker</div>
+              <div>{{ pst_ticker }}</div>
             </div>
             <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
