@@ -95,6 +95,10 @@
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
+            <div v-if="wasmLang" class="cell">
+              <div class="cell-header">WASM</div>
+              <div>{{ wasmLang }}</div>
+            </div>
           </div>
           <div class="col-6 p-0">
             <div class="cell">
@@ -139,13 +143,34 @@
                 </div>
               </div>
             </div>
+            <div class="cell">
+              <div class="cell-header">Bundler id</div>
+              <div class="d-flex">
+                <div v-if="bundler_id" class="align-self-end d-flex">
+                  <span class="d-none d-sm-block">{{ bundler_id }}</span
+                  ><span class="d-block d-sm-none">{{ bundler_id | tx }}</span>
+                  <div
+                    class="flaticon-copy-to-clipboard"
+                    v-clipboard="bundler_id"
+                    v-clipboard:success="onCopyBundlerId"
+                    title="Copy to clipboard"
+                  ></div>
+                  <p
+                    class="clipboard-success"
+                    v-bind:class="{
+                      hidden: !copiedBundlerId,
+                      visible: copiedBundlerId,
+                    }"
+                  >
+                    Copied
+                  </p>
+                </div>
+                <div v-else>N/A</div>
+              </div>
+            </div>
             <div v-if="pst_name" class="cell">
               <div class="cell-header">PST Name</div>
               <div>{{ pst_name }}</div>
-            </div>
-            <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
             </div>
           </div>
         </div>
@@ -449,10 +474,12 @@ export default {
       copiedDisplayOwner: false,
       copiedDisplaySourceTxId: false,
       copiedDisplayInteraction: [],
+      copiedBundlerId: false,
       loadingInitialized: false,
       correct: false,
       pst_ticker: null,
       pst_name: null,
+      bundler_id: null,
       noInteractionsDetected: false,
       wasmLang: null,
       initState: null,
@@ -573,6 +600,10 @@ export default {
       this.copiedDisplaySourceTxId = true;
       setTimeout(() => (this.copiedDisplaySourceTxId = false), 2000);
     },
+    onCopyBundlerId() {
+      this.copiedBundlerId = true;
+      setTimeout(() => (this.copiedBundlerId = false), 2000);
+    },
     onInput(value) {
       if (!this.visitedTabs.includes(value)) {
         this.visitedTabs.push(value);
@@ -610,6 +641,7 @@ export default {
       this.initState = data.initState;
       this.loadedContract = true;
       this.sourceTxId = data.srcTxId;
+      this.bundler_id = data.bundlerTxId;
     },
 
     async getInteractions(page, confirmationStatus) {
