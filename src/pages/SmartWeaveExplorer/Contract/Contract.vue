@@ -54,6 +54,7 @@
             <div class="cell">
               <div class="cell-header">Total interactions</div>
               <div v-if="total"> {{ total }}</div>
+              <div v-else-if="total == 0"> 0 </div>
               <div v-else class="pl-3 pt-3">
                 <div class="dot-flashing"></div>
               </div>
