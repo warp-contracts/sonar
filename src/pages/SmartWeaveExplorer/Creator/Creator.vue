@@ -242,20 +242,15 @@ export default {
       this.total = null;
 
       const response = await fetch(
-        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}${txType ? `&type=${txType}` : ''}`
+        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}${txType ? `&txType=${txType}` : ''}`
       );
       if (!response.ok) {
         this.correct = false;
       }
 
       const data = await response.json();
-      this.total = data.total;
+      this.total = data.paging.total;
       this.paging = data.paging;
-      if (this.selected == 'all') {
-        this.total = data.paging.total;
-      } else {
-        this.total = 0;
-      }
       for (let t of data.transactions) {
         this.transactions.push({
           id: t.id,

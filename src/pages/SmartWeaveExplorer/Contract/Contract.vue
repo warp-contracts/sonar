@@ -53,7 +53,10 @@
             </div>
             <div class="cell">
               <div class="cell-header">Total interactions</div>
-              <div>{{ total }}</div>
+              <div v-if="total"> {{ total }}</div>
+              <div v-else class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
             </div>
             <div class="cell">
               <div class="cell-header">Bundler id</div>
@@ -672,11 +675,7 @@ export default {
           if (this.interactions === null) {
             this.interactions = [];
           }
-          if (this.selected == 'all') {
-            this.total = fetchedInteractions.data.paging.total;
-          } else {
-            this.total = 0;
-          }
+          this.total = fetchedInteractions.data.paging.total;
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
             const interactionInterface = {
