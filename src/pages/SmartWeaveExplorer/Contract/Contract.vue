@@ -24,10 +24,11 @@
         <div class="d-block d-md-flex">
           <div class="col-6 p-0">
             <div class="cell">
-              <div class="cell-header">Owner</div>
+              <div class="cell-header">Creator</div>
               <div class="d-flex">
                 <div v-if="owner" class="align-self-end d-flex">
-                  <span class="d-none d-sm-block">{{ owner }}</span
+                  <span class="d-none d-sm-block"
+                    ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{ owner }}</a></span
                   ><span class="d-block d-sm-none">{{ owner | tx }}</span>
                   <div
                     class="flaticon-copy-to-clipboard"
@@ -52,7 +53,10 @@
             </div>
             <div class="cell">
               <div class="cell-header">Total interactions</div>
-              <div>{{ total }}</div>
+              <div v-if="total"> {{ total }}</div>
+              <div v-else class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
             </div>
             <div class="cell">
               <div class="cell-header">Bundler id</div>
@@ -255,8 +259,13 @@
                   </b-form-radio-group>
                 </b-col>
 
-                <b-button class="btn btn-refresh rounded-pill mb-3 mb-sm-0" @click="refreshData"
-                  >Refresh data
+                <b-button
+                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
+                  @click="refreshData"
+                  ><p class="m-0" v-if="interactionsLoaded">Refresh data</p>
+                  <div v-else>
+                    <div class="dot-flashing"></div>
+                  </div>
                 </b-button>
               </div>
               <div>
@@ -334,12 +343,8 @@
                       {{ data.item.blockHeight }}
                     </template>
 
-                    <template #cell(owner)="data">
-                      <a
-                        v-if="!isTestnet"
-                        :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`"
-                        target="_blank"
-                      >
+                    <template #cell(creator)="data">
+                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" >
                         {{ data.item.owner | tx }}</a
                       >
                       <span v-else> {{ data.item.owner | tx }}</span>
@@ -456,7 +461,7 @@ export default {
         'block_id',
         'block_height',
         'age',
-        'owner',
+        'creator',
         'function',
         'status',
         { key: 'actions', label: '' },
@@ -670,11 +675,7 @@ export default {
           if (this.interactions === null) {
             this.interactions = [];
           }
-          if (this.selected == 'all') {
-            this.total = fetchedInteractions.data.paging.total;
-          } else {
-            this.total = 0;
-          }
+          this.total = fetchedInteractions.data.paging.total;
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
             const interactionInterface = {
@@ -738,6 +739,11 @@ export default {
 .table thead th:nth-of-type(5),
 .table thead th:nth-of-type(6) {
   width: 10%;
+}
+
+.btn-refresh {
+  min-width: 163px;
+  min-height: 42px;
 }
 
 #confirmation-status-group {

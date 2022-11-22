@@ -172,6 +172,8 @@ export default {
         this.$router.push(`/app/contract/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
       } else if (data.type == 'interaction') {
         this.$router.push(`/app/interaction/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
+      } else if (data.type === 'creator') {
+        this.$router.push(`/app/creator/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
       } else {
         this.$router.push(`/app/source/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
       }

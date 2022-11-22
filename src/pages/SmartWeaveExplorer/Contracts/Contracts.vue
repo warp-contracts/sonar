@@ -160,8 +160,8 @@
               <span v-if="data.item.pst_ticker" class="pl-3">{{ data.item.pst_ticker }}</span>
             </div>
           </template>
-          <template #cell(owner)="data">
-            <a v-if="!isTestnet" :href="`https://v2.viewblock.io/arweave/address/${data.item.blockId}`" target="_blank">
+          <template #cell(creator)="data">
+            <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" >
               {{ data.item.owner | tx }}</a
             >
             <span v-else>{{ data.item.owner | tx }}</span>
@@ -220,7 +220,7 @@ export default {
       loading: true,
       fields: [
         'contractId',
-        'owner',
+        'creator',
         'type',
         {
           key: 'lang',
