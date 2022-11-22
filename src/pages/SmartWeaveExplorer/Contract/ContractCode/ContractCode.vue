@@ -1,6 +1,7 @@
 <template>
   <div class="code-container">
     <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
+    <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
     <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
     <div v-if="loaded && contractSrc && wasm">
       <ul id="code-wasm">
@@ -46,6 +47,7 @@ export default {
   data() {
     return {
       loaded: false,
+      correct: true,
       code: null,
       contractSrc: null,
     };
@@ -60,7 +62,14 @@ export default {
           fetchedSource.data.srcBinary = Buffer.from(fetchedSource.data.srcBinary.data);
         }
         const wasmSrc = new WasmSrc(fetchedSource.data.srcBinary);
-        const contractSrc = await wasmSrc.sourceCode();
+        let contractSrc;
+        try {
+          contractSrc = await wasmSrc.sourceCode();
+          console.log(contractSrc);
+        } catch (e) {
+          this.loaded = true;
+          this.correct = false;
+        }
         let objFromContractSrc = Object.fromEntries(contractSrc);
 
         if (fetchedSource.data.srcWasmLang == 'assemblyscript') {
