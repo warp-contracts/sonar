@@ -110,6 +110,12 @@
             </div>
           </div>
           <div class="interaction-item">
+            <div>Last Sort key</div>
+            <div style="word-break: break-all">
+              {{ interaction.lastSortKey ? interaction.lastSortKey : '-' }}
+            </div>
+          </div>
+          <div class="interaction-item">
             <div>Confirmation status</div>
             <div>{{ interaction.confirmationStatus }}</div>
           </div>
@@ -394,6 +400,7 @@ export default {
               ? fetchedInteractions.data.confirmingpeer.split(',')
               : '-',
             sortKey: fetchedInteractions.data.sortkey,
+            lastSortKey: fetchedInteractions.data.interaction.lastSortKey,
             source: fetchedInteractions.data.confirmingpeer == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
