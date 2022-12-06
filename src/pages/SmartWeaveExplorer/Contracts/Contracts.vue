@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="charts-wrapper">
+      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
       <div class="charts d-none d-md-flex">
         <div class="chart-single-wrapper">
           <div class="chart-header">
@@ -209,6 +210,7 @@ import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
 import Charts from '@/components/Charts/Charts';
 import { mapState } from 'vuex';
+import TestnetLabel from '../../../components/TestnetLabel.vue';
 
 export default {
   name: 'Contracts',
@@ -276,7 +278,7 @@ export default {
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
   },
-  components: { TxList, Charts },
+  components: { TxList, Charts, TestnetLabel },
   watch: {
     isTestnet() {
       this.refreshData();

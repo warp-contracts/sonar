@@ -34,7 +34,7 @@ export default {
 
 <style src="./styles/theme.scss" lang="scss" />
 <style lang="scss">
-div.contract-wrapper {
+div.contract-wrapper, div.charts-wrapper {
   position: relative;
 }
 </style>
