@@ -33,3 +33,8 @@ export default {
 </script>
 
 <style src="./styles/theme.scss" lang="scss" />
+<style lang="scss">
+div.contract-wrapper {
+  position: relative;
+}
+</style>
