@@ -1,6 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
+      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
           <div class="flaticon-file-signature m-0-auto"></div>
@@ -247,6 +248,7 @@ import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
+import TestnetLabel from '../../../components/TestnetLabel.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -329,8 +331,9 @@ export default {
     TxList,
     JsonViewer,
     Error,
-    ContractCode
-  },
+    ContractCode,
+    TestnetLabel
+},
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     sourceId() {

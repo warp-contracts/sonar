@@ -1,6 +1,7 @@
 <template>
   <div :key="interactionId">
     <div v-if="correct" class="contract-wrapper">
+      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
       <div class="d-block d-sm-flex pl-2">
         <div class="contract-header-wrapper">
           <div class="flaticon-interaction"></div>
@@ -248,6 +249,7 @@ import utc from 'dayjs/plugin/utc';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { mapState } from 'vuex';
 import { TagsParser } from 'warp-contracts';
+import TestnetLabel from '../../../components/TestnetLabel.vue';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
@@ -295,7 +297,7 @@ export default {
       this.loadInteractionData();
     },
   },
-  components: { JsonViewer, Error },
+  components: { JsonViewer, Error, TestnetLabel },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     interactionId() {

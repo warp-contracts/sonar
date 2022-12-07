@@ -1,6 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
+      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
           <div class="flaticon-file-signature m-0-auto"></div>
@@ -53,8 +54,8 @@
             </div>
             <div class="cell">
               <div class="cell-header">Total interactions</div>
-              <div v-if="total"> {{ total }}</div>
-              <div v-else-if="total == 0"> 0 </div>
+              <div v-if="total">{{ total }}</div>
+              <div v-else-if="total == 0">0</div>
               <div v-else class="pl-3 pt-3">
                 <div class="dot-flashing"></div>
               </div>
@@ -345,9 +346,7 @@
                     </template>
 
                     <template #cell(creator)="data">
-                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" >
-                        {{ data.item.owner | tx }}</a
-                      >
+                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
                       <span v-else> {{ data.item.owner | tx }}</span>
                     </template>
 
@@ -432,6 +431,7 @@ import { mapState } from 'vuex';
 import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
+import TestnetLabel from '../../../components/TestnetLabel.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -510,7 +510,6 @@ export default {
     } else {
       this.correct = true;
     }
-
     this.getInteractions(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.getContract();
     await this.getContractData();
@@ -525,7 +524,8 @@ export default {
     ContractState,
     ContractCode,
     ContractTags,
-  },
+    TestnetLabel
+},
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     contractId() {
