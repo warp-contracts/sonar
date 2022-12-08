@@ -99,8 +99,8 @@
                 <div class="dot-flashing"></div>
               </div>
               <div v-else>
-                <div v-if="validity" class="flaticon-check" />
-                <div v-else class="flaticon-cross" />
+                <!-- <div v-if="validity" class="flaticon-check" /> -->
+                <div class="flaticon-cross" />
               </div>
             </div>
             <div class="cell">
@@ -489,9 +489,9 @@ export default {
       noInteractionsDetected: false,
       wasmLang: null,
       initState: null,
-      loadedValidity: null,
+      loadedValidity: true,
       loadedContract: null,
-      validity: null,
+      validity: false,
       axiosSource: null,
       sourceTxId: null,
       loadedContractData: false,
@@ -514,7 +514,7 @@ export default {
     this.getContract();
     await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
-    this.validity = await this.getInteractionValidity();
+    // this.validity = await this.getInteractionValidity();
   },
 
   components: {
@@ -708,21 +708,21 @@ export default {
           }
         });
     },
-    async getInteractionValidity() {
-      const validity = fetch(
-        `${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
-      ).then(async (res) => {
-        if (res.status == 404) {
-          this.loadedValidity = true;
-          return null;
-        } else {
-          const data = await res.json();
-          this.loadedValidity = true;
-          return data.validity;
-        }
-      });
-      return validity;
-    },
+    // async getInteractionValidity() {
+    //   const validity = fetch(
+    //     `${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
+    //   ).then(async (res) => {
+    //     if (res.status == 404) {
+    //       this.loadedValidity = true;
+    //       return null;
+    //     } else {
+    //       const data = await res.json();
+    //       this.loadedValidity = true;
+    //       return data.validity;
+    //     }
+    //   });
+    //   return validity;
+    // },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },

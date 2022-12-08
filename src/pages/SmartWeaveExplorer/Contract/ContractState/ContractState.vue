@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       state: null,
-      loaded: false,
+      loaded: true,
       header: null,
     };
   },
@@ -36,21 +36,21 @@ export default {
   },
   methods: {
     async created() {
-      fetch(`${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
-        (response) => {
-          if (response.status == 404) {
-            this.loaded = true;
-            this.header = 'Contract Initial State';
-            this.state = this.initState;
-          } else if (response.status == 200) {
-            return response.json().then((data) => {
-              this.header = 'Contract Current State';
-              this.state = data.state;
-              this.loaded = true;
-            });
-          }
-        }
-      );
+      // fetch(`${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
+      //   (response) => {
+      //     if (response.status == 404) {
+      //       this.loaded = true;
+      this.header = 'Contract Initial State';
+      this.state = this.initState;
+      // } else if (response.status == 200) {
+      //   return response.json().then((data) => {
+      //     this.header = 'Contract Current State';
+      //     this.state = data.state;
+      //     this.loaded = true;
+      //   });
+      // }
+      // }
+      // );
     },
   },
 
