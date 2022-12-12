@@ -489,6 +489,7 @@ export default {
       noInteractionsDetected: false,
       wasmLang: null,
       initState: null,
+      currentState: null,
       loadedValidity: true,
       loadedContract: null,
       validity: false,
@@ -514,6 +515,7 @@ export default {
     this.getContract();
     await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
+    this.getDreState();
     // this.validity = await this.getInteractionValidity();
   },
 
@@ -524,8 +526,8 @@ export default {
     ContractState,
     ContractCode,
     ContractTags,
-    TestnetLabel
-},
+    TestnetLabel,
+  },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     contractId() {
@@ -708,6 +710,21 @@ export default {
           }
         });
     },
+
+    async getDreState() {
+      const response = await fetch(
+        `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
+      );
+      if (response.status == 404) {
+        this.loadedValidity = true;
+      };
+      this.loadedValidity = true;
+      const data = await response.json();
+      this.currentState = data.state;
+      this.validity = data.validity;
+      console.log(data);
+    },
+
     // async getInteractionValidity() {
     //   const validity = fetch(
     //     `${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
