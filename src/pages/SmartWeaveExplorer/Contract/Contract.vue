@@ -99,8 +99,8 @@
                 <div class="dot-flashing"></div>
               </div>
               <div v-else>
-                <!-- <div v-if="validity" class="flaticon-check" /> -->
-                <div class="flaticon-cross" />
+                <div v-if="validity" class="flaticon-check" />
+                <div v-if="!validity" class="flaticon-cross" />
               </div>
             </div>
             <div class="cell">
@@ -202,7 +202,15 @@
             :active="$route.hash === '#state'"
             @click="onInput($route.hash)"
           >
-            State
+            Initial State
+          </b-nav-item>
+          <b-nav-item
+            v-if="currentState"
+            :to="`${isTestnet ? '?network=testnet' : ''}#current-state`"
+            :active="$route.hash === '#current-state'"
+            @click="onInput($route.hash)"
+          >
+            Current State
           </b-nav-item>
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
@@ -403,6 +411,15 @@
               <ContractState v-if="initState" :contractId="contractId" :initState="initState"></ContractState>
             </div>
           </div>
+          <div :class="['tab-pane', { active: $route.hash === '#current-state' }]" class="p-2">
+            <div>
+              <ContractCurrentState
+                v-if="currentState"
+                :contractId="contractId"
+                :currentState="currentState"
+              ></ContractCurrentState>
+            </div>
+          </div>
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>
@@ -425,6 +442,7 @@ import { TagsParser } from 'warp-contracts';
 import JsonViewer from 'vue-json-viewer';
 import ContractCode from './ContractCode/ContractCode';
 import ContractState from './ContractState/ContractState';
+import ContractCurrentState from './ContractCurrentState/ContractCurrentState';
 import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
@@ -524,6 +542,7 @@ export default {
     JsonViewer,
     Error,
     ContractState,
+    ContractCurrentState,
     ContractCode,
     ContractTags,
     TestnetLabel,
@@ -717,12 +736,16 @@ export default {
       );
       if (response.status == 404) {
         this.loadedValidity = true;
-      };
-      this.loadedValidity = true;
+      }
       const data = await response.json();
-      this.currentState = data.state;
+      if (data.state === undefined) {
+        this.currentState = null;
+      } else {
+        this.currentState = data.state;
+      }
+      this.loadedValidity = true;
+
       this.validity = data.validity;
-      console.log(data);
     },
 
     // async getInteractionValidity() {
