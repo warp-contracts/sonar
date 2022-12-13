@@ -339,6 +339,7 @@
                         v-show="validity && validity[data.item.interactionId] == false"
                         class="flaticon-cross centered"
                       />
+
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>
@@ -372,6 +373,11 @@
                     </template>
 
                     <template slot="row-details" slot-scope="data">
+                      <div v-show="errorMessages[data.item.interactionId]">
+                        <p class="tx-error-message">
+                          Error: <span>{{ errorMessages[data.item.interactionId] }}</span>
+                        </p>
+                      </div>
                       <div>
                         <p class="json-header">Contract Input:</p>
                         <json-viewer
@@ -515,6 +521,7 @@ export default {
       sourceTxId: null,
       loadedContractData: false,
       contractData: null,
+      errorMessages: null,
       tags: [],
     };
   },
@@ -534,7 +541,6 @@ export default {
     await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
     this.getDreState();
-    // this.validity = await this.getInteractionValidity();
   },
 
   components: {
@@ -557,6 +563,19 @@ export default {
     },
     interactionsLoaded() {
       return this.interactions !== null && this.total !== null;
+    },
+    shownErrorMessages() {
+      const errorIds = Object.keys(this.errorMessages.value);
+
+      return errorIds
+        .map((errorId, index) => {
+          const isRelatedFieldExists = this.interactions.value.find(({ id }) => id === errorId);
+
+          if (isRelatedFieldExists) {
+            return errorId;
+          }
+        })
+        .filter(Boolean);
     },
   },
 
@@ -727,6 +746,8 @@ export default {
               bundlerTxId: i.interaction.bundlerTxId,
             });
           }
+          console.log(this.interactions);
+          console.log(this.validity);
         });
     },
 
@@ -746,23 +767,12 @@ export default {
       this.loadedValidity = true;
 
       this.validity = data.validity;
+      this.errorMessages = data.errorMessages;
+
+      console.log(this.errorMessages);
+      console.log(this.validity);
     },
 
-    // async getInteractionValidity() {
-    //   const validity = fetch(
-    //     `${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
-    //   ).then(async (res) => {
-    //     if (res.status == 404) {
-    //       this.loadedValidity = true;
-    //       return null;
-    //     } else {
-    //       const data = await res.json();
-    //       this.loadedValidity = true;
-    //       return data.validity;
-    //     }
-    //   });
-    //   return validity;
-    // },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
@@ -793,5 +803,9 @@ export default {
     border-color: var(--warp-blue-color) !important;
     border-radius: 50%;
   }
+}
+
+.tx-error-message {
+  color: red;
 }
 </style>
