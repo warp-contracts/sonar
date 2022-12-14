@@ -6,6 +6,8 @@
         <p class="json-header">{{ header }}</p>
   
         <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
+        <p class="json-header">sortKey</p>
+        <json-viewer theme="json-theme" v-if="(state && sortKey)" :value="sortKey" :expand-depth="1" copyable sort> </json-viewer>
       </div>
     </div>
   </template>
@@ -13,7 +15,6 @@
   <script>
   import JsonViewer from 'vue-json-viewer';
   import { mapState } from 'vuex';
-  import constants from '@/constants';
   
   export default {
     name: 'ContractCurrentState',
@@ -21,6 +22,7 @@
     props: {
       contractId: String,
       currentState: Object,
+      sortKey: Object,
     },
   
     data() {
@@ -36,10 +38,6 @@
     },
     methods: {
       async created() {
-        // fetch(`${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
-        //   (response) => {
-        //     if (response.status == 404) {
-        //       this.loaded = true;
         this.header = 'Contract Current State';
         this.state = this.currentState;
       },
