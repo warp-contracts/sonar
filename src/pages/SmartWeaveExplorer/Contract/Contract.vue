@@ -307,6 +307,7 @@
                           title="Copy to clipboard"
                         ></div>
                       </div>
+                      
                     </template>
 
                     <template #cell(bundlerId)="data">
@@ -330,7 +331,7 @@
                       <span v-else>N/A</span>
                     </template>
 
-                    <template #cell(validity)="data">
+                    <template class="validity-cell" #cell(validity)="data">
                       <div
                         v-show="validity && validity[data.item.interactionId] == true"
                         class="flaticon-check centered"
@@ -342,6 +343,13 @@
 
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
+                      <div class="tx-error-message-container position-absolute" v-if="errorMessages">
+                      <div v-show="validity && errorMessages[data.item.interactionId]">
+                        <p class="tx-error-message">
+                          Error: <span>{{ errorMessages[data.item.interactionId] }}</span>
+                        </p>
+                      </div>
+                    </div>
                     </template>
 
                     <template #cell(block_id)="data">
@@ -373,11 +381,6 @@
                     </template>
 
                     <template slot="row-details" slot-scope="data">
-                      <div v-show="errorMessages[data.item.interactionId]">
-                        <p class="tx-error-message">
-                          Error: <span>{{ errorMessages[data.item.interactionId] }}</span>
-                        </p>
-                      </div>
                       <div>
                         <p class="json-header">Contract Input:</p>
                         <json-viewer
@@ -804,8 +807,28 @@ export default {
     border-radius: 50%;
   }
 }
+::v-deep .table > tbody > tr > td {
+padding: 1rem;
+}
 
+.tx-error-message-container {
+  left: 42px;
+}
 .tx-error-message {
+  font-size: 0.8rem;
   color: red;
+}
+
+.validity-cell {
+  padding: 10rem;
+}
+
+@media (max-width: 1023px) {
+  .tx-error-message-container {
+    transform: translate(0, 1rem);
+  }
+  ::v-deep .table > tbody > tr > td[aria-colindex="3"]{
+    padding-bottom: 4rem !important;
+  }
 }
 </style>
