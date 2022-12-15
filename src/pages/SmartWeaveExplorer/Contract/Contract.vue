@@ -128,14 +128,13 @@
                 <div class="dot-flashing"></div>
               </div>
               <div v-else>
-                <div v-if="validity">
+                <div>
                   <a
                     target="_blank"
                     :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
                     >Link</a
                   >
                 </div>
-                <div v-if="!validity" class="flaticon-cross" />
               </div>
             </div>
             <div v-if="wasmLang" class="cell">
@@ -346,7 +345,7 @@
                       <span v-else>N/A</span>
                     </template>
 
-                    <template class="validity-cell" #cell(validity)="data">
+                    <template #cell(validity)="data">
                       <div
                         v-show="validity && validity[data.item.interactionId] == true"
                         class="flaticon-check centered"
@@ -355,10 +354,8 @@
                         v-show="validity && validity[data.item.interactionId] == false"
                         class="flaticon-cross centered"
                       />
-
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
-                      
                     </template>
 
                     <template #cell(block_id)="data">
@@ -784,8 +781,10 @@ export default {
         this.currentState = data.state;
       }
       this.loadedValidity = true;
+      if (data.validity && Object.keys(data.validity).length > 0) {
+        this.validity = data.validity;
+      }
 
-      this.validity = data.validity;
       this.dre_sortKey = data.sortKey;
       this.errorMessages = data.errorMessages;
     },
@@ -826,6 +825,4 @@ export default {
   font-size: 0.8rem;
   color: red;
 }
-
-
 </style>

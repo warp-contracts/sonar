@@ -22,7 +22,7 @@
     props: {
       contractId: String,
       currentState: Object,
-      sortKey: Object,
+      sortKey: String,
     },
   
     data() {

@@ -212,6 +212,10 @@
             <div>Quantity</div>
             <div>{{ interaction.interaction?.quantity.winston }}</div>
           </div>
+          <div v-if="errorMessage" class="interaction-item error-message">
+            <div>Error</div>
+            <div class="error-text">{{ errorMessage }}</div>
+          </div>
         </div>
         <div class="pl-3 col-lg-7 col-12 info-container" v-if="!loaded">
           <div v-for="n in 11" :key="n" class="preloader text-preloader tx-preloader"></div>
@@ -286,6 +290,7 @@ export default {
       correct: false,
       usdPrice: 0,
       qty: 0,
+      errorMessage: null,
     };
   },
 
@@ -422,6 +427,7 @@ export default {
                 : fetchedInteractions.data.interaction.recipient,
           };
           this.loaded = true;
+          this.getErrorMessages();
         })
         .catch((e) => {
           this.correct = false;
@@ -429,6 +435,16 @@ export default {
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
+    },
+    async getErrorMessages() {
+      const response = await fetch(
+        `https://dre-1.warp.cc/contract?id=${this.interaction.contractId}&errorMessages=true`
+      );
+      const data = await response.json();
+      if (data.errorMessages && Object.keys(data.errorMessages).length > 0) {
+        let err = Object.keys(data.errorMessages).find((id) => id == this.interactionId);
+        this.errorMessage = data.errorMessages[err];
+      }
     },
   },
 };
@@ -453,5 +469,11 @@ export default {
 
 .info-container {
   margin-top: 50px;
+}
+
+.error-message {
+  .error-text {
+    color: red;
+  }
 }
 </style>
