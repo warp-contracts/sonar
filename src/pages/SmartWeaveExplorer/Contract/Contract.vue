@@ -358,13 +358,7 @@
 
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
-                      <div class="tx-error-message-container position-absolute" v-if="errorMessages">
-                        <div v-show="validity && errorMessages[data.item.interactionId]">
-                          <p class="tx-error-message">
-                            Error: <span>{{ errorMessages[data.item.interactionId] }}</span>
-                          </p>
-                        </div>
-                      </div>
+                      
                     </template>
 
                     <template #cell(block_id)="data">
@@ -396,6 +390,13 @@
                     </template>
 
                     <template slot="row-details" slot-scope="data">
+                      <div class="tx-error-message-container" v-if="errorMessages">
+                        <div v-show="validity && errorMessages[data.item.interactionId]">
+                          <p class="tx-error-message">
+                            Error: <span>{{ errorMessages[data.item.interactionId] }}</span>
+                          </p>
+                        </div>
+                      </div>
                       <div>
                         <p class="json-header">Contract Input:</p>
                         <json-viewer
@@ -821,27 +822,10 @@ export default {
   }
 }
 
-//ERROR MESSAGES - TABLE
-.tx-error-message-container {
-  left: 42px;
-  transform: translate(0, 3px);
-}
 .tx-error-message {
   font-size: 0.8rem;
   color: red;
 }
 
-//TABLE STYLING
-::v-deep .table > tbody > tr > td {
-  padding: 1rem;
-}
 
-@media (max-width: 1023px) {
-  .tx-error-message-container {
-    transform: translate(0, 1rem);
-  }
-  ::v-deep .table > tbody > tr > td[data-label='valid'] {
-    padding-bottom: 4rem !important;
-  }
-}
 </style>
