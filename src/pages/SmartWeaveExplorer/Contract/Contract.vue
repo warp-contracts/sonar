@@ -354,7 +354,7 @@
                         v-show="validity && validity[data.item.interactionId] == false"
                         class="flaticon-cross centered"
                       />
-                      <div v-show="validity && !validity[data.item.interactionId]" class="text-center">N/A</div>
+                      <div v-if="validity && !(data.item.interactionId in validity)" class="text-center">N/A</div>
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>

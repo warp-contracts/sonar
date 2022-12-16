@@ -159,6 +159,10 @@
             </div>
             <div v-else>N/A</div>
           </div>
+          <div v-if="errorMessage" class="interaction-item error-message">
+            <div>Error</div>
+            <div class="error-text">{{ errorMessage }}</div>
+          </div>
           <div class="interaction-item">
             <div>Function</div>
             <div>{{ interaction.func }}</div>
@@ -211,10 +215,6 @@
           <div class="interaction-item">
             <div>Quantity</div>
             <div>{{ interaction.interaction?.quantity.winston }}</div>
-          </div>
-          <div v-if="errorMessage" class="interaction-item error-message">
-            <div>Error</div>
-            <div class="error-text">{{ errorMessage }}</div>
           </div>
         </div>
         <div class="pl-3 col-lg-7 col-12 info-container" v-if="!loaded">
