@@ -99,8 +99,8 @@
                 <div class="dot-flashing"></div>
               </div>
               <div v-else>
-                <!-- <div v-if="validity" class="flaticon-check" /> -->
-                <div class="flaticon-cross" />
+                <div v-if="validity" class="flaticon-check" />
+                <div v-if="!validity" class="flaticon-cross" />
               </div>
             </div>
             <div class="cell">
@@ -120,6 +120,21 @@
                   <a target="_blank" :href="contractData">Link</a>
                 </div>
                 <div v-else class="flaticon-cross" />
+              </div>
+            </div>
+            <div class="cell">
+              <div class="cell-header pb-2">DRE Data</div>
+              <div v-if="!loadedValidity" class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
+              <div v-else>
+                <div>
+                  <a
+                    target="_blank"
+                    :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
+                    >Link</a
+                  >
+                </div>
               </div>
             </div>
             <div v-if="wasmLang" class="cell">
@@ -202,7 +217,15 @@
             :active="$route.hash === '#state'"
             @click="onInput($route.hash)"
           >
-            State
+            Initial State
+          </b-nav-item>
+          <b-nav-item
+            v-if="currentState"
+            :to="`${isTestnet ? '?network=testnet' : ''}#current-state`"
+            :active="$route.hash === '#current-state'"
+            @click="onInput($route.hash)"
+          >
+            Current State
           </b-nav-item>
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
@@ -331,6 +354,7 @@
                         v-show="validity && validity[data.item.interactionId] == false"
                         class="flaticon-cross centered"
                       />
+                      <div v-if="validity && !(data.item.interactionId in validity)" class="text-center">N/A</div>
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>
@@ -364,6 +388,13 @@
                     </template>
 
                     <template slot="row-details" slot-scope="data">
+                      <div class="tx-error-message-container" v-if="errorMessages">
+                        <div v-show="validity && errorMessages[data.item.interactionId]">
+                          <p class="tx-error-message">
+                            Error: <span>{{ errorMessages[data.item.interactionId] }}</span>
+                          </p>
+                        </div>
+                      </div>
                       <div>
                         <p class="json-header">Contract Input:</p>
                         <json-viewer
@@ -403,6 +434,16 @@
               <ContractState v-if="initState" :contractId="contractId" :initState="initState"></ContractState>
             </div>
           </div>
+          <div :class="['tab-pane', { active: $route.hash === '#current-state' }]" class="p-2">
+            <div>
+              <ContractCurrentState
+                v-if="currentState"
+                :contractId="contractId"
+                :currentState="currentState"
+                :sortKey="dre_sortKey"
+              ></ContractCurrentState>
+            </div>
+          </div>
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>
@@ -425,6 +466,7 @@ import { TagsParser } from 'warp-contracts';
 import JsonViewer from 'vue-json-viewer';
 import ContractCode from './ContractCode/ContractCode';
 import ContractState from './ContractState/ContractState';
+import ContractCurrentState from './ContractCurrentState/ContractCurrentState';
 import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
@@ -489,6 +531,7 @@ export default {
       noInteractionsDetected: false,
       wasmLang: null,
       initState: null,
+      currentState: null,
       loadedValidity: true,
       loadedContract: null,
       validity: false,
@@ -496,6 +539,8 @@ export default {
       sourceTxId: null,
       loadedContractData: false,
       contractData: null,
+      errorMessages: null,
+      dre_sortKey: null,
       tags: [],
     };
   },
@@ -514,7 +559,7 @@ export default {
     this.getContract();
     await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
-    // this.validity = await this.getInteractionValidity();
+    this.getDreState();
   },
 
   components: {
@@ -522,10 +567,11 @@ export default {
     JsonViewer,
     Error,
     ContractState,
+    ContractCurrentState,
     ContractCode,
     ContractTags,
-    TestnetLabel
-},
+    TestnetLabel,
+  },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     contractId() {
@@ -536,6 +582,19 @@ export default {
     },
     interactionsLoaded() {
       return this.interactions !== null && this.total !== null;
+    },
+    shownErrorMessages() {
+      const errorIds = Object.keys(this.errorMessages.value);
+
+      return errorIds
+        .map((errorId, index) => {
+          const isRelatedFieldExists = this.interactions.value.find(({ id }) => id === errorId);
+
+          if (isRelatedFieldExists) {
+            return errorId;
+          }
+        })
+        .filter(Boolean);
     },
   },
 
@@ -708,21 +767,29 @@ export default {
           }
         });
     },
-    // async getInteractionValidity() {
-    //   const validity = fetch(
-    //     `${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`
-    //   ).then(async (res) => {
-    //     if (res.status == 404) {
-    //       this.loadedValidity = true;
-    //       return null;
-    //     } else {
-    //       const data = await res.json();
-    //       this.loadedValidity = true;
-    //       return data.validity;
-    //     }
-    //   });
-    //   return validity;
-    // },
+
+    async getDreState() {
+      const response = await fetch(
+        `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
+      );
+      if (response.status == 404) {
+        this.loadedValidity = true;
+      }
+      const data = await response.json();
+      if (data.state === undefined) {
+        this.currentState = null;
+      } else {
+        this.currentState = data.state;
+      }
+      this.loadedValidity = true;
+      if (data.validity && Object.keys(data.validity).length > 0) {
+        this.validity = data.validity;
+      }
+
+      this.dre_sortKey = data.sortKey;
+      this.errorMessages = data.errorMessages;
+    },
+
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
@@ -753,5 +820,10 @@ export default {
     border-color: var(--warp-blue-color) !important;
     border-radius: 50%;
   }
+}
+
+.tx-error-message {
+  font-size: 0.8rem;
+  color: red;
 }
 </style>
