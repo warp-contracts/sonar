@@ -20,34 +20,12 @@
             </svg>
           </div>
         </summary>
-        <!-- <div>
-          <p class="json-header">Timestamp</p>
+
+        <div class="dreData-wrapper">
+          <p class="json-header">DRE Data</p>
           <json-viewer
             theme="json-theme"
-            v-if="timestamp"
-            :value="timestamp"
-            :expand-depth="1"
-            copyable
-            sort
-          ></json-viewer>
-        </div>
-        <div>
-          <p class="json-header">Signature</p>
-          <json-viewer
-            theme="json-theme"
-            v-if="signature"
-            :value="signature"
-            :expand-depth="1"
-            copyable
-            sort
-          ></json-viewer>
-        </div> -->
-         <div class="dreData-wrapper" v-for="data in dreData" :key="data.title">
-          <p class="json-header">{{ data.title }}</p>
-          <json-viewer
-            theme="json-theme"
-            v-if="data.content"
-            :value="data.content"
+            :value="dreData"
             :expand-depth="1"
             copyable
             sort
@@ -77,12 +55,12 @@ export default {
 
   data() {
     return {
-      dreData: [
-        { title: 'Timestamp', content: this.timestamp },
-        { title: 'Signature', content: this.signature },
-        { title: 'stateHash', content: this.stateHash },
-        { title: 'Manifest', content: this.manifest },
-      ],
+      dreData: {
+        timestamp: this.timestamp,
+        signature: this.signature,
+        stateHash: this.stateHash,
+        manifest: this.manifest,
+      },
       state: null,
       loaded: true,
       header: null,
@@ -134,7 +112,7 @@ svg {
 }
 details[open] svg {
   transform: rotate(180deg);
-   transition: 0.2s; 
+  transition: 0.2s;
 }
 summary {
   display: flex;
@@ -148,7 +126,6 @@ summary {
 summary::webkit-details-marker {
   display: none;
 }
-
 
 .dreData-wrapper {
   margin: 1rem 0;
