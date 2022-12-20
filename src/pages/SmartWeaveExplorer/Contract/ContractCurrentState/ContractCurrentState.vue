@@ -1,68 +1,156 @@
 <template>
-    <div>
-      <div class="state-container" v-if="!loaded">Loading Contract State...</div>
-  
-      <div v-if="state">
-        <p class="json-header">{{ header }}</p>
-  
-        <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
-        <p class="json-header">sortKey</p>
-        <json-viewer theme="json-theme" v-if="(state && sortKey)" :value="sortKey" :expand-depth="1" copyable sort> </json-viewer>
-      </div>
+  <div>
+    <div class="state-container" v-if="!loaded">Loading Contract State...</div>
+
+    <div v-if="state">
+      <p class="json-header">{{ header }}</p>
+
+      <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
+      <p class="json-header">sortKey</p>
+      <json-viewer theme="json-theme" v-if="state && sortKey" :value="sortKey" :expand-depth="1" copyable sort>
+      </json-viewer>
     </div>
-  </template>
-  
-  <script>
-  import JsonViewer from 'vue-json-viewer';
-  import { mapState } from 'vuex';
-  
-  export default {
-    name: 'ContractCurrentState',
-  
-    props: {
-      contractId: String,
-      currentState: Object,
-      sortKey: String,
+    <div>
+      <details>
+        <summary>
+          <h3>Details</h3>
+          <div>
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 1L7 7L1 1" stroke="#7B8BA5" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+        </summary>
+        <!-- <div>
+          <p class="json-header">Timestamp</p>
+          <json-viewer
+            theme="json-theme"
+            v-if="timestamp"
+            :value="timestamp"
+            :expand-depth="1"
+            copyable
+            sort
+          ></json-viewer>
+        </div>
+        <div>
+          <p class="json-header">Signature</p>
+          <json-viewer
+            theme="json-theme"
+            v-if="signature"
+            :value="signature"
+            :expand-depth="1"
+            copyable
+            sort
+          ></json-viewer>
+        </div> -->
+         <div class="dreData-wrapper" v-for="data in dreData" :key="data.title">
+          <p class="json-header">{{ data.title }}</p>
+          <json-viewer
+            theme="json-theme"
+            v-if="data.content"
+            :value="data.content"
+            :expand-depth="1"
+            copyable
+            sort
+          ></json-viewer>
+        </div>
+      </details>
+    </div>
+  </div>
+</template>
+
+<script>
+import JsonViewer from 'vue-json-viewer';
+import { mapState } from 'vuex';
+
+export default {
+  name: 'ContractCurrentState',
+
+  props: {
+    contractId: String,
+    currentState: Object,
+    sortKey: String,
+    timestamp: String,
+    signature: String,
+    stateHash: String,
+    manifest: Object,
+  },
+
+  data() {
+    return {
+      dreData: [
+        { title: 'Timestamp', content: this.timestamp },
+        { title: 'Signature', content: this.signature },
+        { title: 'stateHash', content: this.stateHash },
+        { title: 'Manifest', content: this.manifest },
+      ],
+      state: null,
+      loaded: true,
+      header: null,
+    };
+  },
+
+  mounted() {
+    this.created();
+  },
+  methods: {
+    async created() {
+      this.header = 'Contract Current State';
+      this.state = this.currentState;
     },
-  
-    data() {
-      return {
-        state: null,
-        loaded: true,
-        header: null,
-      };
-    },
-  
-    mounted() {
-      this.created();
-    },
-    methods: {
-      async created() {
-        this.header = 'Contract Current State';
-        this.state = this.currentState;
-      },
-    },
-  
-    components: { JsonViewer },
-    computed: {
-      ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
-    },
-  };
-  </script>
-  
-  <style>
-  .state-container {
-    height: 600px;
+  },
+
+  components: { JsonViewer },
+  computed: {
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.state-container {
+  height: 600px;
+}
+
+.json-header {
+  overflow: hidden;
+  padding: 20px 20px 10px 20px;
+  background: white;
+  margin-bottom: -10px;
+  font-size: 15px;
+  color: #6b6b6b;
+  font-weight: 500;
+}
+details {
+  margin-top: 2rem;
+  width: 100%;
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin: 0;
   }
-  
-  .json-header {
-    overflow: hidden;
-    padding: 20px 20px 10px 20px;
-    background: white;
-    margin-bottom: -10px;
-    font-size: 15px;
-    color: #6b6b6b;
-    font-weight: 500;
-  }
-  </style>
-  
+}
+svg {
+  transition: 0.2s;
+}
+details[open] svg {
+  transform: rotate(180deg);
+   transition: 0.2s; 
+}
+summary {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  justify-content: space-between;
+  list-style-type: none;
+  padding: 1rem 2rem;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+summary::webkit-details-marker {
+  display: none;
+}
+
+
+.dreData-wrapper {
+  margin: 1rem 0;
+}
+</style>

@@ -441,6 +441,10 @@
                 :contractId="contractId"
                 :currentState="currentState"
                 :sortKey="dre_sortKey"
+                :timestamp="dre_timestamp"
+                :signature="dre_signature"
+                :stateHash="dre_stateHash"
+                :manifest="dre_manifest"
               ></ContractCurrentState>
             </div>
           </div>
@@ -541,6 +545,10 @@ export default {
       contractData: null,
       errorMessages: null,
       dre_sortKey: null,
+      dre_timestamp: null,
+      dre_signature: null,
+      dre_stateHash: null,
+      dre_manifest: null,
       tags: [],
     };
   },
@@ -788,6 +796,10 @@ export default {
 
       this.dre_sortKey = data.sortKey;
       this.errorMessages = data.errorMessages;
+      this.dre_timestamp = data.timestamp;
+      this.dre_signature = data.signature;
+      this.dre_stateHash = data.stateHash;
+      this.dre_manifest = data.manifest;
     },
 
     styleCategory(text, numberOfCategories, index) {
