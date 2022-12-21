@@ -228,7 +228,7 @@
             Current State
           </b-nav-item>
           <b-nav-item
-            v-if="currentState"
+            v-if="dre_events"
             :to="`${isTestnet ? '?network=testnet' : ''}#events`"
             :active="$route.hash === '#events'"
             @click="onInput($route.hash)"
@@ -818,7 +818,7 @@ export default {
       this.dre_manifest = data.manifest;
       this.dre_events = data.events;
 
-      console.log(this.dre_events);
+      console.log(data.events);
     },
 
     styleCategory(text, numberOfCategories, index) {

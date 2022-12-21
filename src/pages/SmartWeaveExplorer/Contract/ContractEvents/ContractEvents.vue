@@ -4,10 +4,12 @@
       v-if="events?.length > 0"
       ref="table"
       id="events-table"
+      :per-page="perPage"
       stacked="md"
       hover
       :items="events"
       :fields="fields"
+      :current-page="currentPage"
       @row-clicked="rowClicked"
     >
       <template #table-busy></template>
@@ -36,6 +38,16 @@
 
       <template slot="row-details" slot-scope="data"> Message: {{ data.item.message }} </template>
     </b-table>
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="rows"
+      :per-page="perPage"
+      aria-controls="events-table"
+      align="center"
+      use-router
+      last-number
+      first-number
+    ></b-pagination>
   </div>
 </template>
 
@@ -46,6 +58,8 @@ export default {
   props: { events: Array },
   data() {
     return {
+      currentPage: 1,
+      perPage: 15,
       fields: [
         'id',
         'event',
@@ -58,6 +72,11 @@ export default {
         { key: 'actions', label: '' },
       ],
     };
+  },
+  computed: {
+    rows() {
+      return this.events.length;
+    },
   },
   methods: {
     rowClicked(record) {
