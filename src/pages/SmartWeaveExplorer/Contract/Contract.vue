@@ -228,6 +228,14 @@
             Current State
           </b-nav-item>
           <b-nav-item
+            v-if="currentState"
+            :to="`${isTestnet ? '?network=testnet' : ''}#events`"
+            :active="$route.hash === '#events'"
+            @click="onInput($route.hash)"
+          >
+            Events
+          </b-nav-item>
+          <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
             :active="$route.hash === '#tags'"
             @click="onInput($route.hash)"
@@ -448,6 +456,11 @@
               ></ContractCurrentState>
             </div>
           </div>
+          <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
+            <div>
+              <ContractEvents v-if="dre_events" :events="dre_events"></ContractEvents>
+            </div>
+          </div>
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>
@@ -478,6 +491,7 @@ import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
+import ContractEvents from './ContractEvents/ContractEvents.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -549,6 +563,7 @@ export default {
       dre_signature: null,
       dre_stateHash: null,
       dre_manifest: null,
+      dre_events: null,
       tags: [],
     };
   },
@@ -579,6 +594,7 @@ export default {
     ContractCode,
     ContractTags,
     TestnetLabel,
+    ContractEvents,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
@@ -800,6 +816,9 @@ export default {
       this.dre_signature = data.signature;
       this.dre_stateHash = data.stateHash;
       this.dre_manifest = data.manifest;
+      this.dre_events = data.events;
+
+      console.log(this.dre_events);
     },
 
     styleCategory(text, numberOfCategories, index) {
