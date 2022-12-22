@@ -16,10 +16,10 @@
 
       <template #cell(id)="data">
         <div class="d-flex">
-          {{ data.item.contract_tx_id }}
+          {{ data.item.contract_tx_id | tx }}
           <div
             class="flaticon-copy-to-clipboard small"
-            v-clipboard="data.item.interactionId"
+            v-clipboard="data.item.contract_tx_id"
             v-clipboard:success="({ event }) => event.stopPropagation()"
             title="Copy to clipboard"
           ></div>
@@ -36,7 +36,17 @@
         <div v-else class="flaticon-chevron-up" />
       </template>
 
-      <template slot="row-details" slot-scope="data"> Message: {{ data.item.message }} </template>
+      <template #cell(timestamp)="data">
+        {{ data.item.timestamp }}
+      </template>
+
+      <template slot="row-details" slot-scope="data">
+        <div class="event-message" v-if="data.item.message">
+          Message:
+          {{ data.item.message }}
+        </div>
+        <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme"></json-viewer>
+      </template>
     </b-table>
     <b-pagination
       v-model="currentPage"
@@ -44,7 +54,6 @@
       :per-page="perPage"
       aria-controls="events-table"
       align="center"
-      use-router
       last-number
       first-number
     ></b-pagination>
@@ -52,23 +61,26 @@
 </template>
 
 <script>
+import JsonViewer from 'vue-json-viewer';
+
 export default {
   name: 'ContractEvents',
-  components: {},
+  components: { JsonViewer },
   props: { events: Array },
   data() {
     return {
+      copiedDisplay: false,
       currentPage: 1,
       perPage: 15,
       fields: [
-        'id',
+        { label: 'id', key: 'id', thStyle: { width: '40%' } },
         'event',
-        'timestamp',
         {
           key: 'message',
           label: 'message',
           thClass: 'text-center',
         },
+        'timestamp',
         { key: 'actions', label: '' },
       ],
     };
@@ -111,6 +123,11 @@ export default {
   &.centered {
     margin: 0 auto;
   }
+}
+
+.event-message {
+  color: var(--warp-blue-color);
+  margin: 1rem 0;
 }
 
 .centered {
