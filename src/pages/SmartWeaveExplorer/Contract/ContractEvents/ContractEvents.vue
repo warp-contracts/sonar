@@ -37,7 +37,7 @@
       </template>
 
       <template #cell(timestamp)="data">
-        {{ data.item.timestamp }}
+        {{ new Date(data.item.timestamp).toISOString().substring(0,19).replace('T', ' ') }}
       </template>
 
       <template slot="row-details" slot-scope="data">
@@ -89,10 +89,22 @@ export default {
     rows() {
       return this.events.length;
     },
+    
   },
   methods: {
     rowClicked(record) {
       this.$set(record, '_showDetails', !record._showDetails);
+    },
+    localDate(timestamp) {
+      let d = new Date(timestamp);
+      d.setUTCFullYear(2004);
+      d.setUTCMonth(1);
+      d.setUTCDate(29);
+      d.setUTCHours(2);
+      d.setUTCMinutes(45);
+      d.setUTCSeconds(26);
+
+      return d.toLocaleString();
     },
   },
 };
