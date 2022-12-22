@@ -386,11 +386,6 @@ export default {
 
         .then((fetchedInteractions) => {
           const tagsParser = new TagsParser();
-
-          const interactionInterface = {
-            cursor: '',
-            node: fetchedInteractions.data.interaction,
-          };
           this.correct = true;
           this.correct = !_.isEmpty(fetchedInteractions.data);
           this.interaction = {
@@ -411,7 +406,9 @@ export default {
             source: fetchedInteractions.data.confirmingpeer == 'https://node1.bundlr.network' ? 'sequencer' : 'arweave',
             confirmedAtHeight: fetchedInteractions.data.confirmedAtHeight,
             tags: fetchedInteractions.data.interaction.tags,
-            interactionValue: JSON.parse(tagsParser.getInputTag(interactionInterface, this.contractId).value),
+            interactionValue: JSON.parse(
+              tagsParser.getInputTag(fetchedInteractions.data.interaction, this.contractId).value
+            ),
             timestamp: fetchedInteractions.data.interaction.block.timestamp,
             timestampFormatted: dayjs
               .utc(dayjs.unix(fetchedInteractions.data.interaction.block.timestamp))

@@ -1,6 +1,6 @@
 import constants from '@/constants';
 import Arweave from 'arweave';
-import { WarpWebFactory } from 'warp-contracts';
+import { WarpFactory } from 'warp-contracts';
 
 export default {
   namespaced: true,
@@ -50,9 +50,7 @@ export default {
       commit('setArweave', arweaveObject);
     },
     warp({ commit, state }) {
-      const arweave = state.arweave;
-
-      const warp = WarpWebFactory.memCachedBased(arweave).build();
+      const warp = WarpFactory.forMainnet();
 
       commit('setWarp', warp);
     },
