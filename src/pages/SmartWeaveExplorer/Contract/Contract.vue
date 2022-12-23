@@ -817,8 +817,6 @@ export default {
       this.dre_stateHash = data.stateHash;
       this.dre_manifest = data.manifest;
       this.dre_events = data.events;
-
-      console.log(data.events);
     },
 
     styleCategory(text, numberOfCategories, index) {

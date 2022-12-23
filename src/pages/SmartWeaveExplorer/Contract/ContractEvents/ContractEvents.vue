@@ -95,17 +95,6 @@ export default {
     rowClicked(record) {
       this.$set(record, '_showDetails', !record._showDetails);
     },
-    localDate(timestamp) {
-      let d = new Date(timestamp);
-      d.setUTCFullYear(2004);
-      d.setUTCMonth(1);
-      d.setUTCDate(29);
-      d.setUTCHours(2);
-      d.setUTCMinutes(45);
-      d.setUTCSeconds(26);
-
-      return d.toLocaleString();
-    },
   },
 };
 </script>

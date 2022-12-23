@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="stats-wrapper d-block d-md-none">
-        <div class="item-text">
+        <div class="item-text total-contracts">
           <div>Total contracts</div>
           <div class="d-flex justify-content-center">
             <div v-if="totalContractsLoaded">
@@ -162,9 +162,7 @@
             </div>
           </template>
           <template #cell(creator)="data">
-            <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`" >
-              {{ data.item.owner | tx }}</a
-            >
+            <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
             <span v-else>{{ data.item.owner | tx }}</span>
           </template>
 
@@ -399,5 +397,13 @@ export default {
 <style lang="scss" scoped>
 .total-field {
   min-width: 80px;
+}
+
+@media (max-width: 1024px) {
+  .stats-wrapper {
+    .total-contracts {
+      margin-top: 0;
+    }
+  }
 }
 </style>
