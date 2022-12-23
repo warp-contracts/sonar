@@ -37,7 +37,7 @@
       </template>
 
       <template #cell(timestamp)="data">
-        {{ new Date(data.item.timestamp).toISOString().substring(0,19).replace('T', ' ') }}
+        {{ new Date(data.item.timestamp).toISOString().substring(0, 19).replace('T', ' ') }}
       </template>
 
       <template slot="row-details" slot-scope="data">
@@ -45,7 +45,10 @@
           Message:
           {{ data.item.message }}
         </div>
-        <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme"></json-viewer>
+        <div class="json-display">
+          <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme"></json-viewer>
+          <ExportButton :exportData="data.item" :fileName="'event'"></ExportButton>
+        </div>
       </template>
     </b-table>
     <b-pagination
@@ -62,10 +65,11 @@
 
 <script>
 import JsonViewer from 'vue-json-viewer';
+import ExportButton from '../../../../components/ExportButton.vue';
 
 export default {
   name: 'ContractEvents',
-  components: { JsonViewer },
+  components: { JsonViewer, ExportButton },
   props: { events: Array },
   data() {
     return {
@@ -89,7 +93,6 @@ export default {
     rows() {
       return this.events.length;
     },
-    
   },
   methods: {
     rowClicked(record) {
@@ -100,6 +103,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.json-display {
+  position: relative;
+}
 .flaticon-chevron-down,
 .flaticon-chevron-up {
   height: 15px;

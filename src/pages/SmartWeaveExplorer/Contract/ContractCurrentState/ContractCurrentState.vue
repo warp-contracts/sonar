@@ -2,13 +2,11 @@
   <div>
     <div class="state-container" v-if="!loaded">Loading Contract State...</div>
 
-    <div v-if="state">
+    <div class="json-display" v-if="state">
       <p class="json-header">{{ header }}</p>
 
       <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
-      <p class="json-header">sortKey</p>
-      <json-viewer theme="json-theme" v-if="state && sortKey" :value="sortKey" :expand-depth="1" copyable sort>
-      </json-viewer>
+      <ExportButton :exportData="state" :fileName="'current-state'" :fileType="'text/plain'"></ExportButton>
     </div>
     <div>
       <details>
@@ -21,15 +19,10 @@
           </div>
         </summary>
 
-        <div class="dreData-wrapper">
+        <div class="dreData-wrapper json-display">
           <p class="json-header">DRE Data</p>
-          <json-viewer
-            theme="json-theme"
-            :value="dreData"
-            :expand-depth="1"
-            copyable
-            sort
-          ></json-viewer>
+          <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort></json-viewer>
+          <ExportButton :exportData="dreData" :fileName="'dre-data'" :fileType="'text/plain'"></ExportButton>
         </div>
       </details>
     </div>
@@ -39,6 +32,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import { mapState } from 'vuex';
+import ExportButton from '../../../../components/ExportButton.vue';
 
 export default {
   name: 'ContractCurrentState',
@@ -73,11 +67,12 @@ export default {
   methods: {
     async created() {
       this.header = 'Contract Current State';
+      this.currentState.sortKey = this.sortKey;
       this.state = this.currentState;
     },
   },
 
-  components: { JsonViewer },
+  components: { JsonViewer, ExportButton },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
   },
@@ -87,6 +82,9 @@ export default {
 <style lang="scss" scoped>
 .state-container {
   height: 600px;
+}
+.json-display {
+  position: relative;
 }
 
 .json-header {
