@@ -411,7 +411,9 @@ export default {
     },
     async getContracts(page) {
       axios
-        .get(`${this.gatewayUrl}/gateway/contracts-by-source?id=${this.sourceId}&limit=${this.limit}&page=${page}`)
+        .get(
+          `${this.gatewayUrl}/gateway/contracts-by-source?id=${this.sourceId}&limit=${this.limit}&page=${page}&sort=desc`
+        )
         .then(async (fetchedContracts) => {
           this.contracts = [];
           this.paging = fetchedContracts.data.paging;
