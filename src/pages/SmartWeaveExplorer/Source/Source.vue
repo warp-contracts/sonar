@@ -45,7 +45,7 @@
                     class="clipboard-success"
                     v-bind:class="{
                       hidden: !copiedDisplayOwner,
-                      visible: copiedDisplayOwner
+                      visible: copiedDisplayOwner,
                     }"
                   >
                     Copied
@@ -79,7 +79,7 @@
                     class="clipboard-success"
                     v-bind:class="{
                       hidden: !copiedDisplayBundler,
-                      visible: copiedDisplayBundler
+                      visible: copiedDisplayBundler,
                     }"
                   >
                     Copied
@@ -160,13 +160,11 @@
                     <template #cell(bundlerId)="data">
                       <div class="d-flex" v-if="data.item.bundlerId">
                         <a
-                          :href="
-                            `${
-                              daysAgo(data.item.timestamp) > 1
-                                ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerId}`
-                                : `https://arweave.net/${data.item.bundlerId}`
-                            }`
-                          "
+                          :href="`${
+                            daysAgo(data.item.timestamp) > 1
+                              ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerId}`
+                              : `https://arweave.net/${data.item.bundlerId}`
+                          }`"
                           target="_blank"
                           >{{ data.item.bundlerId | tx }}</a
                         >
@@ -266,7 +264,7 @@ export default {
         ['day', 86400],
         ['hour', 3600],
         ['minute', 60],
-        ['second', 1]
+        ['second', 1],
       ],
       fields: [
         'id',
@@ -278,8 +276,8 @@ export default {
           key: 'interactions',
           label: 'interactions',
           thClass: 'text-right',
-          tdClass: 'text-right'
-        }
+          tdClass: 'text-right',
+        },
       ],
       contracts: null,
       currentPage: 1,
@@ -307,13 +305,13 @@ export default {
       srcContentType: null,
       loadedContractData: false,
       contractData: null,
-      bundlerSrcTxId: null
+      bundlerSrcTxId: null,
     };
   },
   watch: {
-    sourceId: function() {
+    sourceId: function () {
       this.$router.go(0);
-    }
+    },
   },
   async mounted() {
     if (this.$route.params.id.length != 43) {
@@ -332,8 +330,8 @@ export default {
     JsonViewer,
     Error,
     ContractCode,
-    TestnetLabel
-},
+    TestnetLabel,
+  },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
     sourceId() {
@@ -344,7 +342,7 @@ export default {
     },
     contractsLoaded() {
       return this.contracts !== null;
-    }
+    },
   },
 
   methods: {
@@ -359,7 +357,7 @@ export default {
         if (interval >= 1) {
           return {
             interval: interval,
-            epoch: name
+            epoch: name,
           };
         }
       }
@@ -414,12 +412,11 @@ export default {
     async getContracts(page) {
       axios
         .get(`${this.gatewayUrl}/gateway/contracts-by-source?id=${this.sourceId}&limit=${this.limit}&page=${page}`)
-        .then(async fetchedContracts => {
-          if (this.contracts === null) {
-            this.contracts = [];
-          }
+        .then(async (fetchedContracts) => {
+          this.contracts = [];
           this.paging = fetchedContracts.data.paging;
           const contracts = fetchedContracts.data.contracts;
+          console.log(contracts);
           for (const c of contracts) {
             this.contracts.push({
               id: c.contractId,
@@ -427,7 +424,7 @@ export default {
               bundlerId: c.bundlerTxId,
               blockHeight: c.blockHeight,
               age: this.timeAgo(dayjs.unix(c.blockTimestamp)),
-              interactions: c.interactions
+              interactions: c.interactions,
             });
           }
         });
@@ -440,19 +437,21 @@ export default {
       this.axiosSource = CancelToken.source();
       this.total = null;
 
-      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async fetchedContractSource => {
-        const source = fetchedContractSource.data;
-        this.loadedSource = true;
-        this.wasmLang = source.srcWasmLang;
-        this.owner = source.owner;
-        this.bundlerSrcTxId = source.bundlerSrcTxId;
-        this.srcContentType = source.srcContentType;
-      });
+      axios
+        .get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`)
+        .then(async (fetchedContractSource) => {
+          const source = fetchedContractSource.data;
+          this.loadedSource = true;
+          this.wasmLang = source.srcWasmLang;
+          this.owner = source.owner;
+          this.bundlerSrcTxId = source.bundlerSrcTxId;
+          this.srcContentType = source.srcContentType;
+        });
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
-    }
-  }
+    },
+  },
 };
 </script>
 
