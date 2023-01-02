@@ -169,17 +169,17 @@
           </div>
           <div v-if="interaction">
             <p class="json-header">Input Value</p>
-            <json-viewer
-              :value="interaction.interactionValue"
-              :expand-depth="2"
-              copyable
-              sort
-              theme="json-theme"
+            <json-viewer :value="interaction.interactionValue" :expand-depth="2" copyable sort theme="json-theme">
+              <template v-slot:copy>
+                <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
             ></json-viewer>
           </div>
           <div class="vrf-container" v-if="interaction.vrf">
             <p class="json-header">VRF</p>
-            <json-viewer :value="interaction.vrf" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
+            <json-viewer :value="interaction.vrf" :expand-depth="2" copyable sort theme="json-theme">
+              <template v-slot:copy>
+                <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
+            ></json-viewer>
           </div>
           <div class="interaction-item" v-if="interaction.pstQty">
             <div>PST transfer qty</div>
@@ -224,13 +224,9 @@
           <div v-if="interaction">
             <p class="json-header">Interaction Tags</p>
             <json-viewer v-if="!loaded" :value="''" :expand-depth="2" copyable sort theme="json-theme"></json-viewer>
-            <json-viewer
-              v-else
-              :value="interaction.tags"
-              :expand-depth="2"
-              copyable
-              sort
-              theme="json-theme"
+            <json-viewer v-else :value="interaction.tags" :expand-depth="2" copyable sort theme="json-theme">
+              <template v-slot:copy>
+                <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
             ></json-viewer>
           </div>
         </div>

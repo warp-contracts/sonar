@@ -6,8 +6,12 @@
       <p class="json-header">{{ header }}</p>
 
       <div class="json-display">
-        <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
-        <ExportButton :exportData="state" :fileName="'initial-state'"></ExportButton>
+        <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort>
+          <template v-slot:copy>
+            <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+          </template>
+        </json-viewer>
+        <ExportButton :exportData="state" :fileName="'initial-state'" :fileType="'application/json'"></ExportButton>
       </div>
     </div>
   </div>
@@ -52,9 +56,7 @@ export default {
 </script>
 
 <style>
-.json-display {
-  position: relative;
-}
+
 
 .state-container {
   height: 600px;

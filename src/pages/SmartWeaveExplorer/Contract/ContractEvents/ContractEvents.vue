@@ -14,18 +14,6 @@
     >
       <template #table-busy></template>
 
-      <template #cell(id)="data">
-        <div class="d-flex">
-          {{ data.item.contract_tx_id | tx }}
-          <div
-            class="flaticon-copy-to-clipboard small"
-            v-clipboard="data.item.contract_tx_id"
-            v-clipboard:success="({ event }) => event.stopPropagation()"
-            title="Copy to clipboard"
-          ></div>
-        </div>
-      </template>
-
       <template #cell(message)="data">
         <div v-if="data.item.message" class="flaticon-check centered"></div>
         <div v-else class="flaticon-cross centered"></div>
@@ -46,8 +34,10 @@
           {{ data.item.message }}
         </div>
         <div class="json-display">
-          <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme"></json-viewer>
-          <ExportButton :exportData="data.item" :fileName="'event'"></ExportButton>
+          <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
+            <template v-slot:copy>
+            <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+          </template></json-viewer>
         </div>
       </template>
     </b-table>
@@ -77,7 +67,6 @@ export default {
       currentPage: 1,
       perPage: 15,
       fields: [
-        { label: 'id', key: 'id', thStyle: { width: '40%' } },
         'event',
         {
           key: 'message',

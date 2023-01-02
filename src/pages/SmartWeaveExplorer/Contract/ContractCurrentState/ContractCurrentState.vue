@@ -2,11 +2,16 @@
   <div>
     <div class="state-container" v-if="!loaded">Loading Contract State...</div>
 
-    <div class="json-display" v-if="state">
+    <div v-if="state">
       <p class="json-header">{{ header }}</p>
-
-      <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
-      <ExportButton :exportData="state" :fileName="'current-state'" :fileType="'text/plain'"></ExportButton>
+      <div class="json-display">
+        <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort>
+          <template v-slot:copy>
+            <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+          </template>
+        </json-viewer>
+        <ExportButton :exportData="state" :fileName="'current-state'" :fileType="'text/plain'"></ExportButton>
+      </div>
     </div>
     <div>
       <details>
@@ -21,8 +26,10 @@
 
         <div class="dreData-wrapper json-display">
           <p class="json-header">DRE Data</p>
-          <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort></json-viewer>
-          <ExportButton :exportData="dreData" :fileName="'dre-data'" :fileType="'text/plain'"></ExportButton>
+          <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
+            <template v-slot:copy>
+              <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
+          ></json-viewer>
         </div>
       </details>
     </div>
@@ -82,9 +89,6 @@ export default {
 <style lang="scss" scoped>
 .state-container {
   height: 600px;
-}
-.json-display {
-  position: relative;
 }
 
 .json-header {

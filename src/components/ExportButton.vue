@@ -1,5 +1,7 @@
 <template>
-  <div class="export-link"><p @click="exportToFile">Export</p></div>
+  <div class="export-link" @click="exportToFile">
+    <img src="../assets/icons/download.svg" class="jviewer-download-icon" alt="" />
+  </div>
 </template>
 
 <script>
@@ -18,7 +20,7 @@ export default {
     },
     fileType: {
       type: String,
-      default: 'text/plain',
+      default: 'application/json',
     },
   },
   data() {
@@ -34,15 +36,30 @@ export default {
 
 <style lang="scss" scoped>
 .export-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   position: absolute;
-  bottom: 0.5rem;
-  right: 1rem;
-  color: var(--warp-blue-color);
-  text-decoration: underline;
+  top: 0.6rem;
+  right: 4rem;
+
   cursor: pointer;
+
+  &:hover {
+    opacity: 0.85;
+  }
 
   p {
     margin: 0;
+  }
+
+  .jviewer-download-icon {
+    width: 1.2rem;
+  filter: invert(42%) sepia(84%) saturate(1521%) hue-rotate(207deg) brightness(101%) contrast(89%);
+
+  &:hover {
+    opacity: 0.85;
+  }
   }
 }
 </style>

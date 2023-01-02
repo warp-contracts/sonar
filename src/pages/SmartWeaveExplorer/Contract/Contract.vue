@@ -405,21 +405,23 @@
                       </div>
                       <div>
                         <p class="json-header">Contract Input:</p>
-                        <json-viewer
-                          :value="data.item.tags"
-                          :expand-depth="1"
-                          copyable
-                          sort
-                          theme="json-theme"
+                        <json-viewer :value="data.item.tags" :expand-depth="1" copyable sort theme="json-theme">
+                          <template v-slot:copy>
+                            <img
+                              src="@/assets/icons/copy-to-clipboard.svg"
+                              class="jviewer-copy-icon"
+                              alt="copy icon"
+                            /> </template
                         ></json-viewer>
                         <hr />
                         <p class="json-header">Full transaction:</p>
-                        <json-viewer
-                          :value="data.item.interaction"
-                          :expand-depth="1"
-                          copyable
-                          sort
-                          theme="json-theme"
+                        <json-viewer :value="data.item.interaction" :expand-depth="1" copyable sort theme="json-theme">
+                          <template v-slot:copy>
+                            <img
+                              src="@/assets/icons/copy-to-clipboard.svg"
+                              class="jviewer-copy-icon"
+                              alt="copy icon"
+                            /> </template
                         ></json-viewer>
                       </div>
                     </template>

@@ -34,7 +34,20 @@ export default {
 
 <style src="./styles/theme.scss" lang="scss" />
 <style lang="scss">
-div.contract-wrapper, div.charts-wrapper {
+div.contract-wrapper,
+div.charts-wrapper {
+  position: relative;
+}
+.jviewer-copy-icon {
+  width: 1.2rem;
+  filter: invert(42%) sepia(84%) saturate(1521%) hue-rotate(207deg) brightness(101%) contrast(89%);
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.json-display {
   position: relative;
 }
 </style>
