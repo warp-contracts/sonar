@@ -122,7 +122,7 @@
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
-            <div class="cell">
+            <!-- <div class="cell">
               <div class="cell-header pb-2">DRE Data</div>
               <div v-if="!loadedValidity" class="pl-3 pt-3">
                 <div class="dot-flashing"></div>
@@ -136,21 +136,22 @@
                   >
                 </div>
               </div>
-            </div>
-            <div v-if="wasmLang" class="cell">
+            </div> -->
+            <div  class="cell">
               <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
+              <div v-if="wasmLang">{{ wasmLang }}</div>
+              <div v-else>N/A</div>
             </div>
           </div>
           <div class="col-6 p-0">
-            <div class="cell">
+            <!-- <div class="cell">
               <div class="cell-header">Confirmed interactions</div>
               <div>{{ confirmed }}</div>
             </div>
             <div class="cell">
               <div class="cell-header">Corrupted interactions</div>
               <div>{{ corrupted }}</div>
-            </div>
+            </div> -->
             <div class="cell">
               <div class="cell-header">Source transaction id</div>
               <div class="d-flex">
@@ -185,13 +186,13 @@
                 </div>
               </div>
             </div>
-            <div v-if="pst_ticker" class="cell">
-              <div class="cell-header">PST Ticker</div>
-              <div>{{ pst_ticker }}</div>
+            <div  class="cell">
+              <div  class="cell-header">PST Ticker</div>
+              <div>{{ pst_ticker ? pst_ticker : 'N/A' }}</div>
             </div>
-            <div v-if="pst_name" class="cell">
+            <div  class="cell">
               <div class="cell-header">PST Name</div>
-              <div>{{ pst_name }}</div>
+              <div v-if="pst_name">{{ pst_name ? pst_name : 'N/A'}}</div>
             </div>
           </div>
         </div>
@@ -227,14 +228,14 @@
           >
             Current State
           </b-nav-item>
-          <b-nav-item
+          <!-- <b-nav-item
             v-if="dre_events"
             :to="`${isTestnet ? '?network=testnet' : ''}#events`"
             :active="$route.hash === '#events'"
             @click="onInput($route.hash)"
           >
-            Events
-          </b-nav-item>
+            Evaluation logs
+          </b-nav-item> -->
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
             :active="$route.hash === '#tags'"
@@ -265,7 +266,7 @@
                         class="flaticon-question-tooltip lowered"
                       />
                     </div>
-                    <div class="confirmation-status-item">
+                    <!-- <div class="confirmation-status-item">
                       <b-form-radio value="confirmed">Confirmed</b-form-radio>
                       <div
                         v-b-tooltip.hover
@@ -288,7 +289,7 @@
                         title="Show both confirmed and not yet processed interactions."
                         class="flaticon-question-tooltip lowered"
                       />
-                    </div>
+                    </div> -->
                   </b-form-radio-group>
                 </b-col>
 
@@ -458,11 +459,11 @@
               ></ContractCurrentState>
             </div>
           </div>
-          <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
+          <!-- <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
             <div>
               <ContractEvents v-if="dre_events" :events="dre_events"></ContractEvents>
             </div>
-          </div>
+          </div> -->
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>

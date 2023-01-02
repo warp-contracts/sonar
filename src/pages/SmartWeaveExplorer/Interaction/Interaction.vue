@@ -107,13 +107,13 @@
           <div class="interaction-item">
             <div>Sort key</div>
             <div style="word-break: break-all">
-              {{ interaction.sortKey ? interaction.sortKey : '-' }}
+              {{ interaction.sortKey ? interaction.sortKey : 'N/A' }}
             </div>
           </div>
           <div class="interaction-item">
             <div>Last Sort key</div>
             <div style="word-break: break-all">
-              {{ interaction.lastSortKey ? interaction.lastSortKey : '-' }}
+              {{ interaction.lastSortKey ? interaction.lastSortKey : 'N/A' }}
             </div>
           </div>
           <div class="interaction-item">
@@ -122,7 +122,7 @@
           </div>
           <div class="interaction-item">
             <div>Confirming peers</div>
-            <div v-if="interaction.confirmingPeer && interaction.confirmingPeer[0] != '-'">
+            <div v-if="interaction.confirmingPeer && interaction.confirmingPeer[0] != 'N/A'">
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
@@ -159,9 +159,9 @@
             </div>
             <div v-else>N/A</div>
           </div>
-          <div v-if="errorMessage" class="interaction-item error-message">
+          <div class="interaction-item error-message">
             <div>Error</div>
-            <div class="error-text">{{ errorMessage }}</div>
+            <div :class="errorMessage ? 'error-text' : ''">{{ errorMessage ? errorMessage : 'N/A' }}</div>
           </div>
           <div class="interaction-item">
             <div>Function</div>
@@ -181,9 +181,9 @@
                 <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
             ></json-viewer>
           </div>
-          <div class="interaction-item" v-if="interaction.pstQty">
+          <div class="interaction-item">
             <div>PST transfer qty</div>
-            <div>{{ interaction.pstQty }}</div>
+            <div>{{ interaction.pstQty ? interaction.pstQty : 'N/A' }}</div>
           </div>
           <div class="interaction-item">
             <div>Block height</div>
@@ -467,9 +467,7 @@ export default {
   margin-top: 50px;
 }
 
-.error-message {
-  .error-text {
-    color: red;
-  }
+.error-text {
+  color: red;
 }
 </style>

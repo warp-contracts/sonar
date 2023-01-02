@@ -13,25 +13,13 @@
         <ExportButton :exportData="state" :fileName="'current-state'" :fileType="'text/plain'"></ExportButton>
       </div>
     </div>
-    <div>
-      <details>
-        <summary>
-          <h3>Details</h3>
-          <div>
-            <svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 1L7 7L1 1" stroke="#7B8BA5" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </div>
-        </summary>
 
-        <div class="dreData-wrapper json-display">
-          <p class="json-header">DRE Data</p>
-          <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
-            <template v-slot:copy>
-              <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
-          ></json-viewer>
-        </div>
-      </details>
+    <div class="dreData-wrapper json-display">
+      <p class="json-header">Details</p>
+      <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
+        <template v-slot:copy>
+          <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
+      ></json-viewer>
     </div>
   </div>
 </template>
