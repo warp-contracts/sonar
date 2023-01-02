@@ -192,7 +192,7 @@
             </div>
             <div  class="cell">
               <div class="cell-header">PST Name</div>
-              <div v-if="pst_name">{{ pst_name ? pst_name : 'N/A'}}</div>
+              <div >{{ pst_name ? pst_name : 'N/A'}}</div>
             </div>
           </div>
         </div>
