@@ -52,14 +52,14 @@
                 </div>
               </div>
             </div>
-            <div class="cell">
+            <!-- <div class="cell">
               <div class="cell-header">Total interactions</div>
               <div v-if="total">{{ total }}</div>
               <div v-else-if="total == 0">0</div>
               <div v-else class="pl-3 pt-3">
                 <div class="dot-flashing"></div>
               </div>
-            </div>
+            </div> -->
             <div class="cell">
               <div class="cell-header">Bundler id</div>
               <div class="d-flex">
@@ -85,7 +85,7 @@
                 <div v-else>N/A</div>
               </div>
             </div>
-            <div class="cell">
+            <!-- <div class="cell">
               <div class="d-flex">
                 <div class="cell-header pb-2">State evaluated</div>
                 <div
@@ -102,7 +102,7 @@
                 <div v-if="validity" class="flaticon-check" />
                 <div v-if="!validity" class="flaticon-cross" />
               </div>
-            </div>
+            </div> -->
             <div class="cell">
               <div class="d-flex">
                 <div class="cell-header pb-2">Contract data</div>
@@ -137,21 +137,8 @@
                 </div>
               </div>
             </div> -->
-            <div  class="cell">
-              <div class="cell-header">WASM</div>
-              <div v-if="wasmLang">{{ wasmLang }}</div>
-              <div v-else>N/A</div>
-            </div>
           </div>
           <div class="col-6 p-0">
-            <!-- <div class="cell">
-              <div class="cell-header">Confirmed interactions</div>
-              <div>{{ confirmed }}</div>
-            </div>
-            <div class="cell">
-              <div class="cell-header">Corrupted interactions</div>
-              <div>{{ corrupted }}</div>
-            </div> -->
             <div class="cell">
               <div class="cell-header">Source transaction id</div>
               <div class="d-flex">
@@ -186,13 +173,13 @@
                 </div>
               </div>
             </div>
-            <div  class="cell">
-              <div  class="cell-header">PST Ticker</div>
+            <div class="cell">
+              <div class="cell-header">PST Ticker</div>
               <div>{{ pst_ticker ? pst_ticker : 'N/A' }}</div>
             </div>
-            <div  class="cell">
+            <div class="cell">
               <div class="cell-header">PST Name</div>
-              <div >{{ pst_name ? pst_name : 'N/A'}}</div>
+              <div>{{ pst_name ? pst_name : 'N/A' }}</div>
             </div>
           </div>
         </div>
@@ -203,8 +190,15 @@
             :to="`${isTestnet ? '?network=testnet' : ''}#`"
             :active="$route.hash === '#' || $route.hash === ''"
             @click="onInput($route.hash)"
+            class="transactions-tab"
           >
             Transactions
+            <b-badge variant="info" v-if="total"
+              ><div v-if="total">{{ total }}</div>
+              <div v-else-if="total == 0">0</div>
+              <div v-else>
+                <div class="dot-flashing"></div></div
+            ></b-badge>
           </b-nav-item>
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#code`"
@@ -212,6 +206,9 @@
             @click="onInput($route.hash)"
           >
             Code
+            <b-badge :class="[wasmLang === 'rust' ? 'rust-badge' : '', wasmLang === 'javascript' ? 'js-badge' : '']">
+              <div v-if="wasmLang">{{ wasmLang }}</div>
+            </b-badge>
           </b-nav-item>
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#state`"
@@ -221,21 +218,22 @@
             Initial State
           </b-nav-item>
           <b-nav-item
-            v-if="currentState"
             :to="`${isTestnet ? '?network=testnet' : ''}#current-state`"
             :active="$route.hash === '#current-state'"
             @click="onInput($route.hash)"
+            class="state-evaluated-tab"
           >
-            Current State
+            State Evaluated
+            <b-badge variant="light">
+              <div v-if="!loadedValidity" class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
+              <div v-else>
+                <div v-if="validity" class="flaticon-check" />
+                <div v-if="!validity" class="flaticon-cross" /></div
+            ></b-badge>
           </b-nav-item>
-          <!-- <b-nav-item
-            v-if="dre_events"
-            :to="`${isTestnet ? '?network=testnet' : ''}#events`"
-            :active="$route.hash === '#events'"
-            @click="onInput($route.hash)"
-          >
-            Evaluation logs
-          </b-nav-item> -->
+
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
             :active="$route.hash === '#tags'"
@@ -243,56 +241,19 @@
           >
             Tags
           </b-nav-item>
+          <b-nav-item
+            v-if="dre_events"
+            :to="`${isTestnet ? '?network=testnet' : ''}#events`"
+            :active="$route.hash === '#events'"
+            @click="onInput($route.hash)"
+          >
+            Evaluation logs
+          </b-nav-item>
         </b-nav>
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noInteractionsDetected">
-              <div class="d-block d-sm-flex justify-content-between">
-                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p>
-                  <b-form-radio-group
-                    id="confirmation-status-group"
-                    name="confirmation-status-group"
-                    @change="refreshData"
-                    v-model="selected"
-                    class="confirmation-status-group"
-                    v-if="!isTestnet"
-                  >
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="all">All</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show all contract interactions."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <!-- <div class="confirmation-status-item">
-                      <b-form-radio value="confirmed">Confirmed</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show contract interactions which have been positively confirmed by at least three different nodes."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="corrupted">Corrupted</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="not_corrupted">Not corrupted </b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show both confirmed and not yet processed interactions."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div> -->
-                  </b-form-radio-group>
-                </b-col>
-
+              <div class="d-block d-sm-flex justify-content-end">
                 <b-button
                   class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
                   @click="refreshData"
@@ -387,14 +348,16 @@
                       {{ data.item.function }}
                     </template>
 
-                    <template #cell(status)="data">
-                      {{ data.item.status }}
-                    </template>
-
                     <template #cell(actions)="data">
                       <div v-if="!data.item._showDetails" class="flaticon-chevron-down" />
                       <div v-else class="flaticon-chevron-up" />
                     </template>
+
+                    <template #head(validity)> <div class="d-flex justify-content-center">valid <div
+                  v-b-tooltip.hover
+                  title="Validity only available for evaluated contracts."
+                  class="flaticon-question-tooltip"
+                /></div> </template>
 
                     <template slot="row-details" slot-scope="data">
                       <div class="tx-error-message-container" v-if="errorMessages">
@@ -451,22 +414,29 @@
                 v-if="currentState"
                 :contractId="contractId"
                 :currentState="currentState"
-                :sortKey="dre_sortKey"
                 :timestamp="dre_timestamp"
+                :sortKey="dre_sortKey"
                 :signature="dre_signature"
                 :stateHash="dre_stateHash"
                 :manifest="dre_manifest"
               ></ContractCurrentState>
+              <div v-else>
+                <p>
+                  State is evaluated for contracts which are registered as safe (which do not read other contracts'
+                  state and do not use unsafeClient). Please contact us to get the instruction on how to submit the
+                  contract for evaluation.
+                </p>
+              </div>
             </div>
           </div>
-          <!-- <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
-            <div>
-              <ContractEvents v-if="dre_events" :events="dre_events"></ContractEvents>
-            </div>
-          </div> -->
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>
+            </div>
+          </div>
+          <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
+            <div>
+              <ContractEvents v-if="dre_events" :events="dre_events"></ContractEvents>
             </div>
           </div>
         </div>
@@ -527,7 +497,6 @@ export default {
         'age',
         'creator',
         'function',
-        'status',
         { key: 'actions', label: '' },
       ],
       interactions: null,
@@ -585,7 +554,7 @@ export default {
     this.getContract();
     await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
-    this.getDreState();
+    await this.getDreState();
   },
 
   components: {
@@ -857,5 +826,19 @@ export default {
 .tx-error-message {
   font-size: 0.8rem;
   color: red;
+}
+
+.state-evaluated-tab > a {
+  display: flex;
+}
+
+.rust-badge {
+  background-color: rgb(209, 137, 4) !important;
+  color: white;
+}
+
+.js-badge {
+  background-color: rgb(232, 232, 9);
+  color: black;
 }
 </style>

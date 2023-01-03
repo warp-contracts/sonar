@@ -11,7 +11,7 @@ export default {
   name: 'ExportButton',
   props: {
     exportData: {
-      type: [String, Number, Object, Array],
+      type: [String, Number, Object, Array, null],
       required: true,
     },
     fileName: {

@@ -50,4 +50,8 @@ div.charts-wrapper {
 .json-display {
   position: relative;
 }
+
+span.badge-info {
+  background-color: var(--warp-blue-color) !important;
+}
 </style>

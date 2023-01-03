@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="dreData-wrapper json-display">
+    <div v-if="state" class="dreData-wrapper json-display">
       <p class="json-header">Details</p>
       <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
         <template v-slot:copy>
@@ -56,13 +56,16 @@ export default {
     };
   },
 
-  mounted() {
-    this.created();
+  async mounted() {
+    await this.created();
   },
   methods: {
     async created() {
       this.header = 'Contract Current State';
-      this.currentState.sortKey = this.sortKey;
+      if (this.sortKey) {
+        this.currentState.sortKey = this.sortKey;
+      }
+
       this.state = this.currentState;
     },
   },
@@ -88,36 +91,9 @@ export default {
   color: #6b6b6b;
   font-weight: 500;
 }
-details {
-  margin-top: 2rem;
-  width: 100%;
-  h3 {
-    font-size: 1.2rem;
-    font-weight: 400;
-    margin: 0;
-  }
-}
-svg {
-  transition: 0.2s;
-}
-details[open] svg {
-  transform: rotate(180deg);
-  transition: 0.2s;
-}
-summary {
-  display: flex;
-  flex-direction: row;
-  cursor: pointer;
-  justify-content: space-between;
-  list-style-type: none;
-  padding: 1rem 2rem;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
-summary::webkit-details-marker {
-  display: none;
-}
 
 .dreData-wrapper {
   margin: 1rem 0;
 }
 </style>
+
