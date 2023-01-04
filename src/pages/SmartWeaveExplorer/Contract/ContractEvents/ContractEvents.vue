@@ -1,5 +1,5 @@
 <template>
-  <div class="events-container">
+  <div class="events-container cursor-pointer">
     <b-table
       v-if="events?.length > 0"
       ref="table"
@@ -181,5 +181,9 @@ export default {
 
 .centered {
   margin: 0 auto;
+}
+
+::v-deep #events-table tbody tr {
+  cursor: pointer;
 }
 </style>
