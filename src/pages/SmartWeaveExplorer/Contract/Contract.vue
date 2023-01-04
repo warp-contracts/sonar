@@ -255,7 +255,7 @@
             <div v-if="!noInteractionsDetected">
               <div class="d-block d-sm-flex justify-content-end">
                 <b-button
-                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
+                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3"
                   @click="refreshData"
                   ><p class="m-0" v-if="interactionsLoaded">Refresh data</p>
                   <div v-else>
@@ -329,14 +329,10 @@
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>
 
-                    <template #cell(block_id)="data">
-                      <a :href="`https://v2.viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
-                        {{ data.item.blockId | tx }}
-                      </a>
-                    </template>
-
                     <template #cell(block_height)="data">
-                      {{ data.item.blockHeight }}
+                      <a :href="`https://v2.viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
+                        {{ data.item.blockHeight }}
+                      </a>
                     </template>
 
                     <template #cell(creator)="data">
@@ -353,11 +349,16 @@
                       <div v-else class="flaticon-chevron-up" />
                     </template>
 
-                    <template #head(validity)> <div class="d-flex justify-content-center">valid <div
-                  v-b-tooltip.hover
-                  title="Validity only available for evaluated contracts."
-                  class="flaticon-question-tooltip"
-                /></div> </template>
+                    <template #head(validity)>
+                      <div class="d-flex justify-content-center">
+                        valid
+                        <div
+                          v-b-tooltip.hover
+                          title="Validity only available for evaluated contracts."
+                          class="flaticon-question-tooltip"
+                        />
+                      </div>
+                    </template>
 
                     <template slot="row-details" slot-scope="data">
                       <div class="tx-error-message-container" v-if="errorMessages">
@@ -372,6 +373,8 @@
                         <json-viewer :value="data.item.tags" :expand-depth="1" copyable sort theme="json-theme">
                           <template v-slot:copy>
                             <img
+                              v-b-tooltip.hover
+                              title="Copy JSON data"
                               src="@/assets/icons/copy-to-clipboard.svg"
                               class="jviewer-copy-icon"
                               alt="copy icon"
@@ -382,6 +385,8 @@
                         <json-viewer :value="data.item.interaction" :expand-depth="1" copyable sort theme="json-theme">
                           <template v-slot:copy>
                             <img
+                              v-b-tooltip.hover
+                              title="Copy JSON data"
                               src="@/assets/icons/copy-to-clipboard.svg"
                               class="jviewer-copy-icon"
                               alt="copy icon"
@@ -486,17 +491,16 @@ export default {
       ],
       fields: [
         'id',
-        'bundlerId',
         {
           key: 'validity',
           label: 'valid',
           thClass: 'text-center',
         },
-        'block_id',
-        'block_height',
-        'age',
-        'creator',
         'function',
+        'creator',
+        'age',
+        'block_height',
+        'bundlerId',
         { key: 'actions', label: '' },
       ],
       interactions: null,

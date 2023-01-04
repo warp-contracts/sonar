@@ -8,10 +8,10 @@
       <div class="json-display">
         <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort>
           <template v-slot:copy>
-            <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+            <img v-b-tooltip.hover title="Copy JSON data" src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
           </template>
         </json-viewer>
-        <ExportButton :exportData="state" :fileName="'initial-state'" :fileType="'application/json'"></ExportButton>
+        <ExportButton v-b-tooltip.hover title="Download JSON data" :exportData="state" :fileName="'initial-state'" :fileType="'application/json'"></ExportButton>
       </div>
     </div>
   </div>

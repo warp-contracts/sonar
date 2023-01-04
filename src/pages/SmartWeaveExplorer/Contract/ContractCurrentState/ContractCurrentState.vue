@@ -7,10 +7,22 @@
       <div class="json-display">
         <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort>
           <template v-slot:copy>
-            <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+            <img
+              src="@/assets/icons/copy-to-clipboard.svg"
+              class="jviewer-copy-icon"
+              alt="copy icon"
+              v-b-tooltip.hover
+              title="Copy JSON data"
+            />
           </template>
         </json-viewer>
-        <ExportButton :exportData="state" :fileName="'current-state'" :fileType="'text/plain'"></ExportButton>
+        <ExportButton
+          v-b-tooltip.hover
+          title="Download JSON data"
+          :exportData="state"
+          :fileName="'current-state'"
+          :fileType="'application/json'"
+        ></ExportButton>
       </div>
     </div>
 
@@ -18,8 +30,24 @@
       <p class="json-header">Details</p>
       <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
         <template v-slot:copy>
-          <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
+          <img
+            v-b-tooltip.hover
+            title="Copy JSON data"
+            src="@/assets/icons/copy-to-clipboard.svg"
+            class="jviewer-copy-icon"
+            alt="copy icon"
+          /> </template
       ></json-viewer>
+    </div>
+    <div v-if="state" class="d-flex flex-column align-items-center">
+      <h6>
+        <a
+          target="_blank"
+          :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
+          >Evaluator node</a
+        >
+      </h6>
+      <p>Raw details from evaluator node</p>
     </div>
   </div>
 </template>
@@ -96,4 +124,3 @@ export default {
   margin: 1rem 0;
 }
 </style>
-
