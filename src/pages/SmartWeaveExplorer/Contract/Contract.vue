@@ -670,11 +670,7 @@ export default {
           this.total = fetchedInteractions.data.paging.total;
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
-            const interactionInterface = {
-              cursor: '',
-              node: i.interaction,
-            };
-            const inputFunc = JSON.parse(tagsParser.getInputTag(interactionInterface, this.contractId).value).function;
+            const inputFunc = JSON.parse(tagsParser.getInputTag(i.interaction, this.contractId).value).function;
             const isBundled =
               i.confirming_peers == 'https://node2.bundlr.network' ||
               i.confirming_peers == 'https://node1.bundlr.network';
@@ -693,7 +689,7 @@ export default {
               status: i.status,
               owner: i.interaction.owner.address,
               interaction: i.interaction,
-              tags: tagsParser.getInputTag(interactionInterface, this.contractId),
+              tags: tagsParser.getInputTag(i.interaction, this.contractId),
               bundlerTxId: i.interaction.bundlerTxId,
             });
           }
