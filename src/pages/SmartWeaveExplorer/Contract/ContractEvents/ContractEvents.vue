@@ -1,5 +1,5 @@
 <template>
-  <div class="events-container cursor-pointer">
+  <div class="events-container">
     <b-table
       v-if="events?.length > 0"
       ref="table"
@@ -25,7 +25,7 @@
       </template>
 
       <template #cell(ago)="data">
-        {{ timeAgo(data.item.timestamp) }}
+        {{ convertTime(data.item.timestamp) }}
       </template>
 
       <template slot="row-details" slot-scope="data">
@@ -62,10 +62,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import ExportButton from '../../../../components/ExportButton.vue';
-import dayjs from 'dayjs';
-
-const duration = require('dayjs/plugin/duration');
-dayjs.extend(duration);
+import { convertTime } from '@/utils';
 
 export default {
   name: 'ContractEvents',
@@ -73,14 +70,6 @@ export default {
   props: { events: Array },
   data() {
     return {
-      epochs: [
-        ['year', 31536000],
-        ['month', 2592000],
-        ['day', 86400],
-        ['hour', 3600],
-        ['minute', 60],
-        ['second', 1],
-      ],
       copiedDisplay: false,
       currentPage: 1,
       perPage: 15,
@@ -96,50 +85,18 @@ export default {
       ],
     };
   },
+
   computed: {
     rows() {
       return this.events.length;
     },
   },
+
   methods: {
     rowClicked(record) {
       this.$set(record, '_showDetails', !record._showDetails);
     },
-    convertTZ(date, tzString) {
-      return new Date(
-        (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
-      );
-    },
-    getDuration(timeAgoInSeconds) {
-      for (let [name, seconds] of this.epochs) {
-        const interval = Math.floor(timeAgoInSeconds / seconds);
-        if (interval >= 1) {
-          return {
-            interval: interval,
-            epoch: name,
-          };
-        }
-      }
-    },
-    timeAgo(date, sortKeyTimestamp) {
-      const timeAgoInSeconds = Math.floor(
-        (this.convertTZ(new Date(), 'Europe/Berlin') -
-          this.convertTZ(
-            new Date(sortKeyTimestamp ? sortKeyTimestamp : date),
-            sortKeyTimestamp ? 'Europe/Berlin' : 'Europe/London'
-          )) /
-          1000
-      );
-      const { interval, epoch } = this.getDuration(timeAgoInSeconds);
-      const suffix = interval === 1 ? '' : 's';
-      return `${interval} ${epoch}${suffix} ago`;
-    },
-    daysAgo(timestamp) {
-      const difference = Math.trunc(+Date.now() / 1000) - timestamp;
-      const daysDifference = Math.floor(difference / 60 / 60 / 24);
-
-      return daysDifference;
-    },
+    convertTime: convertTime,
   },
 };
 </script>

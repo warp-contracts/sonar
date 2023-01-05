@@ -177,15 +177,6 @@
           <template #cell(total)="data">
             <div class="text-right">{{ data.item.total }}</div>
           </template>
-
-          <!-- <template #cell(confirmed)="data">
-            <div class="text-right">{{ data.item.confirmed }}</div>
-          </template>
-
-          <template #cell(corrupted)="data">
-            <div class="text-right">{{ data.item.corrupted }}</div>
-          </template> -->
-
           <template #cell(lastInteractionHeight)="data">
             <div class="text-right">
               {{ data.item.lastInteractionHeight }}
@@ -232,18 +223,6 @@ export default {
           thClass: 'text-right',
           tdClass: 'text-right',
         },
-        // {
-        //   key: 'confirmed',
-        //   label: 'confirmed',
-        //   thClass: 'text-right',
-        //   tdClass: 'text-right',
-        // },
-        // {
-        //   key: 'corrupted',
-        //   label: 'corrupted',
-        //   thClass: 'text-right',
-        //   tdClass: 'text-right',
-        // },
         {
           key: 'lastInteractionHeight',
           label: 'last interaction height',

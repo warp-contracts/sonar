@@ -52,14 +52,6 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="cell">
-              <div class="cell-header">Total interactions</div>
-              <div v-if="total">{{ total }}</div>
-              <div v-else-if="total == 0">0</div>
-              <div v-else class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
-              </div>
-            </div> -->
             <div class="cell">
               <div class="cell-header">Bundler id</div>
               <div class="d-flex">
@@ -85,24 +77,6 @@
                 <div v-else>N/A</div>
               </div>
             </div>
-            <!-- <div class="cell">
-              <div class="d-flex">
-                <div class="cell-header pb-2">State evaluated</div>
-                <div
-                  v-b-tooltip.hover
-                  title="State is evaluated for contracts which are registered as safe (which do not read other contracts' state and do not use unsafeClient). 
-                  Please contact us to get the instruction on how to submit the contract for evaluation."
-                  class="flaticon-question-tooltip"
-                />
-              </div>
-              <div v-if="!loadedValidity" class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
-              </div>
-              <div v-else>
-                <div v-if="validity" class="flaticon-check" />
-                <div v-if="!validity" class="flaticon-cross" />
-              </div>
-            </div> -->
             <div class="cell">
               <div class="d-flex">
                 <div class="cell-header pb-2">Contract data</div>
@@ -122,21 +96,6 @@
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
-            <!-- <div class="cell">
-              <div class="cell-header pb-2">DRE Data</div>
-              <div v-if="!loadedValidity" class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
-              </div>
-              <div v-else>
-                <div>
-                  <a
-                    target="_blank"
-                    :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
-                    >Link</a
-                  >
-                </div>
-              </div>
-            </div> -->
           </div>
           <div class="col-6 p-0">
             <div class="cell">
@@ -206,8 +165,9 @@
             @click="onInput($route.hash)"
           >
             Code
-            <b-badge :class="[wasmLang === 'rust' ? 'rust-badge' : '', wasmLang === 'javascript' ? 'js-badge' : '']">
+            <b-badge :class="wasmLang === 'rust' ? 'rust-badge' : 'js-badge'">
               <div v-if="wasmLang">{{ wasmLang }}</div>
+              <div v-else>JS</div>
             </b-badge>
           </b-nav-item>
           <b-nav-item
@@ -470,6 +430,7 @@ import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
 import ContractEvents from './ContractEvents/ContractEvents.vue';
+import { convertTime } from '@/utils';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -611,35 +572,6 @@ export default {
           this.contract = null;
         });
     },
-    convertTZ(date, tzString) {
-      return new Date(
-        (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
-      );
-    },
-    getDuration(timeAgoInSeconds) {
-      for (let [name, seconds] of this.epochs) {
-        const interval = Math.floor(timeAgoInSeconds / seconds);
-        if (interval >= 1) {
-          return {
-            interval: interval,
-            epoch: name,
-          };
-        }
-      }
-    },
-    timeAgo(date, sortKeyTimestamp) {
-      const timeAgoInSeconds = Math.floor(
-        (this.convertTZ(new Date(), 'Europe/Berlin') -
-          this.convertTZ(
-            new Date(sortKeyTimestamp ? sortKeyTimestamp : date),
-            sortKeyTimestamp ? 'Europe/Berlin' : 'Europe/London'
-          )) /
-          1000
-      );
-      const { interval, epoch } = this.getDuration(timeAgoInSeconds);
-      const suffix = interval === 1 ? '' : 's';
-      return `${interval} ${epoch}${suffix} ago`;
-    },
     daysAgo(timestamp) {
       const difference = Math.trunc(+Date.now() / 1000) - timestamp;
       const daysDifference = Math.floor(difference / 60 / 60 / 24);
@@ -753,7 +685,7 @@ export default {
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,
               timestamp: i.interaction.block.timestamp,
-              age: this.timeAgo(
+              age: convertTime(
                 dayjs.unix(i.interaction.block.timestamp),
                 isBundled ? dayjs.unix(Math.trunc(i.interaction.sortKey.split(',')[1] / 1000)) : null
               ),
