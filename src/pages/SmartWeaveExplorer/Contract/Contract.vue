@@ -189,8 +189,8 @@
                 <div class="dot-flashing"></div>
               </div>
               <div v-else>
-                <div v-if="validity" class="flaticon-check" />
-                <div v-if="!validity" class="flaticon-cross" /></div
+                <div v-if="dre_status == 'evaluated'" class="flaticon-check" />
+                <div v-else class="flaticon-cross" /></div
             ></b-badge>
           </b-nav-item>
 
@@ -310,8 +310,8 @@
                     </template>
 
                     <template #head(validity)>
-                      <div class="d-flex justify-content-center">
-                        valid
+                      <div class="d-flex justify-content-center align-items-center">
+                        <p class="m-0 align-bottom">valid</p>
                         <div
                           v-b-tooltip.hover
                           title="Validity only available for evaluated contracts."
@@ -387,9 +387,13 @@
               ></ContractCurrentState>
               <div v-else>
                 <p>
-                  State is evaluated for contracts which are registered as safe (which do not read other contracts'
-                  state and do not use unsafeClient). Please contact us to get the instruction on how to submit the
-                  contract for evaluation.
+                  State is evaluated for contracts which are registered as safe (which do not do not use unsafeClient).
+                  If contracts perform internal reads or internal writes on unsafe contracts, these interactions are
+                  skipped during the evaluation process. Please contact us to get the instruction on how to submit the
+                  contract for evaluation.State is evaluated for contracts which are registered as safe (which do not do
+                  not use unsafeClient). If contracts perform internal reads or internal writes on unsafe contracts,
+                  these interactions are skipped during the evaluation process. Please contact us to get the instruction
+                  on how to submit the contract for evaluation.
                 </p>
               </div>
             </div>
@@ -501,6 +505,7 @@ export default {
       dre_stateHash: null,
       dre_manifest: null,
       dre_events: null,
+      dre_status: null,
       tags: [],
     };
   },
@@ -695,7 +700,6 @@ export default {
           }
         });
     },
-
     async getDreState() {
       const response = await fetch(
         `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
@@ -721,6 +725,7 @@ export default {
       this.dre_stateHash = data.stateHash;
       this.dre_manifest = data.manifest;
       this.dre_events = data.events;
+      this.dre_status = data.status;
     },
 
     styleCategory(text, numberOfCategories, index) {
@@ -762,6 +767,7 @@ export default {
 
 .state-evaluated-tab > a {
   display: flex;
+  align-items: center;
 }
 
 .rust-badge {
@@ -772,5 +778,11 @@ export default {
 .js-badge {
   background-color: rgb(232, 232, 9);
   color: black;
+}
+::v-deep #interactions-table thead th {
+  vertical-align: middle;
+}
+.tab-content {
+  min-height: 15rem;
 }
 </style>

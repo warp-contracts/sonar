@@ -27,7 +27,16 @@
     </div>
 
     <div v-if="state" class="dreData-wrapper json-display">
-      <p class="json-header">Details</p>
+      <p class="json-header d-flex flex-column">
+        Details
+
+        <a
+          v-if="state"
+          target="_blank"
+          :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
+          >Raw details from evaluator node</a
+        >
+      </p>
       <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
         <template v-slot:copy>
           <img
@@ -38,16 +47,6 @@
             alt="copy icon"
           /> </template
       ></json-viewer>
-    </div>
-    <div v-if="state" class="d-flex flex-column align-items-center">
-      <h6>
-        <a
-          target="_blank"
-          :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
-          >Evaluator node</a
-        >
-      </h6>
-      <p>Raw details from evaluator node</p>
     </div>
   </div>
 </template>

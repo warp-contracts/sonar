@@ -14,7 +14,7 @@
       <template v-slot:copy>
         <img src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" /> </template
     ></json-viewer>
-    <p class="notags-info" v-else>Tags are unavailable for this contract</p>
+    <p v-else>Tags are unavailable for this contract</p>
   </div>
 </template>
 
@@ -30,8 +30,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.notags-info {
-  padding-top: 2rem;
-}
-</style>
