@@ -8,7 +8,14 @@
         </transition>
       </v-touch>
       <footer class="contentFooter">
-        <div class="mb-2">
+        <div>
+          <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{ findMoreText }}</b-button>
+          <b-modal id="modal-1" title="Redstone SmartWeave Gateway" size="lg">
+            <Modal />
+            <template #modal-footer><div></div></template>
+          </b-modal>
+        </div>
+        <div class="mb-2 mt-3">
           Learn more on
           <a target="_blank" href="https://warp.cc">our website</a>
         </div>
@@ -56,16 +63,44 @@ import { createNamespacedHelpers } from 'vuex';
 const { mapActions } = createNamespacedHelpers('layout');
 
 import Header from '@/components/Header/Header';
+import Modal from '@/components/Modal/Modal';
 
 import './Layout.scss';
 
 export default {
   name: 'Layout',
-  components: { Header },
+  components: { Header, Modal },
   methods: {
     ...mapActions(['handleSwipe']),
+  },
+  computed: {
+    findMoreText() {
+      return screen.width >= 768 ? 'Find out more' : 'More';
+    },
   },
 };
 </script>
 
-<style src="./Layout.scss" lang="scss" />
+<style src="./Layout.scss" lang="scss"></style>
+
+<style scoped lang="scss">
+@import '../../styles/app';
+.contentFooter {
+  .btn-modal {
+    height: fit-content;
+    border: none;
+    margin-right: 10px;
+    font-size: $font-size-mini;
+    color: white;
+    background-color: var(--warp-blue-color);
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    @media (min-width: breakpoint-min(md)) {
+      font-size: $font-size-base;
+    }
+  }
+}
+</style>

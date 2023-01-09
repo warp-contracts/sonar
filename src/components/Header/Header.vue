@@ -73,12 +73,6 @@
       <div class="text-uppercase mr-4 switch-link" role="button" @click="toggleGateway">
         {{ switchNetworkText }}
       </div>
-
-      <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{ findMoreText }}</b-button>
-      <b-modal id="modal-1" title="Redstone SmartWeave Gateway" size="lg">
-        <Modal />
-        <template #modal-footer><div></div></template>
-      </b-modal>
     </b-nav>
   </b-navbar>
 </template>
@@ -88,14 +82,12 @@ import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 import _ from 'lodash';
 import { mapState, mapActions } from 'vuex';
 import { debounce } from 'lodash/function';
-import Modal from '@/components/Modal/Modal';
 import constants from '@/constants';
 
 export default {
   name: 'Header',
   components: {
     VueTypeaheadBootstrap,
-    Modal,
   },
   data() {
     return {
@@ -121,9 +113,7 @@ export default {
     logoUrl() {
       return this.isTestnet ? '/#/app/contracts?network=testnet' : '/';
     },
-    findMoreText() {
-      return screen.width >= 768 ? 'Find out more' : 'More';
-    },
+
     searchTerm: {
       get() {
         return this.$store.state.layout.searchTerm;
