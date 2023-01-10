@@ -34,7 +34,26 @@ export default {
 
 <style src="./styles/theme.scss" lang="scss" />
 <style lang="scss">
+@import './styles/app.scss';
+
 div.contract-wrapper, div.charts-wrapper {
   position: relative;
 }
+
+.btn-modal {
+    height: fit-content;
+    border: none;
+    margin-right: 10px;
+    font-size: $font-size-mini;
+    color: white;
+    background-color: var(--warp-blue-color) !important;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    @media (min-width: breakpoint-min(md)) {
+      font-size: $font-size-base;
+    }
+  }
 </style>

@@ -85,22 +85,5 @@ export default {
 
 <style scoped lang="scss">
 @import '../../styles/app';
-.contentFooter {
-  .btn-modal {
-    height: fit-content;
-    border: none;
-    margin-right: 10px;
-    font-size: $font-size-mini;
-    color: white;
-    background-color: var(--warp-blue-color);
 
-    &:hover {
-      opacity: 0.85;
-    }
-
-    @media (min-width: breakpoint-min(md)) {
-      font-size: $font-size-base;
-    }
-  }
-}
 </style>

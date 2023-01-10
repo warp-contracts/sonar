@@ -73,7 +73,10 @@
       <div class="text-uppercase mr-4 switch-link" role="button" @click="toggleGateway">
         {{ switchNetworkText }}
       </div>
+
+      <b-button class="btn btn-modal rounded-pill">Login</b-button>
     </b-nav>
+    <AccountNavigation></AccountNavigation>
   </b-navbar>
 </template>
 
@@ -83,12 +86,14 @@ import _ from 'lodash';
 import { mapState, mapActions } from 'vuex';
 import { debounce } from 'lodash/function';
 import constants from '@/constants';
+import AccountNavigation from '../AccountNavigation/AccountNavigation.vue';
 
 export default {
   name: 'Header',
   components: {
     VueTypeaheadBootstrap,
-  },
+    AccountNavigation
+},
   data() {
     return {
       query: '',
