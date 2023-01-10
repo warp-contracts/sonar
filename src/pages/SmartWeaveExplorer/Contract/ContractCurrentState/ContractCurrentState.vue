@@ -30,11 +30,14 @@
       <p class="json-header d-flex flex-column">
         Details
 
-        <a
-          v-if="state"
-          target="_blank"
-          :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
-          >Raw details from evaluator node</a
+        <span class="details-subtext"
+          >Raw details from
+          <a
+            v-if="state"
+            target="_blank"
+            :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
+            >evaluator node</a
+          ></span
         >
       </p>
       <json-viewer theme="json-theme" :value="dreData" :expand-depth="1" copyable sort>
@@ -121,5 +124,9 @@ export default {
 
 .dreData-wrapper {
   margin: 1rem 0;
+}
+
+.details-subtext {
+  font-size: 0.9rem;
 }
 </style>

@@ -385,6 +385,7 @@
                 :stateHash="dre_stateHash"
                 :manifest="dre_manifest"
               ></ContractCurrentState>
+              <div v-else-if="!currentState && dre_evaluationError">{{ dre_evaluationError }}</div>
               <div v-else>
                 <p>
                   State is evaluated for contracts which are registered as safe (which do not do not use unsafeClient).
@@ -506,6 +507,7 @@ export default {
       dre_manifest: null,
       dre_events: null,
       dre_status: null,
+      dre_evaluationError: null,
       tags: [],
     };
   },
@@ -726,6 +728,12 @@ export default {
       this.dre_manifest = data.manifest;
       this.dre_events = data.events;
       this.dre_status = data.status;
+
+      if (data.status == 'error') {
+        const res = await fetch(`https://dre-1.warp.cc/contract?id=${this.contractId}`);
+        const data2 = await res.json();
+        this.dre_evaluationError = data2.errors[0].failure;
+      }
     },
 
     styleCategory(text, numberOfCategories, index) {
@@ -784,6 +792,12 @@ export default {
   vertical-align: middle;
 }
 .tab-content {
-  min-height: 15rem;
+  min-height: 30vh;
+}
+
+@media (min-width: 1600px) {
+  .tab-content {
+    min-height: 45vh;
+  }
 }
 </style>
