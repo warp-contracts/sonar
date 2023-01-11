@@ -29,10 +29,6 @@
       </template>
 
       <template slot="row-details" slot-scope="data">
-        <div class="event-message" v-if="data.item.message">
-          Message:
-          {{ data.item.message }}
-        </div>
         <div class="json-display">
           <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
             <template v-slot:copy>

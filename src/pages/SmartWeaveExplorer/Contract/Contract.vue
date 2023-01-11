@@ -386,6 +386,7 @@
                 :manifest="dre_manifest"
               ></ContractCurrentState>
               <div v-else-if="!currentState && dre_evaluationError"><p class="text-break">{{ dre_evaluationError }}</p></div>
+              <div v-else-if="!currentState && !dre_evaluationError">Loading...</div>
               <div v-else>
                 <p class="text-break">
                   State is evaluated for contracts which are registered as safe (which do not do not use unsafeClient).
