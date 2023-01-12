@@ -103,6 +103,8 @@ export default {
       searching: false,
       switchNetworkText: null,
       networkHeight: null,
+      isAccVisible: false,
+
     };
   },
   async mounted() {
