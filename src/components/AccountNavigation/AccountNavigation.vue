@@ -1,49 +1,60 @@
 <template>
   <div class="acc-nav-container" :class="[loading ? 'justify-content-center' : '', account ? 'acc-nav-big' : '']">
-    <div class="unauthorized-view" v-if="!account">
-      <div class="buttons-container" v-if="!loading">
-        <p class="nav-header">Choose wallet</p>
-        <b-button @click="handleMetamask" class="btn btn-modal rounded-pill"
-          ><div><img src="../../assets/icons/MetaMask_Fox.svg" alt="metamask logo icon" /></div>
-          Metamask</b-button
-        >
-        <b-button class="btn btn-modal rounded-pill"
-          ><div><img src="../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" /></div>
-          Arweave.app</b-button
-        >
-        <p class="nav-subtext">Connect wallet to display your token balance</p>
-      </div>
-      <LoadingSpinner v-else></LoadingSpinner>
-    </div>
-    <div class="authorized-view" v-else>
-      <div class="header">
-        <div class="left-side">
-          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
+    
+    <Transition mode="out-in"> 
+      <div class="unauthorized-view" v-if="!account">
+        <div class="buttons-container" v-if="!loading">
+          <p class="nav-header">Choose wallet</p>
+          <b-button @click="handleMetamask" class="btn btn-modal rounded-pill"
+            ><div><img src="../../assets/icons/MetaMask_Fox.svg" alt="metamask logo icon" /></div>
+            Metamask</b-button
+          >
+          <b-button class="btn btn-modal rounded-pill"
+            ><div><img src="../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" /></div>
+            Arweave.app</b-button
+          >
+          <p class="nav-subtext">Connect wallet to display your token balance</p>
         </div>
-        <div class="right-side"><button>Switch</button></div>
+        <LoadingSpinner v-else></LoadingSpinner>
       </div>
-      <b-table
-        v-if="tokens?.length > 0"
-        ref="table"
-        id="tokens-table"
-        :per-page="perPage"
-        stacked="md"
-        hover
-        :small="true"
-        :items="tokens"
-        :fields="fields"
-        :current-page="currentPage"
-        :busy="isTableBusy"
-        @row-clicked="rowClicked"
-      >
-        <template #table-busy>
-          <div class="d-flex flex-column justify-content-center align-items-center">
-            <LoadingSpinner></LoadingSpinner>
-            <strong>Loading tokens...</strong>
-          </div>
-        </template>
-        <template #cell(name)="data">{{ data.item.token_name }}</template>
-        <!-- <template slot="row-details" slot-scope="data">
+    
+    </Transition>
+ 
+    <Transition mode="out-in">
+      <div class="authorized-view" v-if="account" >
+        <div class="header">
+          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
+          <div
+            class="flaticon-copy-to-clipboard"
+            v-clipboard="account"
+            title="Copy to clipboard"
+          ></div>
+
+          <!-- <div class="right-side">
+          <button><img src="../../assets/icons/switch.svg" alt="" /></button>
+        </div> -->
+        </div>
+        <b-table
+          v-if="tokens?.length > 0"
+          ref="table"
+          id="tokens-table"
+          :per-page="perPage"
+          stacked="md"
+          hover
+          :small="true"
+          :items="tokens"
+          :fields="fields"
+          :current-page="currentPage"
+          :busy="isTableBusy"
+        >
+          <template #table-busy>
+            <div class="d-flex flex-column justify-content-center align-items-center">
+              <LoadingSpinner></LoadingSpinner>
+              <strong>Loading tokens...</strong>
+            </div>
+          </template>
+          <template #cell(name)="data">{{ data.item.token_name }}</template>
+          <!-- <template slot="row-details" slot-scope="data">
         <div class="json-display">
           <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
             <template v-slot:copy>
@@ -57,21 +68,29 @@
           ></json-viewer>
         </div>
       </template> -->
-      </b-table>
-      <!-- <div v-else><p>You have no tokens!</p></div> -->
-      <b-pagination
-        v-if="tokens?.length > 0"
-        v-model="currentPage"
-        :total-rows="rows"
-        :per-page="perPage"
-        aria-controls="tokens-table"
-        align="center"
-        last-number
-        first-number
-      ></b-pagination>
-      <div class="footer"><p>Hide</p></div>
+        </b-table>
+        <!-- <div v-else><p>You have no tokens!</p></div> -->
+        <b-pagination
+          v-if="tokens?.length > 0"
+          v-model="currentPage"
+          :total-rows="rows"
+          :per-page="perPage"
+          aria-controls="tokens-table"
+          align="center"
+          last-number
+          first-number
+        ></b-pagination>
+        <div class="footer">
+          <b-button @click="switchWallet" class="btn btn-modal rounded-pill"
+            ><div></div>
+            Switch wallet</b-button
+          >
+        </div>
+      </div>
+    </Transition>
+
     </div>
-  </div>
+
 </template>
 
 <script>
@@ -85,9 +104,7 @@ export default {
   props: {},
   data() {
     return {
-      account: null,
       loading: false,
-      tokens: null,
       currentPage: 1,
       perPage: 4,
       fields: ['name', 'balance'],
@@ -101,8 +118,18 @@ export default {
     rows() {
       return this.tokens.length;
     },
+    account(){
+      return this.$store.state.walletAccount;
+    },
+    tokens(){
+      return this.$store.state.walletTokens;
+    },
   },
   methods: {
+    // onCopy() {
+    //   this.copiedDisplay = true;
+    //   setTimeout(() => (this.copiedDisplay = false), 2000);
+    // },
     async handleMetamask() {
       if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
         let failToast = this.$toasted.show('Metamask not detected!', {
@@ -114,7 +141,8 @@ export default {
       }
       this.loading = true;
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      this.account = accounts[0];
+      // this.account = accounts[0];
+      this.$store.commit('setAccount', accounts[0])
       // let successToast = this.$toasted.show('Authenticated!', {
       //   theme: 'outline',
       //   position: 'top-left',
@@ -123,9 +151,12 @@ export default {
       if (this.account) {
         this.isTableBusy = true;
         await this.getTokenBalances();
-        // this.isTableBusy = false;
+        this.isTableBusy = false;
       }
       this.loading = false;
+    },
+    switchWallet() {
+      this.$store.commit('setAccount', null)
     },
     // checkMetamask() {
     //   if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
@@ -140,12 +171,13 @@ export default {
       //   `https://contracts.warp.cc/balances?walletAddress=${this.account}&page=${this.currentPage}`
       // );
 
-      const response = await fetch(
-        `https://contracts.warp.cc/balances?walletAddress=FAxDUPlFfJrLDl6BvUlPw3EJOEEeg6WQbhiWidU7ueY`
-      );
+      // const response = await fetch(
+      //   `https://contracts.warp.cc/balances?walletAddress=FAxDUPlFfJrLDl6BvUlPw3EJOEEeg6WQbhiWidU7ueY`
+      // );
 
-      const data = await response.json();
-      this.tokens = data.balances;
+      // const data = await response.json();
+      // this.tokens = data.balances;
+      this.$store.dispatch('getTokenBalances')
     },
   },
 };
@@ -155,9 +187,10 @@ export default {
 $scaleXValue: 1.4;
 $scaleYValue: 2.2;
 $warp-blue: #5982f1;
+$warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .acc-nav-container {
   height: 28rem;
-  width: 36rem;
+  width: 32rem;
   padding: 1rem;
 
   position: fixed;
@@ -231,29 +264,50 @@ $warp-blue: #5982f1;
       width: 100%;
       justify-content: center;
       align-items: center;
-      gap: 2rem;
+      margin-bottom: 2rem;
 
-      .left-side {
-        // width: 50%;
+      p {
+        font-weight: bold;
         display: flex;
-        justify-content: center;
         align-items: center;
-        p {
-          font-weight: bold;
-          display: flex;
-          align-items: center;
-          margin-bottom: 0;
-          img {
-            width: 2rem;
-            margin-right: 0.5rem;
-          }
+        margin-bottom: 0;
+        img {
+          width: 2.2rem;
+          margin-right: 0.5rem;
+          cursor: pointer;
+          // filter: invert(36%) sepia(2%) saturate(0%) hue-rotate(43deg) brightness(97%) contrast(86%);
         }
       }
-      .right-side {
-        // width: 50%;
+      .flaticon-copy-to-clipboard {
+        margin-bottom: 0.6rem;
+        filter: invert(36%) sepia(2%) saturate(0%) hue-rotate(43deg) brightness(97%) contrast(86%);
+        // filter: $warp-blue-filter;
+
+        &:active {
+          opacity: 0.85;
+        }
+      }
+      .left-side {
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+      .right-side {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button {
+          background: none;
+          border: none;
+          img {
+            width: 2.5rem;
+            filter: $warp-blue-filter;
+          }
+          &:hover {
+            opacity: 0.85;
+          }
+        }
       }
     }
 
@@ -276,6 +330,7 @@ $warp-blue: #5982f1;
     ::v-deep #tokens-table thead tr th {
       padding: 0;
       text-align: center;
+      font-size: 1.1rem;
     }
 
     ul.pagination {
@@ -298,5 +353,17 @@ $warp-blue: #5982f1;
       }
     }
   }
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+  // height: 0;
+  position: absolute;
 }
 </style>

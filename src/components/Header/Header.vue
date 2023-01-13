@@ -74,9 +74,9 @@
         {{ switchNetworkText }}
       </div>
 
-      <b-button class="btn btn-modal rounded-pill">Login</b-button>
+      <b-button @click="toggleAccNav" :class="isAccNav ? 'accNavActive' : '' " class="btn btn-modal rounded-pill login-btn">Login</b-button>
     </b-nav>
-    <AccountNavigation></AccountNavigation>
+    <AccountNavigation v-if="isAccNav"></AccountNavigation>
   </b-navbar>
 </template>
 
@@ -92,8 +92,8 @@ export default {
   name: 'Header',
   components: {
     VueTypeaheadBootstrap,
-    AccountNavigation
-},
+    AccountNavigation,
+  },
   data() {
     return {
       query: '',
@@ -103,8 +103,7 @@ export default {
       searching: false,
       switchNetworkText: null,
       networkHeight: null,
-      isAccVisible: false,
-
+      isAccNav: true,
     };
   },
   async mounted() {
@@ -193,8 +192,21 @@ export default {
           this.searching = false;
         });
     }, 500),
+    toggleAccNav() {
+      this.isAccNav = !this.isAccNav;
+    },
   },
 };
 </script>
 
-<style src="./Header.scss" lang="scss"></style>
+<style src="./Header.scss" lang="scss" scoped>
+
+// .login-btn {
+//   border: none !important;
+//   background-color: blue !important;
+// }
+// button.accNavActive {
+//   opacity: 0.85 !important;
+//   color: red;
+// }
+</style>
