@@ -17,7 +17,10 @@
     </div>
     <div class="authorized-view" v-else>
       <div class="header">
-        <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account }}</p>
+        <div class="left-side">
+          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
+        </div>
+        <div class="right-side"><button>Switch</button></div>
       </div>
       <b-table
         v-if="tokens?.length > 0"
@@ -30,13 +33,14 @@
         :items="tokens"
         :fields="fields"
         :current-page="currentPage"
+        :busy="isTableBusy"
         @row-clicked="rowClicked"
       >
         <template #table-busy>
-          <div class="text-center text-danger my-2">
-          <b-spinner class="align-middle"></b-spinner>
-          <strong>Loading tokens...</strong>
-        </div>
+          <div class="d-flex flex-column justify-content-center align-items-center">
+            <LoadingSpinner></LoadingSpinner>
+            <strong>Loading tokens...</strong>
+          </div>
         </template>
         <template #cell(name)="data">{{ data.item.token_name }}</template>
         <!-- <template slot="row-details" slot-scope="data">
@@ -54,6 +58,7 @@
         </div>
       </template> -->
       </b-table>
+      <!-- <div v-else><p>You have no tokens!</p></div> -->
       <b-pagination
         v-if="tokens?.length > 0"
         v-model="currentPage"
@@ -86,6 +91,7 @@ export default {
       currentPage: 1,
       perPage: 4,
       fields: ['name', 'balance'],
+      isTableBusy: false,
     };
   },
   // mounted() {
@@ -115,7 +121,9 @@ export default {
       //   duration: 3000,
       // });
       if (this.account) {
+        this.isTableBusy = true;
         await this.getTokenBalances();
+        // this.isTableBusy = false;
       }
       this.loading = false;
     },
@@ -148,7 +156,7 @@ $scaleXValue: 1.4;
 $scaleYValue: 2.2;
 $warp-blue: #5982f1;
 .acc-nav-container {
-  height: 25rem;
+  height: 28rem;
   width: 36rem;
   padding: 1rem;
 
@@ -219,15 +227,33 @@ $warp-blue: #5982f1;
     align-items: center;
 
     .header {
-      p {
-        margin-bottom: 1rem;
-        font-weight: bold;
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+
+      .left-side {
+        // width: 50%;
         display: flex;
+        justify-content: center;
         align-items: center;
-        img {
-          width: 2rem;
-          margin-right: 0.5rem;
+        p {
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+          margin-bottom: 0;
+          img {
+            width: 2rem;
+            margin-right: 0.5rem;
+          }
         }
+      }
+      .right-side {
+        // width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
 
