@@ -74,7 +74,13 @@
         {{ switchNetworkText }}
       </div>
 
-      <b-button @click="toggleAccNav" :class="isAccNav ? 'accNavActive' : '' " class="btn btn-modal rounded-pill login-btn">Login</b-button>
+      <b-button @click="toggleAccNav" :class="{ accNavActive: isAccNav }" class="btn btn-modal rounded-pill login-btn">
+        <div v-if="account">
+          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
+        </div>
+        <p v-else>Login</p>
+        <!-- {{ account ? 'Wallet: ' + account.slice(0, 5) : 'Login' }} -->
+      </b-button>
     </b-nav>
     <AccountNavigation v-if="isAccNav"></AccountNavigation>
   </b-navbar>
@@ -109,7 +115,9 @@ export default {
   async mounted() {
     this.switchNetworkText = this.isTestnet ? 'Switch to Mainnet' : 'Switch to Testnet';
     await this.getNetworkHeight();
+    this.checkMetamask();
   },
+
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
@@ -139,6 +147,9 @@ export default {
           this.$router.push({ query: queryWithoutSearchInput });
         }
       },
+    },
+    account() {
+      return this.$store.state.walletAccount;
     },
   },
 
@@ -195,18 +206,36 @@ export default {
     toggleAccNav() {
       this.isAccNav = !this.isAccNav;
     },
+    async checkMetamask() {
+      const wallet = localStorage.getItem('walletId');
+      if (wallet !== null) {
+        this.$store.commit('setAccount', wallet);
+        this.$store.dispatch('getTokenBalances');
+      }
+    },
   },
 };
 </script>
 
-<style src="./Header.scss" lang="scss" scoped>
+<style src="./Header.scss" lang="scss" scoped></style>
 
-// .login-btn {
-//   border: none !important;
-//   background-color: blue !important;
-// }
-// button.accNavActive {
-//   opacity: 0.85 !important;
-//   color: red;
-// }
+<style scoped lang="scss">
+.login-btn {
+  div {
+    p {
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+    img {
+      filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+      width: 2.2rem;
+      height: 1.8rem;
+      margin-right: 0.5rem;
+    }
+  }
+}
+.accNavActive {
+  opacity: 0.85 !important;
+}
 </style>
