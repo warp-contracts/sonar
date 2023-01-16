@@ -22,7 +22,7 @@ export default new Vuex.Store({
   actions: {
     async getTokenBalances({commit}) {
       // const response = await fetch(
-      //   `https://contracts.warp.cc/balances?walletAddress=${state.walletAccount}&page=${this.currentPage}`
+      //   `https://contracts.warp.cc/balances?walletAddress=${state.walletAccount}&page=${currentPage}`
       // );
 
       const response = await fetch(
@@ -31,7 +31,6 @@ export default new Vuex.Store({
 
       const data = await response.json();
       commit('setTokens', data.balances)
-      // this.tokens = data.balances;
     },
   },
   modules: {

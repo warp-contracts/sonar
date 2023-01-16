@@ -32,9 +32,9 @@ export default {
       isTableBusy: false,
     };
   },
-  // mounted() {
-  //   this.checkMetamask();
-  // },
+  mounted() {
+    this.checkMetamask();
+  },
   computed: {
     account() {
       return this.$store.state.walletAccount;
@@ -57,6 +57,7 @@ export default {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       this.$store.commit('setAccount', accounts[0]);
       if (this.account) {
+        localStorage.setItem('walletId', this.account);
         this.isTableBusy = true;
         await this.getTokenBalances();
         this.isTableBusy = false;
@@ -66,13 +67,13 @@ export default {
     switchWallet() {
       this.$store.commit('setAccount', null);
     },
-    // checkMetamask() {
-    //   if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
-    //     this.isMetamask = false;
-    //   } else {
-    //     this.isMetamask = true;
-    //   }
-    // },
+    async checkMetamask() {
+      const wallet = localStorage.getItem('walletId');
+      if (wallet !== null) {
+        this.$store.commit('setAccount', wallet);
+        await this.getTokenBalances();
+      }
+    },
 
     async getTokenBalances() {
       this.$store.dispatch('getTokenBalances');
@@ -116,10 +117,10 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
 }
 
 .slide-fade-enter-active {
-  transition: all .2s ease;
+  transition: all 0.2s ease;
 }
 .slide-fade-leave-active {
-  transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
 }
 .slide-fade-enter, .slide-fade-leave-to
 /* .slide-fade-leave-active below version 2.1.8 */ {
