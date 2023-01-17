@@ -53,14 +53,6 @@
               </div>
             </div>
             <div class="cell">
-              <div class="cell-header">Total interactions</div>
-              <div v-if="total">{{ total }}</div>
-              <div v-else-if="total == 0">0</div>
-              <div v-else class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
-              </div>
-            </div>
-            <div class="cell">
               <div class="cell-header">Bundler id</div>
               <div class="d-flex">
                 <div v-if="bundler_id" class="align-self-end d-flex">
@@ -87,24 +79,6 @@
             </div>
             <div class="cell">
               <div class="d-flex">
-                <div class="cell-header pb-2">State evaluated</div>
-                <div
-                  v-b-tooltip.hover
-                  title="State is evaluated for contracts which are registered as safe (which do not read other contracts' state and do not use unsafeClient). 
-                  Please contact us to get the instruction on how to submit the contract for evaluation."
-                  class="flaticon-question-tooltip"
-                />
-              </div>
-              <div v-if="!loadedValidity" class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
-              </div>
-              <div v-else>
-                <div v-if="validity" class="flaticon-check" />
-                <div v-if="!validity" class="flaticon-cross" />
-              </div>
-            </div>
-            <div class="cell">
-              <div class="d-flex">
                 <div class="cell-header pb-2">Contract data</div>
                 <div
                   v-b-tooltip.hover
@@ -122,35 +96,8 @@
                 <div v-else class="flaticon-cross" />
               </div>
             </div>
-            <div class="cell">
-              <div class="cell-header pb-2">DRE Data</div>
-              <div v-if="!loadedValidity" class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
-              </div>
-              <div v-else>
-                <div>
-                  <a
-                    target="_blank"
-                    :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
-                    >Link</a
-                  >
-                </div>
-              </div>
-            </div>
-            <div v-if="wasmLang" class="cell">
-              <div class="cell-header">WASM</div>
-              <div>{{ wasmLang }}</div>
-            </div>
           </div>
           <div class="col-6 p-0">
-            <div class="cell">
-              <div class="cell-header">Confirmed interactions</div>
-              <div>{{ confirmed }}</div>
-            </div>
-            <div class="cell">
-              <div class="cell-header">Corrupted interactions</div>
-              <div>{{ corrupted }}</div>
-            </div>
             <div class="cell">
               <div class="cell-header">Source transaction id</div>
               <div class="d-flex">
@@ -185,13 +132,13 @@
                 </div>
               </div>
             </div>
-            <div v-if="pst_ticker" class="cell">
+            <div class="cell">
               <div class="cell-header">PST Ticker</div>
-              <div>{{ pst_ticker }}</div>
+              <div>{{ pst_ticker ? pst_ticker : 'N/A' }}</div>
             </div>
-            <div v-if="pst_name" class="cell">
+            <div class="cell">
               <div class="cell-header">PST Name</div>
-              <div>{{ pst_name }}</div>
+              <div>{{ pst_name ? pst_name : 'N/A' }}</div>
             </div>
           </div>
         </div>
@@ -202,8 +149,15 @@
             :to="`${isTestnet ? '?network=testnet' : ''}#`"
             :active="$route.hash === '#' || $route.hash === ''"
             @click="onInput($route.hash)"
+            class="transactions-tab"
           >
             Transactions
+            <b-badge variant="info" v-if="total" class="ml-2">
+              <div v-if="total">{{ total }}</div>
+              <div v-else-if="total == 0">0</div>
+            </b-badge>
+
+            <div v-else class="dot-flashing ml-4 mr-2"></div>
           </b-nav-item>
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#code`"
@@ -211,6 +165,10 @@
             @click="onInput($route.hash)"
           >
             Code
+            <b-badge :class="wasmLang === 'rust' ? 'rust-badge' : 'js-badge'">
+              <div v-if="wasmLang">{{ wasmLang }}</div>
+              <div v-else>JS</div>
+            </b-badge>
           </b-nav-item>
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#state`"
@@ -220,13 +178,22 @@
             Initial State
           </b-nav-item>
           <b-nav-item
-            v-if="currentState"
             :to="`${isTestnet ? '?network=testnet' : ''}#current-state`"
             :active="$route.hash === '#current-state'"
             @click="onInput($route.hash)"
+            class="state-evaluated-tab"
           >
-            Current State
+            State Evaluated
+            <b-badge variant="light">
+              <div v-if="!loadedValidity" class="pl-3 pt-3">
+                <div class="dot-flashing"></div>
+              </div>
+              <div v-else>
+                <div v-if="dre_status == 'evaluated'" class="flaticon-check" />
+                <div v-else class="flaticon-cross" /></div
+            ></b-badge>
           </b-nav-item>
+
           <b-nav-item
             :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
             :active="$route.hash === '#tags'"
@@ -234,58 +201,21 @@
           >
             Tags
           </b-nav-item>
+          <b-nav-item
+            v-if="dre_events"
+            :to="`${isTestnet ? '?network=testnet' : ''}#events`"
+            :active="$route.hash === '#events'"
+            @click="onInput($route.hash)"
+          >
+            Evaluation logs
+          </b-nav-item>
         </b-nav>
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noInteractionsDetected">
-              <div class="d-block d-sm-flex justify-content-between">
-                <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Confirmation Status</p>
-                  <b-form-radio-group
-                    id="confirmation-status-group"
-                    name="confirmation-status-group"
-                    @change="refreshData"
-                    v-model="selected"
-                    class="confirmation-status-group"
-                    v-if="!isTestnet"
-                  >
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="all">All</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show all contract interactions."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="confirmed">Confirmed</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show contract interactions which have been positively confirmed by at least three different nodes."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="corrupted">Corrupted</b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show corrupted contract interactions which are not part of any block but are still returned by Arweave GQL endpoint."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                    <div class="confirmation-status-item">
-                      <b-form-radio value="not_corrupted">Not corrupted </b-form-radio>
-                      <div
-                        v-b-tooltip.hover
-                        title="Show both confirmed and not yet processed interactions."
-                        class="flaticon-question-tooltip lowered"
-                      />
-                    </div>
-                  </b-form-radio-group>
-                </b-col>
-
+              <div class="d-block d-sm-flex justify-content-end">
                 <b-button
-                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3 mb-sm-0"
+                  class="btn btn-refresh d-flex justify-content-center align-items-center rounded-pill mb-3"
                   @click="refreshData"
                   ><p class="m-0" v-if="interactionsLoaded">Refresh data</p>
                   <div v-else>
@@ -359,14 +289,10 @@
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>
 
-                    <template #cell(block_id)="data">
-                      <a :href="`https://v2.viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
-                        {{ data.item.blockId | tx }}
-                      </a>
-                    </template>
-
                     <template #cell(block_height)="data">
-                      {{ data.item.blockHeight }}
+                      <a :href="`https://v2.viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
+                        {{ data.item.blockHeight }}
+                      </a>
                     </template>
 
                     <template #cell(creator)="data">
@@ -378,13 +304,20 @@
                       {{ data.item.function }}
                     </template>
 
-                    <template #cell(status)="data">
-                      {{ data.item.status }}
-                    </template>
-
                     <template #cell(actions)="data">
                       <div v-if="!data.item._showDetails" class="flaticon-chevron-down" />
                       <div v-else class="flaticon-chevron-up" />
+                    </template>
+
+                    <template #head(validity)>
+                      <div class="d-flex justify-content-center align-items-center">
+                        <p class="m-0 align-bottom">valid</p>
+                        <div
+                          v-b-tooltip.hover
+                          title="Validity only available for evaluated contracts."
+                          class="flaticon-question-tooltip"
+                        />
+                      </div>
                     </template>
 
                     <template slot="row-details" slot-scope="data">
@@ -397,21 +330,27 @@
                       </div>
                       <div>
                         <p class="json-header">Contract Input:</p>
-                        <json-viewer
-                          :value="data.item.tags"
-                          :expand-depth="1"
-                          copyable
-                          sort
-                          theme="json-theme"
+                        <json-viewer :value="data.item.tags" :expand-depth="1" copyable sort theme="json-theme">
+                          <template v-slot:copy>
+                            <img
+                              v-b-tooltip.hover
+                              title="Copy JSON data"
+                              src="@/assets/icons/copy-to-clipboard.svg"
+                              class="jviewer-copy-icon"
+                              alt="copy icon"
+                            /> </template
                         ></json-viewer>
                         <hr />
                         <p class="json-header">Full transaction:</p>
-                        <json-viewer
-                          :value="data.item.interaction"
-                          :expand-depth="1"
-                          copyable
-                          sort
-                          theme="json-theme"
+                        <json-viewer :value="data.item.interaction" :expand-depth="1" copyable sort theme="json-theme">
+                          <template v-slot:copy>
+                            <img
+                              v-b-tooltip.hover
+                              title="Copy JSON data"
+                              src="@/assets/icons/copy-to-clipboard.svg"
+                              class="jviewer-copy-icon"
+                              alt="copy icon"
+                            /> </template
                         ></json-viewer>
                       </div>
                     </template>
@@ -440,13 +379,35 @@
                 v-if="currentState"
                 :contractId="contractId"
                 :currentState="currentState"
+                :timestamp="dre_timestamp"
                 :sortKey="dre_sortKey"
+                :signature="dre_signature"
+                :stateHash="dre_stateHash"
+                :manifest="dre_manifest"
               ></ContractCurrentState>
+              <div v-else-if="!currentState && dre_evaluationError"><p class="text-break">{{ dre_evaluationError }}</p></div>
+              <div v-else-if="!currentState && !dre_evaluationError">Loading...</div>
+              <div v-else>
+                <p class="text-break">
+                  State is evaluated for contracts which are registered as safe (which do not do not use unsafeClient).
+                  If contracts perform internal reads or internal writes on unsafe contracts, these interactions are
+                  skipped during the evaluation process. Please contact us to get the instruction on how to submit the
+                  contract for evaluation.State is evaluated for contracts which are registered as safe (which do not do
+                  not use unsafeClient). If contracts perform internal reads or internal writes on unsafe contracts,
+                  these interactions are skipped during the evaluation process. Please contact us to get the instruction
+                  on how to submit the contract for evaluation.
+                </p>
+              </div>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>
+            </div>
+          </div>
+          <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
+            <div>
+              <ContractEvents v-if="dre_events" :events="dre_events"></ContractEvents>
             </div>
           </div>
         </div>
@@ -474,6 +435,8 @@ import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
+import ContractEvents from './ContractEvents/ContractEvents.vue';
+import { convertTime } from '@/utils';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -495,18 +458,16 @@ export default {
       ],
       fields: [
         'id',
-        'bundlerId',
         {
           key: 'validity',
           label: 'valid',
           thClass: 'text-center',
         },
-        'block_id',
-        'block_height',
-        'age',
-        'creator',
         'function',
-        'status',
+        'creator',
+        'age',
+        'block_height',
+        'bundlerId',
         { key: 'actions', label: '' },
       ],
       interactions: null,
@@ -541,6 +502,13 @@ export default {
       contractData: null,
       errorMessages: null,
       dre_sortKey: null,
+      dre_timestamp: null,
+      dre_signature: null,
+      dre_stateHash: null,
+      dre_manifest: null,
+      dre_events: null,
+      dre_status: null,
+      dre_evaluationError: null,
       tags: [],
     };
   },
@@ -559,7 +527,7 @@ export default {
     this.getContract();
     await this.getContractData();
     this.visitedTabs.push(this.$route.hash);
-    this.getDreState();
+    await this.getDreState();
   },
 
   components: {
@@ -571,6 +539,7 @@ export default {
     ContractCode,
     ContractTags,
     TestnetLabel,
+    ContractEvents,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
@@ -610,35 +579,6 @@ export default {
           this.loadedContractData = true;
           this.contract = null;
         });
-    },
-    convertTZ(date, tzString) {
-      return new Date(
-        (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', { timeZone: tzString })
-      );
-    },
-    getDuration(timeAgoInSeconds) {
-      for (let [name, seconds] of this.epochs) {
-        const interval = Math.floor(timeAgoInSeconds / seconds);
-        if (interval >= 1) {
-          return {
-            interval: interval,
-            epoch: name,
-          };
-        }
-      }
-    },
-    timeAgo(date, sortKeyTimestamp) {
-      const timeAgoInSeconds = Math.floor(
-        (this.convertTZ(new Date(), 'Europe/Berlin') -
-          this.convertTZ(
-            new Date(sortKeyTimestamp ? sortKeyTimestamp : date),
-            sortKeyTimestamp ? 'Europe/Berlin' : 'Europe/London'
-          )) /
-          1000
-      );
-      const { interval, epoch } = this.getDuration(timeAgoInSeconds);
-      const suffix = interval === 1 ? '' : 's';
-      return `${interval} ${epoch}${suffix} ago`;
     },
     daysAgo(timestamp) {
       const difference = Math.trunc(+Date.now() / 1000) - timestamp;
@@ -749,7 +689,7 @@ export default {
               blockId: i.interaction.block.id,
               blockHeight: i.interaction.block.height,
               timestamp: i.interaction.block.timestamp,
-              age: this.timeAgo(
+              age: convertTime(
                 dayjs.unix(i.interaction.block.timestamp),
                 isBundled ? dayjs.unix(Math.trunc(i.interaction.sortKey.split(',')[1] / 1000)) : null
               ),
@@ -763,7 +703,6 @@ export default {
           }
         });
     },
-
     async getDreState() {
       const response = await fetch(
         `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
@@ -784,6 +723,18 @@ export default {
 
       this.dre_sortKey = data.sortKey;
       this.errorMessages = data.errorMessages;
+      this.dre_timestamp = data.timestamp;
+      this.dre_signature = data.signature;
+      this.dre_stateHash = data.stateHash;
+      this.dre_manifest = data.manifest;
+      this.dre_events = data.events;
+      this.dre_status = data.status;
+
+      if (data.status == 'error') {
+        const res = await fetch(`https://dre-1.warp.cc/contract?id=${this.contractId}`);
+        const data2 = await res.json();
+        this.dre_evaluationError = data2.errors[0].failure;
+      }
     },
 
     styleCategory(text, numberOfCategories, index) {
@@ -821,5 +772,33 @@ export default {
 .tx-error-message {
   font-size: 0.8rem;
   color: red;
+}
+
+.state-evaluated-tab > a,
+.transactions-tab > a {
+  display: flex;
+  align-items: center;
+}
+
+.rust-badge {
+  background-color: rgb(209, 137, 4) !important;
+  color: white;
+}
+
+.js-badge {
+  background-color: rgb(232, 232, 9);
+  color: black;
+}
+::v-deep #interactions-table thead th {
+  vertical-align: middle;
+}
+.tab-content {
+  min-height: 30vh;
+}
+
+@media (min-width: 1600px) {
+  .tab-content {
+    min-height: 45vh;
+  }
 }
 </style>

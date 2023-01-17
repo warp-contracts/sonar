@@ -5,7 +5,14 @@
     <div v-if="state">
       <p class="json-header">{{ header }}</p>
 
-      <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort> </json-viewer>
+      <div class="json-display">
+        <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort>
+          <template v-slot:copy>
+            <img v-b-tooltip.hover title="Copy JSON data" src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+          </template>
+        </json-viewer>
+        <ExportButton v-b-tooltip.hover title="Download JSON data" :exportData="state" :fileName="'initial-state'" :fileType="'application/json'"></ExportButton>
+      </div>
     </div>
   </div>
 </template>
@@ -13,7 +20,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import { mapState } from 'vuex';
-import constants from '@/constants';
+import ExportButton from '../../../../components/ExportButton.vue';
 
 export default {
   name: 'ContractState',
@@ -36,25 +43,12 @@ export default {
   },
   methods: {
     async created() {
-      // fetch(`${constants.cacheUrl}/${this.isTestnet ? 'testnet/' : ''}cache/state/${this.contractId}`).then(
-      //   (response) => {
-      //     if (response.status == 404) {
-      //       this.loaded = true;
       this.header = 'Contract Initial State';
       this.state = this.initState;
-      // } else if (response.status == 200) {
-      //   return response.json().then((data) => {
-      //     this.header = 'Contract Current State';
-      //     this.state = data.state;
-      //     this.loaded = true;
-      //   });
-      // }
-      // }
-      // );
     },
   },
 
-  components: { JsonViewer },
+  components: { JsonViewer, ExportButton },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
   },
@@ -62,6 +56,8 @@ export default {
 </script>
 
 <style>
+
+
 .state-container {
   height: 600px;
 }
