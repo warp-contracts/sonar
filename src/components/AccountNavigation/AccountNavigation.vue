@@ -29,12 +29,9 @@ export default {
       currentPage: 1,
       perPage: 4,
       fields: ['name', 'balance'],
-      isTableBusy: false,
     };
   },
-  mounted() {
-    this.checkMetamask();
-  },
+
   computed: {
     account() {
       return this.$store.state.walletAccount;
@@ -58,33 +55,22 @@ export default {
       this.$store.commit('setAccount', accounts[0]);
       if (this.account) {
         localStorage.setItem('walletId', this.account);
-        this.isTableBusy = true;
-        await this.getTokenBalances();
-        this.isTableBusy = false;
+        this.getTokenBalance();
       }
       this.loading = false;
     },
     switchWallet() {
       this.$store.commit('setAccount', null);
     },
-    async checkMetamask() {
-      const wallet = localStorage.getItem('walletId');
-      if (wallet !== null) {
-        this.$store.commit('setAccount', wallet);
-        await this.getTokenBalances();
-      }
-    },
 
-    async getTokenBalances() {
-      this.$store.dispatch('getTokenBalances');
+    async getTokenBalance() {
+      this.$store.dispatch('getTokenBalance');
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-$scaleXValue: 1.4;
-$scaleYValue: 2.2;
 $warp-blue: #5982f1;
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .acc-nav-container {

@@ -27,10 +27,6 @@ export default {
   data() {
     return {};
   },
-  // mounted() {
-  //   this.checkMetamask();
-  // },
-
 };
 </script>
 

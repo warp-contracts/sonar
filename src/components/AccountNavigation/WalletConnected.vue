@@ -3,6 +3,7 @@
     <div class="header">
       <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
       <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
+      <WalletSettings></WalletSettings>
     </div>
     <b-table
       v-if="tokens?.length > 0"
@@ -61,10 +62,12 @@
 
 <script>
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
+import WalletSettings from './WalletSettings.vue';
 export default {
   name: 'WalletConnected',
   components: {
     LoadingSpinner,
+    WalletSettings,
   },
   props: ['account', 'tokens'],
   data() {
@@ -72,13 +75,15 @@ export default {
       currentPage: 1,
       perPage: 4,
       fields: ['name', 'balance'],
-      isTableBusy: false,
     };
   },
 
   computed: {
     rows() {
       return this.tokens.length;
+    },
+    isTableBusy() {
+      return this.$store.state.tableLoading;
     },
   },
   methods: {},
@@ -97,6 +102,7 @@ $warp-blue: #5982f1;
   align-items: center;
 
   .header {
+    position: relative;
     display: flex;
     width: 100%;
     justify-content: center;
@@ -111,7 +117,6 @@ $warp-blue: #5982f1;
       img {
         width: 2.2rem;
         margin-right: 0.5rem;
-        cursor: pointer;
       }
     }
     .flaticon-copy-to-clipboard {

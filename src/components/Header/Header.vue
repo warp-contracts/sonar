@@ -79,7 +79,6 @@
           <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
         </div>
         <p v-else>Login</p>
-        <!-- {{ account ? 'Wallet: ' + account.slice(0, 5) : 'Login' }} -->
       </b-button>
     </b-nav>
     <AccountNavigation v-if="isAccNav"></AccountNavigation>
@@ -210,7 +209,7 @@ export default {
       const wallet = localStorage.getItem('walletId');
       if (wallet !== null) {
         this.$store.commit('setAccount', wallet);
-        this.$store.dispatch('getTokenBalances');
+        this.$store.dispatch('getTokenBalance');
       }
     },
   },
@@ -221,6 +220,9 @@ export default {
 
 <style scoped lang="scss">
 .login-btn {
+  p {
+    margin: 0;
+  }
   div {
     p {
       display: flex;
