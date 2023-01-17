@@ -34,6 +34,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$warp-blue: #5982f1;
+
 .settings {
   position: absolute;
   right: 0;
@@ -64,9 +66,11 @@ export default {
       height: 2rem;
       width: 100%;
       font-size: 0.8rem;
+      color: $warp-blue;
+      text-align: start;
 
       &:hover {
-        background-color: #5e5e5e;
+        background-color: rgba(0, 0, 0, 0.075);
       }
     }
   }
