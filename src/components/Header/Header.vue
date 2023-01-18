@@ -82,6 +82,7 @@
       </b-button>
     </b-nav>
     <AccountNavigation v-if="isAccNav"></AccountNavigation>
+    <div class="nav-closing" v-if="isAccNav" @click="toggleAccNav"></div>
   </b-navbar>
 </template>
 
@@ -239,5 +240,14 @@ export default {
 }
 .accNavActive {
   opacity: 0.85 !important;
+}
+.nav-closing {
+  background: transparent;
+  position: fixed;
+  z-index: 998;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 </style>

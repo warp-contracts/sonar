@@ -5,7 +5,6 @@
         v-if="account"
         :account="account"
         :tokens="tokens"
-        @switchWallet="switchWallet"
       ></WalletConnected>
       <WalletDisconnected v-else :loading="loading" @handleMetamask="handleMetamask"></WalletDisconnected>
     </Transition>
@@ -58,9 +57,6 @@ export default {
         this.getTokenBalance();
       }
       this.loading = false;
-    },
-    switchWallet() {
-      this.$store.commit('setAccount', null);
     },
 
     async getTokenBalance() {

@@ -1,9 +1,9 @@
 <template>
   <div class="authorized-view">
     <div class="header">
-      <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
+      <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="wallet icon" />{{ account | tx }}</p>
       <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
-      <WalletSettings></WalletSettings>
+      <button @click="refreshWallet" class="refresh-btn"><img src="../../assets/icons/refresh.svg" alt="refresh button"></button>
     </div>
     <b-table
       v-if="tokens?.length > 0"
@@ -52,10 +52,11 @@
       first-number
     ></b-pagination>
     <div class="footer">
-      <b-button @click="$emit('switchWallet')" class="btn btn-modal rounded-pill"
+      <b-button @click="disconnectWallet" class="btn btn-modal rounded-pill"
         ><div></div>
         Switch wallet</b-button
       >
+      <button @click="disconnectWallet" class="disconnect-btn">Disconnect</button>
     </div>
   </div>
 </template>
@@ -86,7 +87,14 @@ export default {
       return this.$store.state.tableLoading;
     },
   },
-  methods: {},
+  methods: {
+    disconnectWallet() {
+      this.$store.commit('deleteAccount');
+    },
+    refreshWallet() {
+      this.$store.dispatch('getTokenBalance');
+    },
+  },
 };
 </script>
 
@@ -117,6 +125,24 @@ $warp-blue: #5982f1;
       img {
         width: 2.2rem;
         margin-right: 0.5rem;
+      }
+    }
+
+    .refresh-btn {
+      position: absolute;
+      right: 0;
+      top: -1rem;
+
+      border: none;
+      background: none;
+
+      &:hover {
+        opacity: 0.85;
+      }
+      img {
+        width: 2.2rem;
+        height: 2.2rem;
+        filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
       }
     }
     .flaticon-copy-to-clipboard {
@@ -189,6 +215,15 @@ $warp-blue: #5982f1;
 
       &:hover {
         opacity: 0.7;
+      }
+    }
+    .disconnect-btn {
+      border: none;
+      background: none;
+      color: $warp-blue;
+
+      &:hover {
+        opacity: 0.85;
       }
     }
   }
