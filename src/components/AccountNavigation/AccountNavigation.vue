@@ -68,6 +68,7 @@ export default {
       await this.setWallet(walletId);
       this.getTokenBalance();
       this.loading = false;
+      wallet.disconnect();
     },
 
     async getTokenBalance() {

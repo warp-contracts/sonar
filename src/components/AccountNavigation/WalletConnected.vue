@@ -90,6 +90,7 @@ export default {
   methods: {
     disconnectWallet() {
       this.$store.commit('deleteAccount');
+
     },
     refreshWallet() {
       this.$store.dispatch('getTokenBalance');
