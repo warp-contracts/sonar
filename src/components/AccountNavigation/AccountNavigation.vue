@@ -1,18 +1,20 @@
 <template>
   <div class="acc-nav-container" :class="[loading ? 'justify-content-center' : '', account ? 'acc-nav-big' : '']">
     <Transition name="slide-fade">
-      <WalletConnected
-        v-if="account"
-        :account="account"
-        :tokens="tokens"
-      ></WalletConnected>
-      <WalletDisconnected v-else :loading="loading" @handleMetamask="handleMetamask"></WalletDisconnected>
+      <WalletConnected v-if="account" :account="account" :tokens="tokens"></WalletConnected>
+      <WalletDisconnected
+        v-else
+        :loading="loading"
+        @handleMetamask="handleMetamask"
+        @handleArweaveapp="handleArweaveapp"
+      ></WalletDisconnected>
     </Transition>
   </div>
 </template>
 
 <script>
 import MetaMaskOnboarding from '@metamask/onboarding';
+import { ArweaveWebWallet } from 'arweave-wallet-connector';
 import WalletConnected from './WalletConnected.vue';
 import WalletDisconnected from './WalletDisconnected.vue';
 export default {
@@ -51,16 +53,29 @@ export default {
       }
       this.loading = true;
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      this.$store.commit('setAccount', accounts[0]);
-      if (this.account) {
-        localStorage.setItem('walletId', this.account);
-        this.getTokenBalance();
-      }
+      const walletId = accounts[0];
+      this.setWallet(walletId);
+      this.getTokenBalance();
+      this.loading = false;
+    },
+
+    async handleArweaveapp() {
+      this.loading = true;
+      const wallet = new ArweaveWebWallet();
+      wallet.setUrl('arweave.app');
+      await wallet.connect();
+      const walletId = wallet.namespaces.arweaveWallet.getActiveAddress();
+      await this.setWallet(walletId);
+      this.getTokenBalance();
       this.loading = false;
     },
 
     async getTokenBalance() {
       this.$store.dispatch('getTokenBalance');
+    },
+    async setWallet(walletId) {
+      this.$store.commit('setAccount', walletId);
+      localStorage.setItem('walletId', walletId);
     },
   },
 };

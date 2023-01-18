@@ -6,7 +6,7 @@
         ><div><img src="../../assets/icons/MetaMask_Fox.svg" alt="metamask logo icon" /></div>
         Metamask</b-button
       >
-      <b-button class="btn btn-modal rounded-pill"
+      <b-button @click="$emit('handleArweaveapp')" class="btn btn-modal rounded-pill"
         ><div><img src="../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" /></div>
         Arweave.app</b-button
       >
