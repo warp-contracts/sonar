@@ -65,12 +65,10 @@
 
 <script>
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
-import WalletSettings from './WalletSettings.vue';
 export default {
   name: 'WalletConnected',
   components: {
     LoadingSpinner,
-    WalletSettings,
   },
   props: ['account', 'tokens'],
   data() {

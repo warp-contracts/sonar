@@ -120,10 +120,28 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
 .slide-fade-leave-active {
   transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
 }
-.slide-fade-enter, .slide-fade-leave-to
- {
+.slide-fade-enter,
+.slide-fade-leave-to {
   transform: translateX(10px);
   opacity: 0;
   position: absolute;
+}
+
+@media (max-width: 500px) {
+  .acc-nav-container {
+    right: 10px;
+  }
+}
+
+@media (max-width: 460px) {
+  .acc-nav-container {
+    width: 26rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .acc-nav-container {
+    width: 22rem;
+  }
 }
 </style>
