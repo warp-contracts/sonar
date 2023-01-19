@@ -31,12 +31,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '../../styles/mixins';
+
 .unauthorized-view {
   width: 100%;
 
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
 
   .buttons-container {
     display: flex;
@@ -49,9 +50,7 @@ export default {
     }
 
     button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      @include flex-center;
       div {
         width: 32px;
         height: 32px;

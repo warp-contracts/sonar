@@ -99,28 +99,24 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '../../styles/mixins';
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
-$warp-blue: #5982f1;
 
 .authorized-view {
   width: 100%;
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
 
   .header {
-    position: relative;
-    display: flex;
     width: 100%;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+
+    @include flex-center;
     margin-bottom: 2rem;
 
     p {
       font-weight: bold;
-      display: flex;
-      align-items: center;
+      @include flex-center;
       margin-bottom: 0;
       img {
         width: 2.2rem;
@@ -154,14 +150,10 @@ $warp-blue: #5982f1;
       }
     }
     .left-side {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      @include flex-center;
     }
     .right-side {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      @include flex-center;
 
       button {
         background: none;
@@ -208,7 +200,7 @@ $warp-blue: #5982f1;
     margin-top: 1rem;
 
     p {
-      color: $warp-blue;
+      color: var(--warp-blue-color);
       font-size: 1.2rem;
       cursor: pointer;
       margin: 0;
@@ -220,7 +212,7 @@ $warp-blue: #5982f1;
     .disconnect-btn {
       border: none;
       background: none;
-      color: $warp-blue;
+      color: var(--warp-blue-color);
 
       &:hover {
         opacity: 0.85;
@@ -228,10 +220,8 @@ $warp-blue: #5982f1;
     }
   }
   .no-tokens-info {
-    height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 220px;
+    @include flex-center;
   }
 }
 </style>

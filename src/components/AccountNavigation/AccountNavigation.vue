@@ -83,7 +83,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$warp-blue: #5982f1;
+@import '../../styles/mixins';
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .acc-nav-container {
   height: 28rem;
@@ -95,21 +95,10 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
   top: 60px;
   right: 54px;
 
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 
-  // glass effect
-  background: rgba(255, 255, 255, 0.63);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5.6px);
-  -webkit-backdrop-filter: blur(5.6px);
-  border: 1px solid rgba(89, 130, 241, 0.05);
-
-  transition: scale 0.8s ease;
-  transform-origin: right top;
+  @include glass-effect;
 
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
@@ -127,7 +116,7 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
   position: absolute;
 }
 
-@media (max-width: 500px) {
+@media (min-width: 0) and (max-width: 500px) {
   .acc-nav-container {
     right: 10px;
   }
