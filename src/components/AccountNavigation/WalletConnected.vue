@@ -3,7 +3,9 @@
     <div class="header">
       <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="wallet icon" />{{ account | tx }}</p>
       <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
-      <button @click="refreshWallet" class="refresh-btn"><img src="../../assets/icons/refresh.svg" alt="refresh button"></button>
+      <button @click="refreshWallet" class="refresh-btn">
+        <img src="../../assets/icons/refresh.svg" alt="refresh button" />
+      </button>
     </div>
     <b-table
       v-if="tokens?.length > 0"
@@ -40,7 +42,7 @@
         </div>
       </template> -->
     </b-table>
-    <!-- <div v-else><p>You have no tokens!</p></div> -->
+    <div v-else class="no-tokens-info"><p>You have no tokens!</p></div>
     <b-pagination
       v-if="tokens?.length > 0"
       v-model="currentPage"
@@ -90,7 +92,6 @@ export default {
   methods: {
     disconnectWallet() {
       this.$store.commit('deleteAccount');
-
     },
     refreshWallet() {
       this.$store.dispatch('getTokenBalance');
@@ -143,7 +144,7 @@ $warp-blue: #5982f1;
       img {
         width: 2.2rem;
         height: 2.2rem;
-        filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
+        filter: $warp-blue-filter;
       }
     }
     .flaticon-copy-to-clipboard {
@@ -227,6 +228,12 @@ $warp-blue: #5982f1;
         opacity: 0.85;
       }
     }
+  }
+  .no-tokens-info {
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

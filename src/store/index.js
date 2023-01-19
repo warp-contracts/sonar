@@ -26,14 +26,12 @@ export default new Vuex.Store({
   },
   actions: {
     async getTokenBalance({ state, commit }) {
-      // const response = await fetch(
-      //   `https://contracts.warp.cc/balances?walletAddress=${state.walletAccount}&page=${currentPage}`
-      // );
       state.tableLoading = true;
+      const response = await fetch(`https://contracts.warp.cc/balances?walletAddress=${state.walletAccount}`);
 
-      const response = await fetch(
-        `https://contracts.warp.cc/balances?walletAddress=FAxDUPlFfJrLDl6BvUlPw3EJOEEeg6WQbhiWidU7ueY`
-      );
+      // const response = await fetch(
+      //   `https://contracts.warp.cc/balances?walletAddress=FAxDUPlFfJrLDl6BvUlPw3EJOEEeg6WQbhiWidU7ueY`
+      // );
 
       const data = await response.json();
       commit('setTokens', data.balances);
