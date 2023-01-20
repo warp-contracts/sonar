@@ -187,8 +187,8 @@
           >
             State Evaluated
             <b-badge variant="light">
-              <div v-if="!loadedValidity" class="pl-3 pt-3">
-                <div class="dot-flashing"></div>
+              <div v-if="!loadedValidity" class="pl-3">
+                <div class="dot-flashing mr-1"></div>
               </div>
               <div v-else>
                 <div v-if="dre_status == 'evaluated'" class="flaticon-check" />
@@ -387,9 +387,11 @@
                 :stateHash="dre_stateHash"
                 :manifest="dre_manifest"
               ></ContractCurrentState>
-              <div v-else-if="!currentState && dre_evaluationError"><p class="text-break">{{ dre_evaluationError }}</p></div>
-              <div v-else-if="!currentState && !dre_evaluationError">Loading...</div>
-              <div v-else>
+              <div v-else-if="!currentState && dre_evaluationError">
+                <p class="text-break">{{ dre_evaluationError }}</p>
+              </div>
+              <div v-else-if="!loadedValidity">Loading...</div>
+              <div v-else-if="loadedValidity && !currentState && !dre_evaluationError">
                 <p class="text-break">
                   State is evaluated for contracts which are registered as safe (which do not do not use unsafeClient).
                   If contracts perform internal reads or internal writes on unsafe contracts, these interactions are
@@ -706,9 +708,14 @@ export default {
         });
     },
     async getDreState() {
+      this.loadedValidity = false;
       const response = await fetch(
         `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
       );
+      if (response.status == 500) {
+        this.loadedValidity = true;
+        return;
+      }
       if (response.status == 404) {
         this.loadedValidity = true;
       }
@@ -718,7 +725,6 @@ export default {
       } else {
         this.currentState = data.state;
       }
-      this.loadedValidity = true;
       if (data.validity && Object.keys(data.validity).length > 0) {
         this.validity = data.validity;
       }
@@ -737,6 +743,7 @@ export default {
         const data2 = await res.json();
         this.dre_evaluationError = data2.errors[0].failure;
       }
+      this.loadedValidity = true;
     },
 
     styleCategory(text, numberOfCategories, index) {
