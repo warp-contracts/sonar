@@ -154,7 +154,9 @@
             Transactions
             <b-badge variant="info" v-if="total" class="ml-2">
               <div v-if="total">{{ total }}</div>
-              <div v-else-if="total == 0">0</div>
+            </b-badge>
+            <b-badge variant="info" v-else-if="total == 0" class="ml-2">
+              <div>0</div>
             </b-badge>
 
             <div v-else class="dot-flashing ml-4 mr-2"></div>
