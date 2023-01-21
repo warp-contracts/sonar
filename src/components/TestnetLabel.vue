@@ -40,4 +40,11 @@ right: 1.5rem;
     user-select: none;
   }
 }
+
+@media (max-width: 1024px) {
+  .label {
+    top: 0.5rem;
+    right: 0.8rem;
+  }
+}
 </style>
