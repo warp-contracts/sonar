@@ -74,7 +74,7 @@ export default {
   data() {
     return {
       currentPage: 1,
-      perPage: 4,
+      perPage: 6,
       fields: ['name', 'balance'],
     };
   },
@@ -183,6 +183,11 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
   ::v-deep #tokens-table tbody tr td {
     padding: 0.2rem;
     text-align: center;
+    max-height: 25px;
+  }
+
+  ::v-deep #tokens-table tbody tr  {
+    max-height: 25px;
   }
 
   ::v-deep #tokens-table thead tr th {

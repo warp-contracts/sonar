@@ -27,8 +27,6 @@ export default {
   data() {
     return {
       loading: false,
-      currentPage: 1,
-      perPage: 4,
       fields: ['name', 'balance'],
     };
   },
@@ -86,18 +84,19 @@ export default {
 @import '../../styles/mixins';
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .acc-nav-container {
-  height: 28rem;
+  height: 36rem;
   width: 32rem;
   padding: 1rem;
 
   position: fixed;
   z-index: 999;
   top: 60px;
-  right: 54px;
+  right: 40px;
 
   @include flex-center;
   flex-direction: column;
 
+  border-radius: 10px;
   @include glass-effect;
 
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
