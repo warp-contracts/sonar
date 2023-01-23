@@ -1,48 +1,66 @@
 <template>
   <div class="authorized-view">
     <div class="header">
-      <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="wallet icon" />{{ account | tx }}</p>
-      <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
+      <div class="header-id">
+        <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="wallet icon" />{{ account | tx }}</p>
+        <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
+      </div>
       <button @click="refreshWallet" class="refresh-btn">
-        <img src="../../assets/icons/refresh.svg" alt="refresh button" />
+        <img src="../../assets/icons/refresh.svg" alt="refresh button" /> Refresh
       </button>
     </div>
-    <b-table
-      v-if="tokens?.length > 0"
-      ref="table"
-      id="tokens-table"
-      :per-page="perPage"
-      stacked="md"
-      hover
-      :small="true"
-      :items="tokens"
-      :fields="fields"
-      :current-page="currentPage"
-      :busy="isTableBusy"
-    >
-      <template #table-busy>
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <LoadingSpinner></LoadingSpinner>
-          <strong>Loading tokens...</strong>
-        </div>
-      </template>
-      <template #cell(name)="data">{{ data.item.token_name }}</template>
-      <!-- <template slot="row-details" slot-scope="data">
-        <div class="json-display">
-          <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
-            <template v-slot:copy>
-              <img
-                v-b-tooltip.hover
-                title="Copy JSON data"
-                src="@/assets/icons/copy-to-clipboard.svg"
-                class="jviewer-copy-icon"
-                alt="copy icon"
-              /> </template
-          ></json-viewer>
-        </div>
-      </template> -->
-    </b-table>
-    <div v-else class="no-tokens-info"><p>You have no tokens!</p></div>
+    <div class="table-container">
+      <b-table
+        v-if="tokens?.length > 0"
+        ref="table"
+        id="tokens-table"
+        :per-page="perPage"
+        stacked="md"
+        hover
+        :small="true"
+        :items="tokens"
+        :fields="fields"
+        :current-page="currentPage"
+        :busy="isTableBusy"
+      >
+        <template #table-busy>
+          <div class="d-flex flex-column justify-content-center align-items-center">
+            <LoadingSpinner></LoadingSpinner>
+            <strong>Loading tokens...</strong>
+          </div>
+        </template>
+        <template #cell(id)="data">
+          <div>
+            <router-link
+              style="min-width: 126px"
+              :to="{
+                path: '/app/contract/' + data.item.contract_tx_id,
+                query: isTestnet ? { network: 'testnet' } : '',
+              }"
+            >
+              {{ data.item.contract_tx_id | tx }}
+            </router-link>
+          </div></template
+        >
+        <template #cell(name)="data">{{ data.item.token_name }}</template>
+
+        <!-- <template slot="row-details" slot-scope="data">
+          <div class="json-display">
+            <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
+              <template v-slot:copy>
+                <img
+                  v-b-tooltip.hover
+                  title="Copy JSON data"
+                  src="@/assets/icons/copy-to-clipboard.svg"
+                  class="jviewer-copy-icon"
+                  alt="copy icon"
+                /> </template
+            ></json-viewer>
+          </div>
+        </template> -->
+      </b-table>
+      <div v-else class="no-tokens-info"><p>You have no tokens!</p></div>
+    </div>
     <b-pagination
       v-if="tokens?.length > 0"
       v-model="currentPage"
@@ -74,8 +92,8 @@ export default {
   data() {
     return {
       currentPage: 1,
-      perPage: 6,
-      fields: ['name', 'balance'],
+      perPage: 7,
+      fields: ['id', 'name', 'balance'],
     };
   },
 
@@ -103,7 +121,7 @@ export default {
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 
 .authorized-view {
-  width: 100%;
+  width: 90%;
   @include flex-center;
   flex-direction: column;
 
@@ -112,22 +130,25 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
     position: relative;
 
     @include flex-center;
+    justify-content: space-between;
     margin-bottom: 2rem;
-
-    p {
-      font-weight: bold;
-      @include flex-center;
-      margin-bottom: 0;
-      img {
-        width: 2.2rem;
-        margin-right: 0.5rem;
+    .header-id {
+      display: flex;
+      p {
+        font-weight: bold;
+        @include flex-center;
+        margin-bottom: 0;
+        img {
+          width: 2.2rem;
+          margin-right: 0.5rem;
+        }
       }
     }
 
     .refresh-btn {
-      position: absolute;
-      right: 0;
-      top: -1rem;
+      // position: absolute;
+      // right: 0;
+      // top: -1rem;
 
       border: none;
       background: none;
@@ -169,31 +190,37 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
     }
   }
 
-  #tokens-table {
-    min-height: 150px;
-    width: 80%;
-    margin: 0 auto;
-    margin-top: 1rem;
-  }
+  .table-container {
+    min-height: 260px;
+    width: 100%;
+    #tokens-table {
+      width: 100%;
+      margin: 0 auto;
+      margin-top: 1rem;
+    }
 
-  ::v-deep #tokens-table tbody tr {
-    cursor: pointer;
-  }
+    ::v-deep #tokens-table tbody tr {
+      cursor: pointer;
+    }
 
-  ::v-deep #tokens-table tbody tr td {
-    padding: 0.2rem;
-    text-align: center;
-    max-height: 25px;
-  }
+    ::v-deep #tokens-table tbody tr td {
+      padding: 0.4rem;
+      padding-left: 0;
+      text-align: left;
+      max-height: 25px;
+      font-size: 1rem;
+    }
 
-  ::v-deep #tokens-table tbody tr  {
-    max-height: 25px;
-  }
+    ::v-deep #tokens-table tbody tr {
+      max-height: 25px;
+    }
 
-  ::v-deep #tokens-table thead tr th {
-    padding: 0;
-    text-align: center;
-    font-size: 1.1rem;
+    ::v-deep #tokens-table thead tr th {
+      padding: 0;
+      padding-bottom: 0.5rem;
+      text-align: left;
+      font-size: 1.1rem;
+    }
   }
 
   ul.pagination {
@@ -202,6 +229,11 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
   }
 
   .footer {
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+
     margin-top: 1rem;
 
     p {
