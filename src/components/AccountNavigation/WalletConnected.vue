@@ -5,9 +5,13 @@
         <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="wallet icon" />{{ account | tx }}</p>
         <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
       </div>
-      <button @click="refreshWallet" class="refresh-btn">
+      <!-- <button @click="refreshWallet" class="refresh-btn">
         <img src="../../assets/icons/refresh.svg" alt="refresh button" /> Refresh
-      </button>
+      </button> -->
+      <BaseButton :type="'secondary'" class="refresh-btn" @btnClicked="refreshWallet">
+        <!-- <img src="../../assets/icons/refresh.svg" alt="refresh button" /> -->
+         Refresh
+      </BaseButton>
     </div>
     <div class="table-container">
       <b-table
@@ -76,17 +80,22 @@
         ><div></div>
         Switch wallet</b-button
       >
-      <button @click="disconnectWallet" class="disconnect-btn">Disconnect</button>
+      <!-- <button @click="disconnectWallet" class="disconnect-btn">Disconnect</button> -->
+      <BaseButton :type="'textOnly'" @btnClicked="disconnectWallet">
+      Disconnect
+      </BaseButton>
     </div>
   </div>
 </template>
 
 <script>
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
+import BaseButton from '../BaseButton.vue';
 export default {
   name: 'WalletConnected',
   components: {
     LoadingSpinner,
+    BaseButton,
   },
   props: ['account', 'tokens'],
   data() {
@@ -146,20 +155,14 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
     }
 
     .refresh-btn {
-      // position: absolute;
-      // right: 0;
-      // top: -1rem;
 
-      border: none;
-      background: none;
-
-      &:hover {
-        opacity: 0.85;
-      }
       img {
         width: 2.2rem;
-        height: 2.2rem;
+        height: 1.6rem;
         filter: $warp-blue-filter;
+      }
+      &:hover img {
+        filter: invert(99%) sepia(95%) saturate(4%) hue-rotate(20deg) brightness(103%) contrast(100%);
       }
     }
     .flaticon-copy-to-clipboard {

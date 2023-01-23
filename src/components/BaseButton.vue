@@ -1,5 +1,5 @@
 <template>
-  <button>
+  <button :class="classType" @click="$emit('btnClicked')">
     <slot></slot>
   </button>
 </template>
@@ -18,10 +18,13 @@ export default {
     return {};
   },
 
-  computed: {},
-  methods: {
-    disconnectWallet() {
-      this.$store.commit('deleteAccount');
+  computed: {
+    classType() {
+      return {
+        primary: this.type == 'primary',
+        secondary: this.type == 'secondary',
+        textOnly: this.type == 'textOnly',
+      };
     },
   },
 };
@@ -36,37 +39,45 @@ $radius: 50rem;
 
 button {
   @include flex-center;
-  .primary {
+  cursor: pointer;
+  padding: 0.6rem 1.8rem;
+
+  p {
+    margin: 0;
+  }
+}
+.primary {
+  background-color: $warp-blue;
+  border-radius: $radius;
+  color: $white;
+  border: none;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.secondary {
+  background: none;
+  border: 1px solid $warp-blue;
+  border-radius: $radius;
+  color: $warp-blue;
+
+  transition: background 0.2s ease;
+
+  &:hover {
     background-color: $warp-blue;
-    border-radius: $radius;
     color: $white;
-
-    &:hover {
-      opacity: 0.75;
-    }
   }
+}
 
-  .secondary {
-    background: none;
-    border: 1px solid $warp-blue;
-    border-radius: $radius;
-    color: $warp-blue;
+.textOnly {
+  border: none;
+  background: none;
+  color: $warp-blue;
 
-    transition: background 0.2s ease;
-
-    &:hover {
-      background-color: $warp-blue;
-      color: $white;
-    }
-  }
-
-  .textOnly {
-    background: none;
-    color: $warp-blue;
-
-    &:hover {
-      opacity: 0.75;
-    }
+  &:hover {
+    opacity: 0.75;
   }
 }
 </style>
