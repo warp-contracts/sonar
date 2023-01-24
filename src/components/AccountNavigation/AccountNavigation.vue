@@ -1,7 +1,7 @@
 <template>
-  <div class="acc-nav-container" :class="[loading ? 'justify-content-center' : '', account ? 'acc-nav-big' : '']">
+  <div class="acc-nav-container" :class="[loading ? 'justify-content-center' : '', walletAccount ? 'acc-nav-big' : '']">
     <Transition name="slide-fade">
-      <WalletConnected v-if="account" :account="account" :tokens="tokens"></WalletConnected>
+      <WalletConnected v-if="walletAccount" :account="walletAccount" :tokens="walletTokens"></WalletConnected>
       <WalletDisconnected
         v-else
         :loading="loading"
@@ -17,6 +17,8 @@ import MetaMaskOnboarding from '@metamask/onboarding';
 import { ArweaveWebWallet } from 'arweave-wallet-connector';
 import WalletConnected from './WalletConnected.vue';
 import WalletDisconnected from './WalletDisconnected.vue';
+import { mapState, mapActions, mapMutations } from 'vuex';
+
 export default {
   name: 'AccountNavigation',
   components: {
@@ -32,14 +34,11 @@ export default {
   },
 
   computed: {
-    account() {
-      return this.$store.state.walletAccount;
-    },
-    tokens() {
-      return this.$store.state.walletTokens;
-    },
+    ...mapState('wallet', ['walletAccount', 'walletTokens']),
   },
   methods: {
+    ...mapActions('wallet', ['getTokenBalance']),
+    ...mapMutations('wallet', ['setAccount']),
     async handleMetamask() {
       if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
         let failToast = this.$toasted.show('Metamask not detected!', {
@@ -69,11 +68,8 @@ export default {
       wallet.disconnect();
     },
 
-    async getTokenBalance() {
-      this.$store.dispatch('getTokenBalance');
-    },
     async setWallet(walletId) {
-      this.$store.commit('setAccount', walletId);
+      this.setAccount(walletId);
       localStorage.setItem('walletId', walletId);
     },
   },

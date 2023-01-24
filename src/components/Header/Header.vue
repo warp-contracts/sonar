@@ -74,22 +74,22 @@
         {{ switchNetworkText }}
       </div>
 
-      <b-button @click="toggleAccNav" :class="{ accNavActive: isAccNav }" class="btn btn-modal rounded-pill login-btn">
-        <div v-if="account">
-          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ account | tx }}</p>
+      <b-button @click="toggleAccNav" :class="{ accNavActive: modalVisible }" class="btn btn-modal rounded-pill login-btn">
+        <div v-if="walletAccount">
+          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ walletAccount | tx }}</p>
         </div>
         <p v-else>Login</p>
       </b-button>
     </b-nav>
-    <AccountNavigation v-if="isAccNav"></AccountNavigation>
-    <div class="nav-closing" v-if="isAccNav" @click="toggleAccNav"></div>
+    <AccountNavigation v-if="modalVisible"></AccountNavigation>
+    <div class="nav-closing" v-if="modalVisible" @click="toggleAccNav"></div>
   </b-navbar>
 </template>
 
 <script>
 import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 import _ from 'lodash';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 import { debounce } from 'lodash/function';
 import constants from '@/constants';
 import AccountNavigation from '../AccountNavigation/AccountNavigation.vue';
@@ -109,7 +109,6 @@ export default {
       searching: false,
       switchNetworkText: null,
       networkHeight: null,
-      isAccNav: false,
     };
   },
   async mounted() {
@@ -121,6 +120,8 @@ export default {
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
+    ...mapState('wallet', ['walletAccount', 'modalVisible']),
+    
     searchBarText() {
       return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
@@ -148,9 +149,7 @@ export default {
         }
       },
     },
-    account() {
-      return this.$store.state.walletAccount;
-    },
+
   },
 
   created() {
@@ -159,6 +158,9 @@ export default {
   methods: {
     ...mapActions('layout', ['updateSearchTerm']),
     ...mapActions('prefetch', ['setIsTestnet']),
+
+    ...mapActions('wallet', ['getTokenBalance']),
+    ...mapMutations('wallet', ['setAccount', 'changeModalVisible']),
     async toggleGateway() {
       if (!this.isTestnet) {
         this.setIsTestnet('testnet');
@@ -204,13 +206,13 @@ export default {
         });
     }, 500),
     toggleAccNav() {
-      this.isAccNav = !this.isAccNav;
+      this.changeModalVisible();
     },
     async checkMetamask() {
       const wallet = localStorage.getItem('walletId');
       if (wallet !== null) {
-        this.$store.commit('setAccount', wallet);
-        this.$store.dispatch('getTokenBalance');
+        this.setAccount(wallet);
+        this.getTokenBalance();
       }
     },
   },

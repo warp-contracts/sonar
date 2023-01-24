@@ -5,13 +5,7 @@
         <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="wallet icon" />{{ account | tx }}</p>
         <div class="flaticon-copy-to-clipboard" v-clipboard="account" title="Copy to clipboard"></div>
       </div>
-      <!-- <button @click="refreshWallet" class="refresh-btn">
-        <img src="../../assets/icons/refresh.svg" alt="refresh button" /> Refresh
-      </button> -->
-      <BaseButton :type="'secondary'" class="refresh-btn" @btnClicked="refreshWallet">
-        <!-- <img src="../../assets/icons/refresh.svg" alt="refresh button" /> -->
-         Refresh
-      </BaseButton>
+      <BaseButton :type="'secondary'" class="refresh-btn" @btnClicked="getTokenBalance"> Refresh </BaseButton>
     </div>
     <div class="table-container">
       <b-table
@@ -25,7 +19,7 @@
         :items="tokens"
         :fields="fields"
         :current-page="currentPage"
-        :busy="isTableBusy"
+        :busy="tableLoading"
       >
         <template #table-busy>
           <div class="d-flex flex-column justify-content-center align-items-center">
@@ -47,21 +41,6 @@
           </div></template
         >
         <template #cell(name)="data">{{ data.item.token_name }}</template>
-
-        <!-- <template slot="row-details" slot-scope="data">
-          <div class="json-display">
-            <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
-              <template v-slot:copy>
-                <img
-                  v-b-tooltip.hover
-                  title="Copy JSON data"
-                  src="@/assets/icons/copy-to-clipboard.svg"
-                  class="jviewer-copy-icon"
-                  alt="copy icon"
-                /> </template
-            ></json-viewer>
-          </div>
-        </template> -->
       </b-table>
       <div v-else class="no-tokens-info"><p>You have no tokens!</p></div>
     </div>
@@ -76,14 +55,8 @@
       first-number
     ></b-pagination>
     <div class="footer">
-      <b-button @click="disconnectWallet" class="btn btn-modal rounded-pill"
-        ><div></div>
-        Switch wallet</b-button
-      >
-      <!-- <button @click="disconnectWallet" class="disconnect-btn">Disconnect</button> -->
-      <BaseButton :type="'textOnly'" @btnClicked="disconnectWallet">
-      Disconnect
-      </BaseButton>
+      <BaseButton @btnClicked="switchWallet">Switch wallet</BaseButton>
+      <BaseButton :type="'textOnly'" @btnClicked="deleteAccount"> Disconnect </BaseButton>
     </div>
   </div>
 </template>
@@ -91,6 +64,8 @@
 <script>
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import BaseButton from '../BaseButton.vue';
+import { mapState, mapActions, mapMutations } from 'vuex';
+
 export default {
   name: 'WalletConnected',
   components: {
@@ -107,20 +82,16 @@ export default {
   },
 
   computed: {
+    ...mapState('prefetch', ['isTestnet']),
+    ...mapState('wallet', ['tableLoading']),
+
     rows() {
       return this.tokens.length;
     },
-    isTableBusy() {
-      return this.$store.state.tableLoading;
-    },
   },
   methods: {
-    disconnectWallet() {
-      this.$store.commit('deleteAccount');
-    },
-    refreshWallet() {
-      this.$store.dispatch('getTokenBalance');
-    },
+    ...mapActions('wallet', ['getTokenBalance']),
+    ...mapMutations('wallet', ['deleteAccount', 'switchWallet']),
   },
 };
 </script>
@@ -155,7 +126,6 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
     }
 
     .refresh-btn {
-
       img {
         width: 2.2rem;
         height: 1.6rem;
