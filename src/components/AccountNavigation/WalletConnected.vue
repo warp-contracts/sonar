@@ -28,7 +28,7 @@
           </div>
         </template>
         <template #cell(id)="data">
-          <div>
+          <div v-if="data.item.contract_tx_id">
             <router-link
               style="min-width: 126px"
               :to="{
@@ -38,9 +38,13 @@
             >
               {{ data.item.contract_tx_id | tx }}
             </router-link>
-          </div></template
-        >
-        <template #cell(name)="data">{{ data.item.token_name }}</template>
+          </div>
+          <div v-else>N/A</div>
+        </template>
+        <template #cell(name)="data">
+          <div v-if="data.item.token_name">{{ data.item.token_name }}</div>
+          <div v-else>N/A</div>
+        </template>
       </b-table>
       <div v-else class="no-tokens-info"><p>You have no tokens!</p></div>
     </div>
@@ -230,7 +234,7 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
     }
   }
   .no-tokens-info {
-    height: 220px;
+    height: 320px;
     @include flex-center;
   }
 }

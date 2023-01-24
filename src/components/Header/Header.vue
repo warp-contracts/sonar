@@ -252,4 +252,9 @@ export default {
   top: 0;
   bottom: 0;
 }
+@media (max-width: 768px) {
+  .login-btn {
+    display: none;
+  }
+}
 </style>

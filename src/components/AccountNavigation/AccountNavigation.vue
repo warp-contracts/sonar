@@ -58,14 +58,25 @@ export default {
 
     async handleArweaveapp() {
       this.loading = true;
-      const wallet = new ArweaveWebWallet();
-      wallet.setUrl('arweave.app');
-      await wallet.connect();
-      const walletId = wallet.namespaces.arweaveWallet.getActiveAddress();
-      await this.setWallet(walletId);
-      this.getTokenBalance();
-      this.loading = false;
-      wallet.disconnect();
+      try {
+        const wallet = new ArweaveWebWallet();
+        wallet.setUrl('arweave.app');
+
+        await wallet.connect();
+        const walletId = wallet.namespaces.arweaveWallet.getActiveAddress();
+        await this.setWallet(walletId);
+        this.getTokenBalance();
+        wallet.disconnect();
+      } catch (err) {
+        let failToast = this.$toasted.show('Error while connecting wallet. Reload page and try again', {
+          theme: 'outline',
+          position: 'top-left',
+          duration: 3000,
+        });
+        this.loading = false;
+      } finally {
+        this.loading = false;
+      }
     },
 
     async setWallet(walletId) {
