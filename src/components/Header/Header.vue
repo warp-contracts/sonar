@@ -187,7 +187,7 @@ export default {
         this.foundContracts = [];
         return;
       }
-      fetch(`${this.gatewayUrl}/gateway/search/${this.query}`)
+      fetch(`${this.gatewayUrl}/gateway/search/${this.query}${this.isTestnet ? '?testnet=true' : ''}`)
         .then((response) => {
           return response.json();
         })
