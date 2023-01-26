@@ -198,15 +198,13 @@ import _ from 'lodash';
 import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
 import Charts from '@/components/Charts/Charts';
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
 
 export default {
   name: 'Contracts',
   data() {
     return {
-      selected: 'all',
-      selectedSource: 'all',
       chartLoading: true,
       loading: true,
       fields: [
@@ -252,7 +250,11 @@ export default {
   },
   mounted() {
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
-    this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
+    this.getContracts(
+      this.$route.query.page ? this.$route.query.page : this.currentPage,
+      this.selected,
+      this.selectedSource
+    );
     this.loadStats();
   },
   components: { TxList, Charts, TestnetLabel },
@@ -264,6 +266,7 @@ export default {
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('contracts', ['selectedContractType', 'selectedSourceType']),
     pages() {
       return this.paging ? this.paging : null;
     },
@@ -279,8 +282,27 @@ export default {
         ? this.fields
         : this.fields.filter((field) => field.key != 'lang');
     },
+    selected: {
+      get() {
+        return this.selectedContractType;
+      },
+
+      set(value) {
+        this.setSelectedContractType(value);
+      },
+    },
+    selectedSource: {
+      get() {
+        return this.selectedSourceType;
+      },
+
+      set(value) {
+        this.setSelectedSourceType(value);
+      },
+    },
   },
   methods: {
+    ...mapMutations('contracts', ['setSelectedContractType', 'setSelectedSourceType']),
     refreshData() {
       if (this.currentPage > 1) {
         this.$router.push({ query: {} });
@@ -322,6 +344,14 @@ export default {
       );
     },
     async getContracts(page, type, sourceType) {
+      // this.$router.push({ query: { page: this.currentPage, type: type, sourceType: sourceType } });
+      // this.$router.push({ query: { sourceType: sourceType } });
+      if (type == 'all') {
+        type = null;
+      }
+      if (sourceType == 'all') {
+        sourceType = null;
+      }
       if (this.axiosSource) {
         this.axiosSource.cancel('Cancel previous request');
       }
