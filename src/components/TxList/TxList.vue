@@ -1,7 +1,7 @@
 <template>
   <div class="tx-list">
     <slot></slot>
-    <b-pagination-nav
+    <b-pagination-nav v-if="paging"
       :link-gen="linkGen"
       :number-of-pages="rows"
       @page-click="handleClick"

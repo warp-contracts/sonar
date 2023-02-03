@@ -84,111 +84,141 @@
     </div>
 
     <div class="contracts-wrapper">
-      <div class="d-block py-3 d-sm-flex">
-        <div class="my-1 d-sm-flex px-0 pr-5">
-          <p class="filter-header mr-4 ml-2">Contract Source Type</p>
-          <b-form-radio-group
-            id="contract-source-type-group"
-            name="contract-source-type-group"
-            @change="refreshData"
-            v-model="selectedSource"
-            class="radio-group"
-            stacked
-          >
-            <div class="contract-type-item">
-              <b-form-radio value="all">All</b-form-radio>
-            </div>
-            <div class="contract-type-item">
-              <b-form-radio value="application/javascript">JavaScript</b-form-radio>
-            </div>
-            <div class="contract-type-item">
-              <b-form-radio value="application/wasm">WASM</b-form-radio>
-            </div>
-          </b-form-radio-group>
+      <div class="tx-lists-wrapper d-none d-md-flex">
+
+        <div class="tx-list-single-wrapper">
+          <div class="tx-list-header">
+            <div>Interactions</div>
+          </div>
+          <div class="tx-list">
+            <TxList :paging="null" v-if="!noContractsDetected">
+              <b-table
+                  ref="table"
+                  id="interactions-table"
+                  stacked="md"
+                  hover
+                  :items="interactions"
+                  :fields="interactionsFields"
+                  @row-clicked="rowClicked"
+                  :busy="!contractsLoaded"
+              >
+                <template #table-busy> </template>
+                <template #cell(interactionId)="data" class="text-right">
+                  <div class="d-flex align-items-center">
+                    <router-link
+                        style="min-width: 126px"
+                        :to="{
+                  path: '/app/interaction/' + data.item.interactionId,
+                  query: isTestnet ? { network: 'testnet' } : '',
+                }"
+                    >
+                      {{ data.item.interactionId | tx }}
+                    </router-link>
+                    <div class="table-icon-handler">
+                      <div
+                          class="flaticon-copy-to-clipboard small"
+                          v-clipboard="data.item.interactionId"
+                          title="Copy to clipboard"
+                      ></div>
+                    </div>
+                  </div>
+                </template>
+                <template #cell(creator)="data">
+                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
+                  <span v-else>{{ data.item.owner | tx }}</span>
+                </template>
+
+                <template #cell(function)="data">
+                  <div class="text-uppercase">{{ data.item.function }}</div>
+                </template>
+
+                <template #cell(source)="data">
+                  <div class="text-uppercase">{{ data.item.source }}</div>
+                </template>
+
+                <template #cell(total)="data">
+                  <div class="text-right">{{ data.item.total }}</div>
+                </template>
+                <template #cell(blockHeight)="data">
+                  <div class="text-right">
+                    {{ data.item.blockHeight }}
+                  </div>
+                </template>
+              </b-table>
+
+              <div v-if="!contractsLoaded">
+                <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
+              </div>
+            </TxList>
+          </div>
         </div>
-        <div class="my-1 d-sm-flex px-0">
-          <p class="filter-header mr-4 ml-2">Contract Type</p>
-          <b-form-radio-group
-            id="contract-type-group"
-            name="contract-type-group"
-            @change="refreshData"
-            v-model="selected"
-            class="radio-group"
-            stacked
-          >
-            <div class="contract-type-item">
-              <b-form-radio value="all">All</b-form-radio>
-            </div>
-            <div class="contract-type-item">
-              <b-form-radio value="pst">PST</b-form-radio>
-            </div>
-            <div class="contract-type-item">
-              <b-form-radio value="other">Other</b-form-radio>
-            </div>
-          </b-form-radio-group>
-        </div>
-      </div>
-      <TxList :paging="pages" @page-clicked="onPageClicked" v-if="!noContractsDetected">
-        <b-table
-          ref="table"
-          id="contracts-table"
-          stacked="md"
-          hover
-          :items="contracts"
-          :fields="computedFields"
-          @row-clicked="rowClicked"
-          :busy="!contractsLoaded"
-        >
-          <template #table-busy> </template>
-          <template #cell(contractId)="data" class="text-right">
-            <div class="d-flex align-items-center">
-              <router-link
-                style="min-width: 126px"
-                :to="{
+
+        <div class="d-none d-md-block tx-list-single-wrapper">
+          <div class="tx-list-header">
+            <div>Contracts</div>
+          </div>
+          <div class="tx-list">
+            <TxList :paging="null" v-if="!noContractsDetected">
+              <b-table
+                  ref="table"
+                  id="contracts-table"
+                  stacked="md"
+                  hover
+                  :items="contracts"
+                  :fields="contractFields"
+                  @row-clicked="rowClicked"
+                  :busy="!contractsLoaded"
+              >
+                <template #table-busy> </template>
+                <template #cell(contractId)="data" class="text-right">
+                  <div class="d-flex align-items-center">
+                    <router-link
+                        style="min-width: 126px"
+                        :to="{
                   path: '/app/contract/' + data.item.contractId,
                   query: isTestnet ? { network: 'testnet' } : '',
                 }"
-              >
-                {{ data.item.contractId | tx }}
-              </router-link>
-              <div class="table-icon-handler">
-                <div
-                  class="flaticon-copy-to-clipboard small"
-                  v-clipboard="data.item.contractId"
-                  title="Copy to clipboard"
-                ></div>
+                    >
+                      {{ data.item.contractId | tx }}
+                    </router-link>
+                    <div class="table-icon-handler">
+                      <div
+                          class="flaticon-copy-to-clipboard small"
+                          v-clipboard="data.item.contractId"
+                          title="Copy to clipboard"
+                      ></div>
+                    </div>
+                  </div>
+                </template>
+                <template #cell(creator)="data">
+                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
+                  <span v-else>{{ data.item.owner | tx }}</span>
+                </template>
+
+                <template #cell(type)="data">
+                  <div class="text-uppercase">{{ data.item.type }}</div>
+                </template>
+
+                <template #cell(source)="data">
+                  <div class="text-uppercase">{{ data.item.source }}</div>
+                </template>
+
+                <template #cell(blockHeight)="data">
+                  <div class="text-right">
+                    {{ data.item.blockHeight }}
+                  </div>
+                </template>
+              </b-table>
+
+              <div v-if="!contractsLoaded">
+                <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
               </div>
-              <span v-if="data.item.pst_ticker" class="pl-3">{{ data.item.pst_ticker }}</span>
-            </div>
-          </template>
-          <template #cell(creator)="data">
-            <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
-            <span v-else>{{ data.item.owner | tx }}</span>
-          </template>
-
-          <template #cell(type)="data">
-            <div class="text-uppercase">{{ data.item.type }}</div>
-          </template>
-
-          <template #cell(lang)="data">
-            <div class="text-uppercase">{{ data.item.lang }}</div>
-          </template>
-
-          <template #cell(total)="data">
-            <div class="text-right">{{ data.item.total }}</div>
-          </template>
-          <template #cell(lastInteractionHeight)="data">
-            <div class="text-right">
-              {{ data.item.lastInteractionHeight }}
-            </div>
-          </template>
-        </b-table>
-
-        <div v-if="!contractsLoaded">
-          <div v-for="n in 15" :key="n" class="preloader text-preloader tx-preloader"></div>
+            </TxList>
+          </div>
         </div>
-      </TxList>
-      <div v-else class="no-contracts-wrapper ml-2">No contracts for specified requirements!</div>
+
+      </div>
+
     </div>
   </div>
 </template>
@@ -209,32 +239,37 @@ export default {
       selectedSource: 'all',
       chartLoading: true,
       loading: true,
-      fields: [
+      contractFields: [
         'contractId',
         'creator',
         'type',
+        'source',
         {
-          key: 'lang',
-          label: 'Wasm Lang',
-        },
-        {
-          key: 'total',
-          label: 'total',
+          key: 'blockHeight',
+          label: 'block height',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
+      ],
+      interactionsFields: [
+        'interactionId',
+        'creator',
+        'function',
+        'source',
         {
-          key: 'lastInteractionHeight',
-          label: 'last interaction height',
+          key: 'blockHeight',
+          label: 'block height',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
       ],
       contracts: [],
+      interactions: [],
       currentPage: 1,
-      paging: null,
+      summary: null,
       loaded: false,
-      limit: 15,
+      contractsLimit: 15,
+      integrationsLimit: 15,
       totalContracts: 0,
       totalInteractions: 0,
       totalContractsLoaded: false,
@@ -264,20 +299,14 @@ export default {
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
-    pages() {
-      return this.paging ? this.paging : null;
-    },
     contractsLoaded() {
+      const totalLimit = this.contractsLimit + this.integrationsLimit;
+      const allItems = this.contracts.length + this.interactions.length;
       return (
         this.contracts &&
-        this.paging &&
-        this.contracts.length == (this.paging.items > this.limit ? this.limit : this.paging.items)
+        this.summary &&
+        allItems == (this.summary.itemsCount > totalLimit ? totalLimit : this.summary.itemsCount)
       );
-    },
-    computedFields() {
-      return this.selectedSource == 'application/wasm'
-        ? this.fields
-        : this.fields.filter((field) => field.key != 'lang');
     },
   },
   methods: {
@@ -331,9 +360,8 @@ export default {
       this.contracts = [];
       axios
         .get(
-          `${this.gatewayUrl}/gateway/contracts?limit=${this.limit}&page=${page}${
-            type != null ? `&contractType=${type}` : ''
-          }${sourceType != null ? `&sourceType=${sourceType}` : ''}${this.isTestnet ? '&testnet=true' : ''}`,
+          `${this.gatewayUrl}/gateway/dashboard?contractLimit=${this.contractsLimit}&interactionLimit=${
+            this.integrationsLimit}${this.isTestnet ? '&testnet=true' : ''}`,
           {
             cancelToken: this.axiosSource.token,
           }
@@ -341,21 +369,33 @@ export default {
 
         .then(async (fetchedContracts) => {
           this.noContractsDetected = fetchedContracts.data.contracts.length == 0;
-          this.paging = fetchedContracts.data.paging;
-          for (const contract of fetchedContracts.data.contracts) {
-            this.contracts.push({
-              pst_ticker: contract.pst_ticker,
-              id: contract.contract,
-              contractId: contract.contract,
-              owner: contract.owner,
-              total: contract.interactions,
-              confirmed: contract.confirmed,
-              corrupted: contract.corrupted,
-              lastInteractionHeight: contract.last_interaction_height,
-              type: contract.contract_type,
-              lang: contract.src_wasm_lang,
-            });
-          }
+          this.summary = fetchedContracts.data.summary;
+          this.interactions = [];
+          this.contracts = [];
+          fetchedContracts.data.contracts
+              .filter(item => item.contract_or_interaction === 'contract')
+              .forEach(contract => {
+                this.contracts.push({
+                  id: contract.contract,
+                  contractId: contract.contract_id,
+                  owner: contract.owner,
+                  blockHeight: contract.block_height,
+                  type: contract.contract_type,
+                  source: contract.source,
+                });
+              })
+          fetchedContracts.data.contracts
+              .filter(item => item.contract_or_interaction === 'interaction')
+              .forEach(interaction => {
+                this.interactions.push({
+                  interactionId: interaction.interaction_id,
+                  contractId: interaction.contract_id,
+                  owner: interaction.owner,
+                  function: interaction.function,
+                  blockHeight: interaction.block_height,
+                  source: interaction.source,
+                });
+              });
         });
     },
     rowClicked(record) {
