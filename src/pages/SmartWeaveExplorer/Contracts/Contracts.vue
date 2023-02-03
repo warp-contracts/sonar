@@ -88,7 +88,7 @@
 
         <div class="tx-list-single-wrapper">
           <div class="tx-list-header">
-            <div>Interactions</div>
+            <div>Latest Interactions</div>
           </div>
           <div class="tx-list">
             <TxList :paging="null" v-if="!noContractsDetected">
@@ -123,13 +123,30 @@
                     </div>
                   </div>
                 </template>
-                <template #cell(creator)="data">
-                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
-                  <span v-else>{{ data.item.owner | tx }}</span>
+                <template #cell(contractId)="data" class="text-right">
+                  <div class="d-flex align-items-center">
+                    <router-link
+                        style="min-width: 126px"
+                        :to="{
+                  path: '/app/contract/' + data.item.contractId,
+                  query: isTestnet ? { network: 'testnet' } : '',
+                }"
+                    >
+                      {{ data.item.contractId | tx }}
+                    </router-link>
+                    <div class="table-icon-handler">
+                      <div
+                          class="flaticon-copy-to-clipboard small"
+                          v-clipboard="data.item.contractId"
+                          title="Copy to clipboard"
+                      ></div>
+                    </div>
+                  </div>
                 </template>
 
                 <template #cell(function)="data">
-                  <div class="text-uppercase">{{ data.item.function }}</div>
+                  <div v-if="data.item.function.length > 14" class="text-uppercase text-ellipsis" v-b-tooltip.hover :title=data.item.function.toUpperCase()>{{ data.item.function }}</div>
+                  <div v-else class="text-uppercase text-ellipsis">{{ data.item.function }}</div>
                 </template>
 
                 <template #cell(source)="data">
@@ -155,7 +172,7 @@
 
         <div class="d-none d-md-block tx-list-single-wrapper">
           <div class="tx-list-header">
-            <div>Contracts</div>
+            <div>Latest Contracts</div>
           </div>
           <div class="tx-list">
             <TxList :paging="null" v-if="!noContractsDetected">
@@ -246,19 +263,19 @@ export default {
         'source',
         {
           key: 'blockHeight',
-          label: 'block height',
+          label: 'height',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
       ],
       interactionsFields: [
         'interactionId',
-        'creator',
+        'contractId',
         'function',
         'source',
         {
           key: 'blockHeight',
-          label: 'block height',
+          label: 'height',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
