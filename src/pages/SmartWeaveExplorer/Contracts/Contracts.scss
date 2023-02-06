@@ -147,6 +147,13 @@
   }
 }
 
+.text-ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 14ch;
+}
+
 .stats-wrapper {
   align-self: center;
   margin-left: -75px;
