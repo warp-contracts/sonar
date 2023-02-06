@@ -42,18 +42,19 @@ export default {
   .buttons-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    width: 80%;
+    gap: 2rem;
+    width: 70%;
     p.nav-header {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       margin: 0 auto;
     }
 
     button {
       @include flex-center;
+      font-size: 1.2rem;
       div {
-        width: 32px;
-        height: 32px;
+        width: 38px;
+        height: 38px;
         margin-right: 0.6rem;
 
         img {
@@ -62,6 +63,9 @@ export default {
           height: 100%;
         }
       }
+    }
+    .nav-subtext {
+      text-align: center;
     }
   }
 }

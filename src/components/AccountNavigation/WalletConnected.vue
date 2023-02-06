@@ -28,9 +28,9 @@
           </div>
         </template>
         <template #cell(id)="data">
-          <div v-if="data.item.contract_tx_id">
+          <div style="width: 140px" v-if="data.item.contract_tx_id">
             <router-link
-              style="min-width: 126px"
+              @click="changeModalVisible"
               :to="{
                 path: '/app/contract/' + data.item.contract_tx_id,
                 query: isTestnet ? { network: 'testnet' } : '',
@@ -42,7 +42,11 @@
           <div v-else>N/A</div>
         </template>
         <template #cell(name)="data">
-          <div v-if="data.item.token_name">{{ data.item.token_name }}</div>
+          <div style="width: 300px; overflow: hidden" v-if="data.item.token_name">{{ data.item.token_name }}</div>
+          <div style="width: 300px; overflow: hidden" v-else>N/A</div>
+        </template>
+        <template #cell(balance)="data">
+          <div v-if="data.item.balance">{{ data.item.balance }}</div>
           <div v-else>N/A</div>
         </template>
       </b-table>
@@ -95,7 +99,7 @@ export default {
   },
   methods: {
     ...mapActions('wallet', ['getTokenBalance']),
-    ...mapMutations('wallet', ['deleteAccount', 'switchWallet']),
+    ...mapMutations('wallet', ['deleteAccount', 'switchWallet', 'changeModalVisible']),
   },
 };
 </script>
@@ -168,7 +172,7 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
   }
 
   .table-container {
-    min-height: 260px;
+    min-height: 280px;
     width: 100%;
     #tokens-table {
       width: 100%;
@@ -182,7 +186,6 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
 
     ::v-deep #tokens-table tbody tr td {
       padding: 0.4rem;
-      padding-left: 0;
       text-align: left;
       max-height: 25px;
       font-size: 1rem;
@@ -195,8 +198,13 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
     ::v-deep #tokens-table thead tr th {
       padding: 0;
       padding-bottom: 0.5rem;
+      padding-left: 0.4rem;
       text-align: left;
       font-size: 1.1rem;
+    }
+
+    ::v-deep tbody tr td div > .cell-name {
+      width: 20rem;
     }
   }
 

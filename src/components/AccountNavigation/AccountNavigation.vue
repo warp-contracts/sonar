@@ -92,7 +92,7 @@ export default {
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .acc-nav-container {
   min-height: 36rem;
-  width: 32rem;
+  width: 48rem;
   padding: 1rem;
 
   position: fixed;
