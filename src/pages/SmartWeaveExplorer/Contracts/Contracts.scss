@@ -17,16 +17,13 @@
 }
 
 .contracts-wrapper {
-  background-color: $gray-100;
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: var(--content-shadow);
 }
 
 .charts-wrapper {
   background-color: $gray-100;
   border-radius: 10px;
   padding: 2rem;
+  margin: 0.5rem;
   box-shadow: var(--content-shadow);
   margin-bottom: 30px;
 }
@@ -121,6 +118,40 @@
   @media (max-width: breakpoint-max(lg)) {
     flex: 1 0 50%;
   }
+}
+
+.tx-lists-wrapper {
+  margin-bottom: 40px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+
+.tx-list-header {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  padding: 0.75rem;
+}
+
+.tx-list-single-wrapper {
+  flex: 2 1 0%;
+  padding: 15px;
+  margin: 0.5rem;
+  min-width: 150px;
+  border-radius: 10px;
+  background-color: $gray-100;
+  box-shadow: var(--content-shadow);
+
+  @media (max-width: breakpoint-max(lg)) {
+    flex: 1 0 50%;
+  }
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 14ch;
 }
 
 .stats-wrapper {
