@@ -98,7 +98,7 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
   position: fixed;
   z-index: 999;
   top: 60px;
-  right: 40px;
+  right: 60px;
 
   @include flex-center;
   flex-direction: column;
