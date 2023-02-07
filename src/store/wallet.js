@@ -28,7 +28,6 @@ export default {
   actions: {
     async getTokenBalance({ state, commit }) {
       state.tableLoading = true;
-      //pr fix
       const response = await fetch(`https://contracts.warp.cc/balances?walletAddress=${state.walletAccount}`);
 
       const data = await response.json();
