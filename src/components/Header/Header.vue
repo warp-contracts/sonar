@@ -74,28 +74,31 @@
         {{ switchNetworkText }}
       </div>
 
-      <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{ findMoreText }}</b-button>
-      <b-modal id="modal-1" title="Redstone SmartWeave Gateway" size="lg">
-        <Modal />
-        <template #modal-footer><div></div></template>
-      </b-modal>
+      <b-button @click="toggleAccNav" :class="{ accNavActive: modalVisible }" class="btn btn-modal rounded-pill login-btn">
+        <div v-if="walletAccount">
+          <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ walletAccount | tx }}</p>
+        </div>
+        <p v-else>Login</p>
+      </b-button>
     </b-nav>
+    <AccountNavigation v-if="modalVisible"></AccountNavigation>
+    <div class="nav-closing" v-if="modalVisible" @click="toggleAccNav"></div>
   </b-navbar>
 </template>
 
 <script>
 import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 import _ from 'lodash';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 import { debounce } from 'lodash/function';
-import Modal from '@/components/Modal/Modal';
 import constants from '@/constants';
+import AccountNavigation from '../AccountNavigation/AccountNavigation.vue';
 
 export default {
   name: 'Header',
   components: {
     VueTypeaheadBootstrap,
-    Modal,
+    AccountNavigation,
   },
   data() {
     return {
@@ -111,19 +114,21 @@ export default {
   async mounted() {
     this.switchNetworkText = this.isTestnet ? 'Switch to Mainnet' : 'Switch to Testnet';
     await this.getNetworkHeight();
+    this.checkMetamask();
   },
+
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
+    ...mapState('wallet', ['walletAccount', 'modalVisible']),
+    
     searchBarText() {
       return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
     logoUrl() {
       return this.isTestnet ? '/#/app/contracts?network=testnet' : '/';
     },
-    findMoreText() {
-      return screen.width >= 768 ? 'Find out more' : 'More';
-    },
+
     searchTerm: {
       get() {
         return this.$store.state.layout.searchTerm;
@@ -144,6 +149,7 @@ export default {
         }
       },
     },
+
   },
 
   created() {
@@ -152,6 +158,9 @@ export default {
   methods: {
     ...mapActions('layout', ['updateSearchTerm']),
     ...mapActions('prefetch', ['setIsTestnet']),
+
+    ...mapActions('wallet', ['getTokenBalance']),
+    ...mapMutations('wallet', ['setAccount', 'changeModalVisible']),
     async toggleGateway() {
       if (!this.isTestnet) {
         this.setIsTestnet('testnet');
@@ -196,8 +205,56 @@ export default {
           this.searching = false;
         });
     }, 500),
+    toggleAccNav() {
+      this.changeModalVisible();
+    },
+    async checkMetamask() {
+      const wallet = localStorage.getItem('walletId');
+      if (wallet !== null) {
+        this.setAccount(wallet);
+        this.getTokenBalance();
+      }
+    },
   },
 };
 </script>
 
-<style src="./Header.scss" lang="scss"></style>
+<style src="./Header.scss" lang="scss" scoped></style>
+
+<style scoped lang="scss">
+.login-btn {
+  p {
+    margin: 0;
+  }
+  div {
+    p {
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+    img {
+      filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+      width: 2.2rem;
+      height: 1.8rem;
+      margin-right: 0.5rem;
+    }
+  }
+}
+.accNavActive {
+  opacity: 0.85 !important;
+}
+.nav-closing {
+  background: transparent;
+  position: fixed;
+  z-index: 998;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+@media (max-width: 768px) {
+  .login-btn {
+    display: none;
+  }
+}
+</style>

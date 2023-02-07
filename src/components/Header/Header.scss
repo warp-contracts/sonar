@@ -26,23 +26,6 @@
   .nav {
     height: 100%;
     padding: 0;
-
-    .btn-modal {
-      height: fit-content;
-      border: none;
-      margin-right: 10px;
-      font-size: $font-size-mini;
-      color: white;
-      background-color: var(--warp-blue-color);
-
-      &:hover {
-        opacity: 0.85;
-      }
-
-      @media (min-width: breakpoint-min(md)) {
-        font-size: $font-size-base;
-      }
-    }
   }
 
   .form-group {
