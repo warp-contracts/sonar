@@ -28,7 +28,7 @@
           </div>
         </template>
         <template #cell(id)="data">
-          <div style="width: 140px" v-if="data.item.contract_tx_id">
+          <div v-if="data.item.contract_tx_id">
             <router-link
               @click="changeModalVisible"
               :to="{
@@ -42,12 +42,24 @@
           <div v-else>N/A</div>
         </template>
         <template #cell(name)="data">
-          <div style="width: 300px; overflow: hidden" v-if="data.item.token_name">{{ data.item.token_name }}</div>
-          <div style="width: 300px; overflow: hidden" v-else>N/A</div>
+          <div
+            style="width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+            v-if="data.item.token_name"
+          >
+            {{ data.item.token_name }}
+          </div>
+          <div style="width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" v-else>N/A</div>
         </template>
         <template #cell(balance)="data">
-          <div v-if="data.item.balance">{{ data.item.balance }}</div>
-          <div v-else>N/A</div>
+          <div
+            style="max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; text-decoration: underline;"
+            v-clipboard="data.item.balance"
+            v-b-tooltip.hover title="Copy to clipboard"
+            v-if="data.item.balance"
+          >
+            {{ data.item.balance }}
+          </div>
+          <div style="max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" v-else>N/A</div>
         </template>
       </b-table>
       <div v-else class="no-tokens-info"><p>You have no tokens!</p></div>
@@ -85,7 +97,7 @@ export default {
     return {
       currentPage: 1,
       perPage: 7,
-      fields: ['id', 'name', 'balance'],
+      fields: [{key: 'id', label: 'id', thStyle: { width: '140px'}}, 'name', 'balance'],
     };
   },
 
@@ -178,10 +190,6 @@ $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) bri
       width: 100%;
       margin: 0 auto;
       margin-top: 1rem;
-    }
-
-    ::v-deep #tokens-table tbody tr {
-      cursor: pointer;
     }
 
     ::v-deep #tokens-table tbody tr td {
