@@ -157,10 +157,31 @@
 
                 <template #cell(source)="data">
                   <div v-if="data.item.source == 'arweave'">
-                    <img v-b-tooltip.hover title="Arweave" src="../../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" class="source-icon" />
+                    <img
+                      v-b-tooltip.hover
+                      title="Arweave"
+                      src="../../../assets/icons/arweave-ar-logo.svg"
+                      alt="arweave logo icon"
+                      class="source-icon"
+                    />
                   </div>
                   <div v-else-if="data.item.source == 'warp'">
-                    <img v-b-tooltip.hover title="Warp" src="../../../assets/icons/warp–logo.svg" alt="warp logo icon" class="source-icon" />
+                    <img
+                      v-b-tooltip.hover
+                      title="Warp"
+                      src="../../../assets/icons/warp–logo.svg"
+                      alt="warp logo icon"
+                      class="source-icon"
+                    />
+                  </div>
+                  <div v-else-if="data.item.source == 'sequencer'">
+                    <img
+                      v-b-tooltip.hover
+                      title="Warp Sequencer"
+                      src="../../../assets/icons/warp–logo.svg"
+                      alt="warp logo icon"
+                      class="source-icon"
+                    />
                   </div>
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
@@ -230,10 +251,31 @@
 
                 <template #cell(source)="data">
                   <div v-if="data.item.source == 'warp'">
-                    <img v-b-tooltip.hover title="Warp" src="../../../assets/icons/warp–logo.svg" alt="warp logo icon" class="source-icon" />
+                    <img
+                      v-b-tooltip.hover
+                      title="Warp"
+                      src="../../../assets/icons/warp–logo.svg"
+                      alt="warp logo icon"
+                      class="source-icon"
+                    />
                   </div>
                   <div v-else-if="data.item.source == 'arweave'">
-                    <img v-b-tooltip.hover title="Arweave" src="../../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" class="source-icon" />
+                    <img
+                      v-b-tooltip.hover
+                      title="Arweave"
+                      src="../../../assets/icons/arweave-ar-logo.svg"
+                      alt="arweave logo icon"
+                      class="source-icon"
+                    />
+                  </div>
+                  <div v-else-if="data.item.source == 'sequencer'">
+                    <img
+                      v-b-tooltip.hover
+                      title="Warp Sequencer"
+                      src="../../../assets/icons/warp–logo.svg"
+                      alt="warp logo icon"
+                      class="source-icon"
+                    />
                   </div>
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>

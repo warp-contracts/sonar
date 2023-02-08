@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="p-3">
-        <span class="info-colored">Warp SmartWeave Gateway</span> is a gateway dedicated to loading SmartWeave contract
+        <span class="info-colored">Warp Gateway</span> is a gateway dedicated to loading SmartWeave contract
         interactions. It firstly loads information about currently active peers and rank them by the amount of synced
         blocks and response times. It then loads and index SmartWeave interactions from the newly mined blocks in order
         to - finally - perform transactions confirmation. Each transaction must be confirmed by at least three nodes to
@@ -26,7 +26,7 @@
         reliable data and not exposing smart contracts to potential harmful incidents.
         <br />
         <br />
-        <span class="info-colored">Redstone SmartWeave Gateway</span> is a fast and dependable resource which addresses
+        <span class="info-colored">Warp Gateway</span> is a fast and dependable resource which addresses
         critical problems of loading interactions. It's an open source project which can be used by anyone willing to
         spin up their own instance of the gateway dedicated to serving its contracts' interactions.
       </div>
