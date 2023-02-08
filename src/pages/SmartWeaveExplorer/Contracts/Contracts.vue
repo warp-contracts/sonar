@@ -84,8 +84,7 @@
     </div>
 
     <div class="contracts-wrapper">
-      <div class="tx-lists-wrapper d-none d-md-flex">
-
+      <div class="tx-lists-wrapper d-md-flex">
         <div class="tx-list-single-wrapper">
           <div class="tx-list-header">
             <div>Latest Interactions</div>
@@ -93,32 +92,32 @@
           <div class="tx-list">
             <TxList :paging="null" v-if="!noContractsDetected">
               <b-table
-                  ref="table"
-                  id="interactions-table"
-                  stacked="md"
-                  hover
-                  :items="interactions"
-                  :fields="interactionsFields"
-                  @row-clicked="rowClicked"
-                  :busy="!contractsLoaded"
+                ref="table"
+                id="interactions-table"
+                stacked="md"
+                hover
+                :items="interactions"
+                :fields="interactionsFields"
+                @row-clicked="rowClicked"
+                :busy="!contractsLoaded"
               >
                 <template #table-busy> </template>
                 <template #cell(interactionId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                        style="min-width: 126px"
-                        :to="{
-                  path: '/app/interaction/' + data.item.interactionId,
-                  query: isTestnet ? { network: 'testnet' } : '',
-                }"
+                      style="min-width: 126px"
+                      :to="{
+                        path: '/app/interaction/' + data.item.interactionId,
+                        query: isTestnet ? { network: 'testnet' } : '',
+                      }"
                     >
                       {{ data.item.interactionId | tx }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
-                          class="flaticon-copy-to-clipboard small"
-                          v-clipboard="data.item.interactionId"
-                          title="Copy to clipboard"
+                        class="flaticon-copy-to-clipboard small"
+                        v-clipboard="data.item.interactionId"
+                        title="Copy to clipboard"
                       ></div>
                     </div>
                   </div>
@@ -126,31 +125,44 @@
                 <template #cell(contractId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                        style="min-width: 126px"
-                        :to="{
-                  path: '/app/contract/' + data.item.contractId,
-                  query: isTestnet ? { network: 'testnet' } : '',
-                }"
+                      style="min-width: 126px"
+                      :to="{
+                        path: '/app/contract/' + data.item.contractId,
+                        query: isTestnet ? { network: 'testnet' } : '',
+                      }"
                     >
                       {{ data.item.contractId | tx }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
-                          class="flaticon-copy-to-clipboard small"
-                          v-clipboard="data.item.contractId"
-                          title="Copy to clipboard"
+                        class="flaticon-copy-to-clipboard small"
+                        v-clipboard="data.item.contractId"
+                        title="Copy to clipboard"
                       ></div>
                     </div>
                   </div>
                 </template>
 
                 <template #cell(function)="data">
-                  <div v-if="data.item.function.length > 14" class="text-uppercase text-ellipsis" v-b-tooltip.hover :title=data.item.function.toUpperCase()>{{ data.item.function }}</div>
+                  <div
+                    v-if="data.item.function.length > 14"
+                    class="text-uppercase text-ellipsis"
+                    v-b-tooltip.hover
+                    :title="data.item.function.toUpperCase()"
+                  >
+                    {{ data.item.function }}
+                  </div>
                   <div v-else class="text-uppercase text-ellipsis">{{ data.item.function }}</div>
                 </template>
 
                 <template #cell(source)="data">
-                  <div class="text-uppercase">{{ data.item.source }}</div>
+                  <div v-if="data.item.source == 'arweave'">
+                    <img v-b-tooltip.hover title="Arweave" src="../../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" class="source-icon" />
+                  </div>
+                  <div v-else-if="data.item.source == 'warp'">
+                    <img v-b-tooltip.hover title="Warp" src="../../../assets/icons/warp–logo.svg" alt="warp logo icon" class="source-icon" />
+                  </div>
+                  <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
                 <template #cell(total)="data">
@@ -170,39 +182,39 @@
           </div>
         </div>
 
-        <div class="d-none d-md-block tx-list-single-wrapper">
+        <div class="d-md-block tx-list-single-wrapper">
           <div class="tx-list-header">
             <div>Latest Contracts</div>
           </div>
           <div class="tx-list">
             <TxList :paging="null" v-if="!noContractsDetected">
               <b-table
-                  ref="table"
-                  id="contracts-table"
-                  stacked="md"
-                  hover
-                  :items="contracts"
-                  :fields="contractFields"
-                  @row-clicked="rowClicked"
-                  :busy="!contractsLoaded"
+                ref="table"
+                id="contracts-table"
+                stacked="md"
+                hover
+                :items="contracts"
+                :fields="contractFields"
+                @row-clicked="rowClicked"
+                :busy="!contractsLoaded"
               >
                 <template #table-busy> </template>
                 <template #cell(contractId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                        style="min-width: 126px"
-                        :to="{
-                  path: '/app/contract/' + data.item.contractId,
-                  query: isTestnet ? { network: 'testnet' } : '',
-                }"
+                      style="min-width: 126px"
+                      :to="{
+                        path: '/app/contract/' + data.item.contractId,
+                        query: isTestnet ? { network: 'testnet' } : '',
+                      }"
                     >
                       {{ data.item.contractId | tx }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
-                          class="flaticon-copy-to-clipboard small"
-                          v-clipboard="data.item.contractId"
-                          title="Copy to clipboard"
+                        class="flaticon-copy-to-clipboard small"
+                        v-clipboard="data.item.contractId"
+                        title="Copy to clipboard"
                       ></div>
                     </div>
                   </div>
@@ -217,7 +229,13 @@
                 </template>
 
                 <template #cell(source)="data">
-                  <div class="text-uppercase">{{ data.item.source }}</div>
+                  <div v-if="data.item.source == 'warp'">
+                    <img v-b-tooltip.hover title="Warp" src="../../../assets/icons/warp–logo.svg" alt="warp logo icon" class="source-icon" />
+                  </div>
+                  <div v-else-if="data.item.source == 'arweave'">
+                    <img v-b-tooltip.hover title="Arweave" src="../../../assets/icons/arweave-ar-logo.svg" alt="arweave logo icon" class="source-icon" />
+                  </div>
+                  <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
                 <template #cell(blockHeight)="data">
@@ -233,9 +251,7 @@
             </TxList>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 </template>
@@ -378,7 +394,8 @@ export default {
       axios
         .get(
           `${this.gatewayUrl}/gateway/dashboard?contractLimit=${this.contractsLimit}&interactionLimit=${
-            this.integrationsLimit}${this.isTestnet ? '&testnet=true' : ''}`,
+            this.integrationsLimit
+          }${this.isTestnet ? '&testnet=true' : ''}`,
           {
             cancelToken: this.axiosSource.token,
           }
@@ -390,29 +407,29 @@ export default {
           this.interactions = [];
           this.contracts = [];
           fetchedContracts.data.contracts
-              .filter(item => item.contract_or_interaction === 'contract')
-              .forEach(contract => {
-                this.contracts.push({
-                  id: contract.contract,
-                  contractId: contract.contract_id,
-                  owner: contract.owner,
-                  blockHeight: contract.block_height,
-                  type: contract.contract_type,
-                  source: contract.source,
-                });
-              })
-          fetchedContracts.data.contracts
-              .filter(item => item.contract_or_interaction === 'interaction')
-              .forEach(interaction => {
-                this.interactions.push({
-                  interactionId: interaction.interaction_id,
-                  contractId: interaction.contract_id,
-                  owner: interaction.owner,
-                  function: interaction.function,
-                  blockHeight: interaction.block_height,
-                  source: interaction.source,
-                });
+            .filter((item) => item.contract_or_interaction === 'contract')
+            .forEach((contract) => {
+              this.contracts.push({
+                id: contract.contract,
+                contractId: contract.contract_id,
+                owner: contract.owner,
+                blockHeight: contract.block_height,
+                type: contract.contract_type,
+                source: contract.source,
               });
+            });
+          fetchedContracts.data.contracts
+            .filter((item) => item.contract_or_interaction === 'interaction')
+            .forEach((interaction) => {
+              this.interactions.push({
+                interactionId: interaction.interaction_id,
+                contractId: interaction.contract_id,
+                owner: interaction.owner,
+                function: interaction.function,
+                blockHeight: interaction.block_height,
+                source: interaction.source,
+              });
+            });
         });
     },
     rowClicked(record) {
@@ -433,6 +450,15 @@ export default {
 <style lang="scss" scoped>
 .total-field {
   min-width: 80px;
+}
+
+.source-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.source-text {
+  height: 22.25px;
 }
 
 @media (max-width: 1024px) {
