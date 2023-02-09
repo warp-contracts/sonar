@@ -708,7 +708,6 @@ export default {
         });
     },
     async getDreState() {
-      console.log('test1');
       this.loadedValidity = false;
       const response = await fetch(
         `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`

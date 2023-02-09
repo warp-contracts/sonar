@@ -1,16 +1,25 @@
 <template>
   <div class="code-container">
-    <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
-    <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-    <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
-    <div v-if="loaded && contractSrc && wasm">
-      <ul id="code-wasm">
-        <li v-for="(item, idx) in contractSrc" :key="idx">
-          <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
+    <div class="source-code-wrapper">
+      <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
+      <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
+      <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
+      <div v-if="loaded && contractSrc && wasm">
+        <ul id="code-wasm">
+          <li v-for="(item, idx) in contractSrc" :key="idx">
+            <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
 
-          <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
-        </li>
-      </ul>
+            <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="version-nav">
+      <nav>
+        <ul>
+          <li v-for="(version, key) in fakeCode.data.src" :key="version">{{ key }}</li>
+        </ul>
+      </nav>
     </div>
 
     <!-- temporary - until ArCode loads contract's code from the redstone gateway -->
@@ -50,6 +59,16 @@ export default {
       correct: true,
       code: null,
       contractSrc: null,
+      fakeCode: {
+        config: { some: 'data' },
+        data: {
+          src: {
+            v1: 'code',
+            v2: 'more code',
+            v3: 'lot of code :O',
+          },
+        },
+      },
     };
   },
   updated: function () {
@@ -58,6 +77,9 @@ export default {
   async mounted() {
     if (this.wasm) {
       axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async (fetchedSource) => {
+        // export following code to external function
+        // then execute it to every sourceCode from request
+        // finally push results to 'global' table
         if (!(fetchedSource.data.srcBinary instanceof Buffer)) {
           fetchedSource.data.srcBinary = Buffer.from(fetchedSource.data.srcBinary.data);
         }
@@ -65,7 +87,6 @@ export default {
         let contractSrc;
         try {
           contractSrc = await wasmSrc.sourceCode();
-          console.log(contractSrc);
         } catch (e) {
           this.loaded = true;
           this.correct = false;
@@ -80,6 +101,7 @@ export default {
           this.contractSrc = this.getGo(objFromContractSrc);
         }
         this.loaded = true;
+        console.log(fetchedSource);
       });
     } else {
       // temporary until ArCode loads contracrt from the RedStone gateway
@@ -87,6 +109,7 @@ export default {
       axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
         this.contractSrc = fetchedSource.data.src;
         this.loaded = true;
+        console.log(fetchedSource);
       });
       //   } else {
       //     const contentWindow = document.getElementById('arcode').contentWindow;
@@ -246,9 +269,31 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .code-container {
+  display: flex;
   min-height: 700px;
   width: 100%;
+
+  .source-code-wrapper {
+    width: 80%;
+  }
+
+  .version-nav {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    nav {
+      width: 80%;
+      ul {
+        li {
+          width: 100%;
+          margin: 1rem 0;
+          cursor: pointer;
+          border: 1px solid grey;
+        }
+      }
+    }
+  }
 }
 </style>
