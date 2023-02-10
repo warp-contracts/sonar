@@ -219,7 +219,7 @@ export default {
 };
 </script>
 
-<style src="./Header.scss" lang="scss" scoped></style>
+<style src="./Header.scss" lang="scss" ></style>
 
 <style scoped lang="scss">
 .login-btn {
