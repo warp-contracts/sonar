@@ -3,7 +3,7 @@
     <div class="source-code-wrapper">
       <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-      <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
+      <pre v-if="loaded && contractSrc && !wasm && renderComponent"><code class="language-javascript">{{ contractSrc }}</code></pre>
       <div v-if="loaded && contractSrc && wasm">
         <ul id="code-wasm">
           <li v-for="(item, idx) in contractSrc" :key="idx">
@@ -17,8 +17,11 @@
     <div class="version-nav">
       <nav>
         <ul>
-          <li v-for="(version, key) in fakeCode.data.src" :key="version">{{ key }}</li>
+          <li v-for="(version, key) in fakeCode.data.src" :key="version" @click="changeCodeSource(version)">
+            {{ key }}
+          </li>
         </ul>
+        {{ contractSrc }}
       </nav>
     </div>
 
@@ -59,6 +62,7 @@ export default {
       correct: true,
       code: null,
       contractSrc: null,
+      renderComponent: true,
       fakeCode: {
         config: { some: 'data' },
         data: {
@@ -75,6 +79,7 @@ export default {
     Prism.highlightAll();
   },
   async mounted() {
+    console.log(this.wasm);
     if (this.wasm) {
       axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async (fetchedSource) => {
         // export following code to external function
@@ -265,6 +270,12 @@ export default {
     // getCodeSrc() {
     //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
     // },
+    async changeCodeSource(code) {
+      this.renderComponent = false; 
+      this.contractSrc = code;
+      await this.$nextTick();
+      this.renderComponent = true;
+    },
   },
 };
 </script>
