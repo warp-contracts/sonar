@@ -3,7 +3,9 @@
     <div class="source-code-wrapper">
       <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-      <pre v-if="loaded && contractSrc && !wasm && renderComponent"><code class="language-javascript">{{ contractSrc }}</code></pre>
+      <pre
+        v-if="loaded && contractSrc && !wasm && renderComponent"
+      ><code class="language-javascript">{{ contractSrc }}</code></pre>
       <div v-if="loaded && contractSrc && wasm">
         <ul id="code-wasm">
           <li v-for="(item, idx) in contractSrc" :key="idx">
@@ -16,12 +18,17 @@
     </div>
     <div class="version-nav">
       <nav>
+        <p>Browse versions</p>
         <ul>
-          <li v-for="(version, key) in fakeCode.data.src" :key="version" @click="changeCodeSource(version)">
+          <li
+            v-for="(version, key, index) in fakeCode.data.src"
+            :key="version"
+            @click="changeCodeSource(version, index)"
+            :class="{ 'active-item': activeItem == index }"
+          >
             {{ key }}
           </li>
         </ul>
-        {{ contractSrc }}
       </nav>
     </div>
 
@@ -63,6 +70,7 @@ export default {
       code: null,
       contractSrc: null,
       renderComponent: true,
+      activeItem: 0,
       fakeCode: {
         config: { some: 'data' },
         data: {
@@ -270,11 +278,12 @@ export default {
     // getCodeSrc() {
     //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
     // },
-    async changeCodeSource(code) {
-      this.renderComponent = false; 
+    async changeCodeSource(code, index) {
+      this.renderComponent = false;
       this.contractSrc = code;
       await this.$nextTick();
       this.renderComponent = true;
+      this.activeItem = index;
     },
   },
 };
@@ -294,14 +303,37 @@ export default {
     width: 20%;
     display: flex;
     justify-content: center;
+    margin-top: 0.5rem;
     nav {
-      width: 80%;
+      width: 100%;
+      padding-left: 1rem;
+      p {
+        text-align: center;
+      }
       ul {
         li {
           width: 100%;
+          height: 2.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           margin: 1rem 0;
           cursor: pointer;
-          border: 1px solid grey;
+          color: #a8a8a8;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: #5e5e5e;
+          }
+        }
+        .active-item {
+          border-radius: 50rem;
+          background-color: var(--warp-blue-color);
+          color: white;
+
+          &:hover {
+            color: white;
+          }
         }
       }
     }
