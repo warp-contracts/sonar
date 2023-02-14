@@ -1,7 +1,7 @@
 <template>
   <div class="code-container">
     <div class="source-code-wrapper">
-      <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
+      <div v-if="!loaded" class="state-container" :class="loaded ? '' :['d-flex', 'align-items-center', 'flex-column', 'pt-5']"><LoadingSpinner></LoadingSpinner><p>Loading contract code...</p></div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
       <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
@@ -53,9 +53,13 @@ import axios from 'axios';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-okaidia.css';
 import { WasmSrc } from 'warp-contracts';
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   name: 'ContractCode',
+  components: {
+    LoadingSpinner,
+  },
   props: {
     sourceId: String,
     wasm: Boolean,
@@ -114,7 +118,6 @@ export default {
           this.contractSrc = this.getGo(objFromContractSrc);
         }
         this.loaded = true;
-        console.log(fetchedSource);
       });
     } else {
       // temporary until ArCode loads contracrt from the RedStone gateway
@@ -122,7 +125,6 @@ export default {
       axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
         this.contractSrc = fetchedSource.data.src;
         this.loaded = true;
-        console.log(fetchedSource);
       });
       //   } else {
       //     const contentWindow = document.getElementById('arcode').contentWindow;
