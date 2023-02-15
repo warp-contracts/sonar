@@ -25,7 +25,7 @@
       </template>
 
       <template #cell(ago)="data">
-        {{ convertTime(data.item.timestamp) }}
+        {{ convertTime(data.item.timestamp, null, 'Europe/London') }}
       </template>
 
       <template slot="row-details" slot-scope="data">

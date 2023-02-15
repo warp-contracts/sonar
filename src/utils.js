@@ -19,7 +19,7 @@ export function downloadFile(content, name, type) {
   a.click();
 }
 
-export function convertTime(date, sortKeyTimestamp) {
+export function convertTime(date, sortKeyTimestamp, timezoneType = 'Europe/Berlin') {
   let fullDate;
   const epochs = [
     ['year', 31536000],
@@ -45,7 +45,7 @@ export function convertTime(date, sortKeyTimestamp) {
   };
   const timeAgo = (date, sortKeyTimestamp) => {
     const timeAgoInSeconds = Math.floor(
-      (convertTZ(new Date(), 'Europe/Berlin') -
+      (convertTZ(new Date(), timezoneType) -
         convertTZ(
           new Date(sortKeyTimestamp ? sortKeyTimestamp : date),
           sortKeyTimestamp ? 'Europe/Berlin' : 'Europe/London'
