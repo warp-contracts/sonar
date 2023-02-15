@@ -1,7 +1,14 @@
 <template>
   <div class="code-container">
     <div class="source-code-wrapper">
-      <div v-if="!loaded" class="state-container" :class="loaded ? '' :['d-flex', 'align-items-center', 'flex-column', 'pt-5']"><LoadingSpinner></LoadingSpinner><p>Loading contract code...</p></div>
+      <div
+        v-if="!loaded"
+        class="state-container"
+        :class="loaded ? '' : ['d-flex', 'align-items-center', 'flex-column', 'pt-5']"
+      >
+        <LoadingSpinner></LoadingSpinner>
+        <p>Loading contract code...</p>
+      </div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
       <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
@@ -53,7 +60,7 @@ import axios from 'axios';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-okaidia.css';
 import { WasmSrc } from 'warp-contracts';
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 export default {
   name: 'ContractCode',
@@ -94,30 +101,8 @@ export default {
     console.log(this.wasm);
     if (this.wasm) {
       axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async (fetchedSource) => {
-        // export following code to external function
-        // then execute it to every sourceCode from request
-        // finally push results to 'global' table
-        if (!(fetchedSource.data.srcBinary instanceof Buffer)) {
-          fetchedSource.data.srcBinary = Buffer.from(fetchedSource.data.srcBinary.data);
-        }
-        const wasmSrc = new WasmSrc(fetchedSource.data.srcBinary);
-        let contractSrc;
-        try {
-          contractSrc = await wasmSrc.sourceCode();
-        } catch (e) {
-          this.loaded = true;
-          this.correct = false;
-        }
-        let objFromContractSrc = Object.fromEntries(contractSrc);
-
-        if (fetchedSource.data.srcWasmLang == 'assemblyscript') {
-          this.contractSrc = this.getAs(objFromContractSrc);
-        } else if (fetchedSource.data.srcWasmLang == 'rust') {
-          this.contractSrc = this.getRust(objFromContractSrc);
-        } else if (fetchedSource.data.srcWasmLang == 'go') {
-          this.contractSrc = this.getGo(objFromContractSrc);
-        }
-        this.loaded = true;
+        console.log(fetchedSource);
+        await this.parseCode(fetchedSource);
       });
     } else {
       // temporary until ArCode loads contracrt from the RedStone gateway
@@ -275,6 +260,54 @@ export default {
           response['payload'] = 'Method not found';
           contentWindow.postMessage(response, origin);
         }
+      }
+    },
+    async parseCode(source) {
+      if (this.wasm) {
+        // export following code to external function
+        // then execute it to every sourceCode from request
+        // finally push results to 'global' table
+        if (!(source.data.srcBinary instanceof Buffer)) {
+          source.data.srcBinary = Buffer.from(source.data.srcBinary.data);
+        }
+        const wasmSrc = new WasmSrc(source.data.srcBinary);
+        let contractSrc;
+        try {
+          contractSrc = await wasmSrc.sourceCode();
+        } catch (e) {
+          this.loaded = true;
+          this.correct = false;
+        }
+        let objFromContractSrc = Object.fromEntries(contractSrc);
+
+        if (source.data.srcWasmLang == 'assemblyscript') {
+          this.contractSrc = this.getAs(objFromContractSrc);
+        } else if (source.data.srcWasmLang == 'rust') {
+          this.contractSrc = this.getRust(objFromContractSrc);
+        } else if (source.data.srcWasmLang == 'go') {
+          this.contractSrc = this.getGo(objFromContractSrc);
+        }
+        this.loaded = true;
+      } else {
+        // temporary until ArCode loads contracrt from the RedStone gateway
+        // if (this.isTestnet) {
+        axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
+          this.contractSrc = fetchedSource.data.src;
+          this.loaded = true;
+        });
+        //   } else {
+        //     const contentWindow = document.getElementById('arcode').contentWindow;
+        //     window.addEventListener(
+        //       'message',
+        //       async (event) => {
+        //         const origin = event.origin;
+
+        //         const frameEvent = `${event.data.event}`.trim();
+        //         await this.handleCalls(frameEvent, event, contentWindow, origin);
+        //       },
+        //       false
+        //     );
+        //   }
       }
     },
     // getCodeSrc() {
