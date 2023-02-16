@@ -68,6 +68,7 @@ export default {
     LoadingSpinner,
   },
   props: {
+    contractId: String,
     sourceId: String,
     wasm: Boolean,
   },
@@ -100,15 +101,20 @@ export default {
   async mounted() {
     console.log(this.wasm);
     if (this.wasm) {
-      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async (fetchedSource) => {
-        console.log(fetchedSource);
+      axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
         await this.parseCode(fetchedSource);
+        if (fetchedSource.data.evolvedSrc) {
+          console.log(fetchedSource.data.evolvedSrc)
+        }
       });
     } else {
       // temporary until ArCode loads contracrt from the RedStone gateway
       // if (this.isTestnet) {
-      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
+      axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
         this.contractSrc = fetchedSource.data.src;
+        if (fetchedSource.data.evolvedSrc) {
+          console.log(fetchedSource.data.evolvedSrc)
+        }
         this.loaded = true;
       });
       //   } else {
@@ -282,32 +288,18 @@ export default {
 
         if (source.data.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
+          // let parsedAs = this.getAs(objFromContractSrc);
+          // return parsedAs;
         } else if (source.data.srcWasmLang == 'rust') {
+          // let parsedRust = this.getRust(objFromContractSrc);
+          // return parsedRust;
           this.contractSrc = this.getRust(objFromContractSrc);
         } else if (source.data.srcWasmLang == 'go') {
           this.contractSrc = this.getGo(objFromContractSrc);
+          // let parsedGo = this.getGo(objFromContractSrc);
+          // return parsedGo;
         }
         this.loaded = true;
-      } else {
-        // temporary until ArCode loads contracrt from the RedStone gateway
-        // if (this.isTestnet) {
-        axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
-          this.contractSrc = fetchedSource.data.src;
-          this.loaded = true;
-        });
-        //   } else {
-        //     const contentWindow = document.getElementById('arcode').contentWindow;
-        //     window.addEventListener(
-        //       'message',
-        //       async (event) => {
-        //         const origin = event.origin;
-
-        //         const frameEvent = `${event.data.event}`.trim();
-        //         await this.handleCalls(frameEvent, event, contentWindow, origin);
-        //       },
-        //       false
-        //     );
-        //   }
       }
     },
     // getCodeSrc() {
@@ -315,7 +307,7 @@ export default {
     // },
     async changeCodeSource(code, index) {
       this.renderComponent = false;
-      this.contractSrc = code;
+      this.contractSrc = this.parseCode(code);
       await this.$nextTick();
       this.renderComponent = true;
       this.activeItem = index;
