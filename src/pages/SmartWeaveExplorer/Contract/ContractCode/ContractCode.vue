@@ -27,13 +27,22 @@
       <nav>
         <p>Browse versions</p>
         <ul>
-          <li
+          <!-- <li
             v-for="(version, key, index) in fakeCode.data.src"
             :key="version"
             @click="changeCodeSource(version, index)"
             :class="{ 'active-item': activeItem == index }"
           >
             {{ key }}
+          </li> -->
+
+          <li
+            v-for="(version, key, index) in contractSrcHistory"
+            :key="key"
+            @click="changeCodeSource(version)"
+            :class="{ 'active-item': activeItem == index }"
+          >
+            b
           </li>
         </ul>
       </nav>
@@ -83,6 +92,7 @@ export default {
       contractSrc: null,
       renderComponent: true,
       activeItem: 0,
+      contractSrcHistory: null,
       fakeCode: {
         config: { some: 'data' },
         data: {
@@ -103,8 +113,8 @@ export default {
     if (this.wasm) {
       axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
         await this.parseCode(fetchedSource);
-        if (fetchedSource.data.evolvedSrc) {
-          console.log(fetchedSource.data.evolvedSrc)
+        if (fetchedSource.data.evolvedSrc.length > 0) {
+          console.log(fetchedSource.data.evolvedSrc.length);
         }
       });
     } else {
@@ -112,8 +122,9 @@ export default {
       // if (this.isTestnet) {
       axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
         this.contractSrc = fetchedSource.data.src;
-        if (fetchedSource.data.evolvedSrc) {
-          console.log(fetchedSource.data.evolvedSrc)
+        if (fetchedSource.data.evolvedSrc.length > 0) {
+          this.contractSrcHistory = fetchedSource.data.evolvedSrc;
+          console.log(fetchedSource.data.evolvedSrc.length);
         }
         this.loaded = true;
       });
@@ -306,8 +317,9 @@ export default {
     //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
     // },
     async changeCodeSource(code, index) {
+      console.log(code.src);
       this.renderComponent = false;
-      this.contractSrc = this.parseCode(code);
+      await this.parseCode(code.src);
       await this.$nextTick();
       this.renderComponent = true;
       this.activeItem = index;
