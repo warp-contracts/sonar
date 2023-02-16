@@ -27,22 +27,16 @@
       <nav>
         <p>Browse versions</p>
         <ul>
-          <!-- <li
-            v-for="(version, key, index) in fakeCode.data.src"
-            :key="version"
-            @click="changeCodeSource(version, index)"
-            :class="{ 'active-item': activeItem == index }"
-          >
-            {{ key }}
-          </li> -->
-
+          <li :class="{ 'active-item': activeItem == 'current' }" @click="changeCodeSource(currentSrcVersion, 'current')">
+            Current
+          </li>
           <li
-            v-for="(version, key, index) in contractSrcHistory"
+            v-for="(version, key) in contractSrcHistory"
             :key="key"
-            @click="changeCodeSource(version)"
-            :class="{ 'active-item': activeItem == index }"
+            @click="changeCodeSource(version.src, key)"
+            :class="{ 'active-item': activeItem == key }"
           >
-            b
+            Version {{ key + 1 }}
           </li>
         </ul>
       </nav>
@@ -91,8 +85,9 @@ export default {
       code: null,
       contractSrc: null,
       renderComponent: true,
-      activeItem: 0,
+      activeItem: 'current',
       contractSrcHistory: null,
+      currentSrcVersion: null,
       fakeCode: {
         config: { some: 'data' },
         data: {
@@ -109,11 +104,11 @@ export default {
     Prism.highlightAll();
   },
   async mounted() {
-    console.log(this.wasm);
     if (this.wasm) {
       axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
-        await this.parseCode(fetchedSource);
+        await this.parseCode(fetchedSource, true);
         if (fetchedSource.data.evolvedSrc.length > 0) {
+          this.contractSrcHistory = fetchedSource.data.evolvedSrc;
           console.log(fetchedSource.data.evolvedSrc.length);
         }
       });
@@ -122,6 +117,7 @@ export default {
       // if (this.isTestnet) {
       axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
         this.contractSrc = fetchedSource.data.src;
+        this.currentSrcVersion = fetchedSource.data.src;
         if (fetchedSource.data.evolvedSrc.length > 0) {
           this.contractSrcHistory = fetchedSource.data.evolvedSrc;
           console.log(fetchedSource.data.evolvedSrc.length);
@@ -279,7 +275,7 @@ export default {
         }
       }
     },
-    async parseCode(source) {
+    async parseCode(source, isCurrentSource) {
       if (this.wasm) {
         // export following code to external function
         // then execute it to every sourceCode from request
@@ -299,6 +295,7 @@ export default {
 
         if (source.data.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
+
           // let parsedAs = this.getAs(objFromContractSrc);
           // return parsedAs;
         } else if (source.data.srcWasmLang == 'rust') {
@@ -310,6 +307,9 @@ export default {
           // let parsedGo = this.getGo(objFromContractSrc);
           // return parsedGo;
         }
+        if (isCurrentSource == true) {
+          this.currentSrcVersion = this.contractSrc;
+        }
         this.loaded = true;
       }
     },
@@ -317,9 +317,9 @@ export default {
     //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
     // },
     async changeCodeSource(code, index) {
-      console.log(code.src);
+      console.log(index)
       this.renderComponent = false;
-      await this.parseCode(code.src);
+      await this.parseCode(code);
       await this.$nextTick();
       this.renderComponent = true;
       this.activeItem = index;
