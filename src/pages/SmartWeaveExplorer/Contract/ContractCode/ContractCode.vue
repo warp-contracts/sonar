@@ -31,6 +31,13 @@
             :class="{ 'active-item': activeItem == 'current' }"
             @click="changeCodeSource(currentSrcVersion, 'current')"
           >
+            <img
+              v-if="activeItem == 'current'"
+              src="../../../../assets/icons/tick-circle.svg"
+              alt="active item circle tick icon"
+              class="chosen-icon"
+            />
+
             Current
           </li>
           <li
@@ -39,7 +46,18 @@
             @click="changeCodeSource(version, key)"
             :class="{ 'active-item': activeItem == key }"
           >
-            Version {{ key + 1 }}
+            <img
+              v-if="activeItem == key"
+              src="../../../../assets/icons/tick-circle.svg"
+              alt="active item circle tick icon"
+              class="chosen-icon"
+            />
+            <div class="d-flex flex-column">
+              <p class="text-nowrap mb-0">Timestamp</p>
+              <a :href="`/#/app/source/${version.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+                version.srcTxId | tx
+              }}</a>
+            </div>
           </li>
         </ul>
       </nav>
@@ -109,6 +127,7 @@ export default {
           this.contractSrcHistory = fetchedSource.data.evolvedSrc;
         }
         this.loaded = true;
+        console.log(this.contractSrcHistory);
       });
     }
   },
@@ -301,11 +320,11 @@ export default {
   width: 100%;
 
   .source-code-wrapper {
-    width: 80%;
+    width: 85%;
   }
 
   .version-nav {
-    width: 20%;
+    width: 15%;
     display: flex;
     justify-content: center;
     margin-top: 0.5rem;
@@ -317,27 +336,41 @@ export default {
       }
       ul {
         li {
+          position: relative;
           width: 100%;
           height: 2.5rem;
           display: flex;
           justify-content: center;
           align-items: center;
-          margin: 1rem 0;
+          margin: 1.5rem 0;
           cursor: pointer;
           color: #a8a8a8;
           transition: color 0.2s ease;
-
+          border: 1px solid grey;
+          border-radius: 5px;
+          overflow: hidden;
+          padding: 0.5rem;
+          height: 4rem;
+          box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
           &:hover {
             color: #5e5e5e;
           }
+
+          .chosen-icon {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 1.6rem;
+            height: 1.6rem;
+            filter: invert(42%) sepia(84%) saturate(1521%) hue-rotate(207deg) brightness(101%) contrast(89%);
+          }
         }
         .active-item {
-          border-radius: 50rem;
-          background-color: var(--warp-blue-color);
-          color: white;
-
+          border: 2px solid var(--warp-blue-color);
+          box-shadow: rgba(89, 130, 241, 0.3) 0px 1px 2px 0px, rgba(89, 130, 241, 0.15) 0px 2px 6px 2px;
+          color: #5e5e5e;
           &:hover {
-            color: white;
+            border: 2px solid var(--warp-blue-color);
           }
         }
       }
