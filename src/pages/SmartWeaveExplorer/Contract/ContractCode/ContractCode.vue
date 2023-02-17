@@ -27,13 +27,16 @@
       <nav>
         <p>Browse versions</p>
         <ul>
-          <li :class="{ 'active-item': activeItem == 'current' }" @click="changeCodeSource(currentSrcVersion, 'current')">
+          <li
+            :class="{ 'active-item': activeItem == 'current' }"
+            @click="changeCodeSource(currentSrcVersion, 'current')"
+          >
             Current
           </li>
           <li
             v-for="(version, key) in contractSrcHistory"
             :key="key"
-            @click="changeCodeSource(version.src, key)"
+            @click="changeCodeSource(version, key)"
             :class="{ 'active-item': activeItem == key }"
           >
             Version {{ key + 1 }}
@@ -41,19 +44,6 @@
         </ul>
       </nav>
     </div>
-
-    <!-- temporary - until ArCode loads contract's code from the redstone gateway -->
-    <!-- <iframe
-      v-show="loaded && !isTestnet && !wasm"
-      ref="arcode"
-      id="arcode"
-      title="ArCode iframe"
-      width="100%"
-      height="700px"
-      frameBorder="0"
-      :src="getCodeSrc()"
-    >
-    </iframe> -->
   </div>
 </template>
 
@@ -88,16 +78,6 @@ export default {
       activeItem: 'current',
       contractSrcHistory: null,
       currentSrcVersion: null,
-      fakeCode: {
-        config: { some: 'data' },
-        data: {
-          src: {
-            v1: 'code',
-            v2: 'more code',
-            v3: 'lot of code :O',
-          },
-        },
-      },
     };
   },
   updated: function () {
@@ -106,37 +86,30 @@ export default {
   async mounted() {
     if (this.wasm) {
       axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
-        await this.parseCode(fetchedSource, true);
+        if (fetchedSource.status !== 200) {
+          this.loaded = true;
+          this.correct = false;
+          return;
+        }
         if (fetchedSource.data.evolvedSrc.length > 0) {
           this.contractSrcHistory = fetchedSource.data.evolvedSrc;
-          console.log(fetchedSource.data.evolvedSrc.length);
         }
+        await this.parseCode(fetchedSource.data, true);
       });
     } else {
-      // temporary until ArCode loads contracrt from the RedStone gateway
-      // if (this.isTestnet) {
       axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
+        if (fetchedSource.status !== 200) {
+          this.loaded = true;
+          this.correct = false;
+          return;
+        }
         this.contractSrc = fetchedSource.data.src;
-        this.currentSrcVersion = fetchedSource.data.src;
+        this.currentSrcVersion = fetchedSource.data;
         if (fetchedSource.data.evolvedSrc.length > 0) {
           this.contractSrcHistory = fetchedSource.data.evolvedSrc;
-          console.log(fetchedSource.data.evolvedSrc.length);
         }
         this.loaded = true;
       });
-      //   } else {
-      //     const contentWindow = document.getElementById('arcode').contentWindow;
-      //     window.addEventListener(
-      //       'message',
-      //       async (event) => {
-      //         const origin = event.origin;
-
-      //         const frameEvent = `${event.data.event}`.trim();
-      //         await this.handleCalls(frameEvent, event, contentWindow, origin);
-      //       },
-      //       false
-      //     );
-      //   }
     }
   },
   methods: {
@@ -277,13 +250,10 @@ export default {
     },
     async parseCode(source, isCurrentSource) {
       if (this.wasm) {
-        // export following code to external function
-        // then execute it to every sourceCode from request
-        // finally push results to 'global' table
-        if (!(source.data.srcBinary instanceof Buffer)) {
-          source.data.srcBinary = Buffer.from(source.data.srcBinary.data);
+        if (!(source.srcBinary instanceof Buffer)) {
+          source.srcBinary = Buffer.from(source.srcBinary.data);
         }
-        const wasmSrc = new WasmSrc(source.data.srcBinary);
+        const wasmSrc = new WasmSrc(source.srcBinary);
         let contractSrc;
         try {
           contractSrc = await wasmSrc.sourceCode();
@@ -293,36 +263,32 @@ export default {
         }
         let objFromContractSrc = Object.fromEntries(contractSrc);
 
-        if (source.data.srcWasmLang == 'assemblyscript') {
+        if (source.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
-
-          // let parsedAs = this.getAs(objFromContractSrc);
-          // return parsedAs;
-        } else if (source.data.srcWasmLang == 'rust') {
-          // let parsedRust = this.getRust(objFromContractSrc);
-          // return parsedRust;
+        } else if (source.srcWasmLang == 'rust') {
           this.contractSrc = this.getRust(objFromContractSrc);
-        } else if (source.data.srcWasmLang == 'go') {
+        } else if (source.srcWasmLang == 'go') {
           this.contractSrc = this.getGo(objFromContractSrc);
-          // let parsedGo = this.getGo(objFromContractSrc);
-          // return parsedGo;
         }
+        if (isCurrentSource == true) {
+          this.currentSrcVersion = this.contractSrc;
+        }
+        this.loaded = true;
+      } else {
+        this.contractSrc = source.src;
         if (isCurrentSource == true) {
           this.currentSrcVersion = this.contractSrc;
         }
         this.loaded = true;
       }
     },
-    // getCodeSrc() {
-    //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
-    // },
+
     async changeCodeSource(code, index) {
-      console.log(index)
+      this.activeItem = index;
       this.renderComponent = false;
       await this.parseCode(code);
       await this.$nextTick();
       this.renderComponent = true;
-      this.activeItem = index;
     },
   },
 };
