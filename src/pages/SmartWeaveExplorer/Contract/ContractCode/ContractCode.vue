@@ -23,7 +23,7 @@
         </ul>
       </div>
     </div>
-    <div class="version-nav">
+    <div class="version-nav" v-if="loaded">
       <nav>
         <p>Browse versions</p>
         <ul>
@@ -38,7 +38,12 @@
               class="chosen-icon"
             />
 
-            Current
+            <div class="d-flex flex-column">
+              <p class="text-nowrap mb-0">Timestamp</p>
+              <a :href="`/#/app/source/${currentSrcVersion.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+                currentSrcVersion.srcTxId | tx
+              }}</a>
+            </div>
           </li>
           <li
             v-for="(version, key) in contractSrcHistory"
@@ -123,6 +128,7 @@ export default {
         }
         this.contractSrc = fetchedSource.data.src;
         this.currentSrcVersion = fetchedSource.data;
+
         if (fetchedSource.data.evolvedSrc.length > 0) {
           this.contractSrcHistory = fetchedSource.data.evolvedSrc;
         }
