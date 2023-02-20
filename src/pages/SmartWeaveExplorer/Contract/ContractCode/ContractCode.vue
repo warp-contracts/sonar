@@ -1,14 +1,14 @@
 <template>
   <div class="code-container">
+    <div
+      v-if="!loaded"
+      class="state-container"
+      :class="loaded ? '' : ['d-flex', 'align-items-center', 'flex-column', 'pt-5']"
+    >
+      <LoadingSpinner></LoadingSpinner>
+      <p>Loading contract code...</p>
+    </div>
     <div class="source-code-wrapper">
-      <div
-        v-if="!loaded"
-        class="state-container"
-        :class="loaded ? '' : ['d-flex', 'align-items-center', 'flex-column', 'pt-5']"
-      >
-        <LoadingSpinner></LoadingSpinner>
-        <p>Loading contract code...</p>
-      </div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
       <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
@@ -23,7 +23,7 @@
         </ul>
       </div>
     </div>
-    <div class="version-nav" v-if="loaded">
+    <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 0">
       <nav>
         <p>Browse versions</p>
         <ul>
@@ -75,7 +75,7 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-okaidia.css';
-import { WasmSrc } from 'warp-contracts';
+import { arrayToHex, WasmSrc } from 'warp-contracts';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 export default {
@@ -87,6 +87,7 @@ export default {
     contractId: String,
     sourceId: String,
     wasm: Boolean,
+    source: Object,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'arweave']),
@@ -100,42 +101,48 @@ export default {
       renderComponent: true,
       activeItem: 'current',
       contractSrcHistory: null,
-      currentSrcVersion: null,
+      initSrcVersion: null,
     };
   },
   updated: function () {
     Prism.highlightAll();
   },
   async mounted() {
-    if (this.wasm) {
-      axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
-        if (fetchedSource.status !== 200) {
-          this.loaded = true;
-          this.correct = false;
-          return;
-        }
-        if (fetchedSource.data.evolvedSrc.length > 0) {
-          this.contractSrcHistory = fetchedSource.data.evolvedSrc;
-        }
-        await this.parseCode(fetchedSource.data, true);
-      });
+    // if (this.wasm) {
+    //   axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
+    //     if (fetchedSource.status !== 200) {
+    //       // this.loaded = true;
+    //       this.correct = false;
+    //       return;
+    //     }
+    //     if (fetchedSource.data.evolvedSrc.length > 0) {
+    //       this.contractSrcHistory = fetchedSource.data.evolvedSrc;
+    //     }
+    //     await this.parseCode(fetchedSource.data, true);
+    //   });
+    // } else {
+    //   axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
+    //     if (fetchedSource.status !== 200) {
+    //       // this.loaded = true;
+    //       this.correct = false;
+    //       return;
+    //     }
+    //     this.contractSrc = fetchedSource.data.src;
+    //     this.currentSrcVersion = fetchedSource.data;
+    //     if (fetchedSource.data.evolvedSrc.length > 0) {
+    //       this.contractSrcHistory = fetchedSource.data.evolvedSrc;
+    //     }
+    //     // this.loaded = true;
+    //   });
+    // }
+    // console.log(this.initSrc)
+    this.currentSrcVersion = await this.parseCode(this.source);
+    if (this.source.evolvedSrc.length == 0) {
+      console.log('0');
     } else {
-      axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
-        if (fetchedSource.status !== 200) {
-          this.loaded = true;
-          this.correct = false;
-          return;
-        }
-        this.contractSrc = fetchedSource.data.src;
-        this.currentSrcVersion = fetchedSource.data;
-
-        if (fetchedSource.data.evolvedSrc.length > 0) {
-          this.contractSrcHistory = fetchedSource.data.evolvedSrc;
-        }
-        this.loaded = true;
-        console.log(this.contractSrcHistory);
-      });
+      console.log(this.source.evolvedSrc.length);
     }
+    console.log(this.loaded);
   },
   methods: {
     getAs(obj) {
@@ -273,8 +280,8 @@ export default {
         }
       }
     },
-    async parseCode(source, isCurrentSource) {
-      if (this.wasm) {
+    async parseCode(source) {
+      if (source.srcWasmLang) {
         if (!(source.srcBinary instanceof Buffer)) {
           source.srcBinary = Buffer.from(source.srcBinary.data);
         }
@@ -295,16 +302,18 @@ export default {
         } else if (source.srcWasmLang == 'go') {
           this.contractSrc = this.getGo(objFromContractSrc);
         }
-        if (isCurrentSource == true) {
-          this.currentSrcVersion = this.contractSrc;
-        }
+        // if (isCurrentSource == true) {
+        //   this.currentSrcVersion = this.contractSrc;
+        // }
         this.loaded = true;
       } else {
+        console.log('hi there');
         this.contractSrc = source.src;
-        if (isCurrentSource == true) {
-          this.currentSrcVersion = this.contractSrc;
-        }
+        // if (isCurrentSource == true) {
+        //   this.currentSrcVersion = this.contractSrc;
+        // }
         this.loaded = true;
+        console.log(this.contractSrc);
       }
     },
 

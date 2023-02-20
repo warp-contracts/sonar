@@ -367,7 +367,15 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedContract" :contractId="contractId" :sourceId="sourceTxId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode
+                v-if="loadedContract"
+                :contractId="contractId"
+                :sourceId="sourceTxId"
+                :wasm="!!wasmLang"
+                :evolvedSrc="evolvedSrc ? evolvedSrc : undefined"
+                :initSrc="initSrc"
+                :source="codeSource"
+              ></ContractCode>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -514,6 +522,10 @@ export default {
       dre_status: null,
       dre_evaluationError: null,
       tags: [],
+      // for code tab
+      codeSource: null,
+      evolvedSrc: null,
+      initSrc: null,
     };
   },
   watch: {
@@ -631,11 +643,12 @@ export default {
     },
 
     async getContract() {
-      const response = await fetch(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`);
+      const response = await fetch(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`);
       if (!response.ok) {
         this.correct = false;
       }
       const data = await response.json();
+      console.log(data);
 
       if (data.contractTx == null || data.contractTx.tags == null) {
         this.tags = null;
@@ -651,6 +664,9 @@ export default {
       this.loadedContract = true;
       this.sourceTxId = data.srcTxId;
       this.bundler_id = data.bundlerTxId;
+      this.evolvedSrc = data.evolvedSrc;
+      this.initSrc = data.src;
+      this.codeSource = data;
     },
 
     async getInteractions(page, confirmationStatus) {
