@@ -648,7 +648,7 @@ export default {
         this.correct = false;
       }
       const data = await response.json();
-      console.log(data);
+      this.codeSource = data;
 
       if (data.contractTx == null || data.contractTx.tags == null) {
         this.tags = null;
@@ -666,7 +666,6 @@ export default {
       this.bundler_id = data.bundlerTxId;
       this.evolvedSrc = data.evolvedSrc;
       this.initSrc = data.src;
-      this.codeSource = data;
     },
 
     async getInteractions(page, confirmationStatus) {

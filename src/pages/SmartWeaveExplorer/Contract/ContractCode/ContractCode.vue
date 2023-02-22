@@ -1,14 +1,14 @@
 <template>
   <div class="code-container">
-    <div
-      v-if="!loaded"
-      class="state-container"
-      :class="loaded ? '' : ['d-flex', 'align-items-center', 'flex-column', 'pt-5']"
-    >
-      <LoadingSpinner></LoadingSpinner>
-      <p>Loading contract code...</p>
-    </div>
     <div class="source-code-wrapper">
+      <div
+        v-if="!loaded"
+        class="state-container"
+        :class="loaded ? '' : ['d-flex', 'align-items-center', 'flex-column', 'pt-5']"
+      >
+        <LoadingSpinner></LoadingSpinner>
+        <p>Loading contract code...</p>
+      </div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
       <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
@@ -27,7 +27,7 @@
       <nav>
         <p>Browse versions</p>
         <ul>
-          <li
+          <!-- <li
             :class="{ 'active-item': activeItem == 'current' }"
             @click="changeCodeSource(currentSrcVersion, 'current')"
           >
@@ -44,9 +44,9 @@
                 currentSrcVersion.srcTxId | tx
               }}</a>
             </div>
-          </li>
+          </li> -->
           <li
-            v-for="(version, key) in contractSrcHistory"
+            v-for="(version, key) in preparedSource"
             :key="key"
             @click="changeCodeSource(version, key)"
             :class="{ 'active-item': activeItem == key }"
@@ -58,7 +58,9 @@
               class="chosen-icon"
             />
             <div class="d-flex flex-column">
-              <p class="text-nowrap mb-0">Timestamp</p>
+              <p class="text-nowrap mb-0">
+                {{ version.age }}
+              </p>
               <a :href="`/#/app/source/${version.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
                 version.srcTxId | tx
               }}</a>
@@ -72,11 +74,15 @@
 
 <script>
 import { mapState } from 'vuex';
-import axios from 'axios';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-okaidia.css';
-import { arrayToHex, WasmSrc } from 'warp-contracts';
+import { WasmSrc } from 'warp-contracts';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
+import { convertTime } from '@/utils';
+import dayjs from 'dayjs';
+
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 export default {
   name: 'ContractCode',
@@ -100,49 +106,38 @@ export default {
       contractSrc: null,
       renderComponent: true,
       activeItem: 'current',
-      contractSrcHistory: null,
+      contractSrcHistory: [],
       initSrcVersion: null,
+      preparedSource: [],
     };
   },
   updated: function () {
     Prism.highlightAll();
+
+    // Prism.highlightAllUnder(this.$refs.codeWrapper);
+    // Prism.hooks.add('before-sanity-check', function () {
+    //   // console.log()
+    //   // this.loaded = false
+    // });
+    // Prism.hooks.add('after-highlight', function () {
+    //   // console.log(env)
+    //   // this.loaded = true;
+
+    // });
+    // console.log(this.loaded);
   },
+
   async mounted() {
-    // if (this.wasm) {
-    //   axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then(async (fetchedSource) => {
-    //     if (fetchedSource.status !== 200) {
-    //       // this.loaded = true;
-    //       this.correct = false;
-    //       return;
-    //     }
-    //     if (fetchedSource.data.evolvedSrc.length > 0) {
-    //       this.contractSrcHistory = fetchedSource.data.evolvedSrc;
-    //     }
-    //     await this.parseCode(fetchedSource.data, true);
-    //   });
-    // } else {
-    //   axios.get(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`).then((fetchedSource) => {
-    //     if (fetchedSource.status !== 200) {
-    //       // this.loaded = true;
-    //       this.correct = false;
-    //       return;
-    //     }
-    //     this.contractSrc = fetchedSource.data.src;
-    //     this.currentSrcVersion = fetchedSource.data;
-    //     if (fetchedSource.data.evolvedSrc.length > 0) {
-    //       this.contractSrcHistory = fetchedSource.data.evolvedSrc;
-    //     }
-    //     // this.loaded = true;
-    //   });
-    // }
-    // console.log(this.initSrc)
-    this.currentSrcVersion = await this.parseCode(this.source);
-    if (this.source.evolvedSrc.length == 0) {
-      console.log('0');
-    } else {
-      console.log(this.source.evolvedSrc.length);
+    this.parseCode(this.source);
+    if (this.source.evolvedSrc.length > 0) {
+      this.source.evolvedSrc.forEach((element) => {
+        this.contractSrcHistory.push(element);
+      });
     }
-    console.log(this.loaded);
+    this.contractSrcHistory.push(this.source);
+    this.prepareSource(this.contractSrcHistory);
+    this.loaded = true;
+    console.log(this.preparedSource);
   },
   methods: {
     getAs(obj) {
@@ -294,7 +289,6 @@ export default {
           this.correct = false;
         }
         let objFromContractSrc = Object.fromEntries(contractSrc);
-
         if (source.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
         } else if (source.srcWasmLang == 'rust') {
@@ -302,19 +296,12 @@ export default {
         } else if (source.srcWasmLang == 'go') {
           this.contractSrc = this.getGo(objFromContractSrc);
         }
-        // if (isCurrentSource == true) {
-        //   this.currentSrcVersion = this.contractSrc;
-        // }
         this.loaded = true;
       } else {
-        console.log('hi there');
         this.contractSrc = source.src;
-        // if (isCurrentSource == true) {
-        //   this.currentSrcVersion = this.contractSrc;
-        // }
         this.loaded = true;
-        console.log(this.contractSrc);
       }
+      this.loaded = true;
     },
 
     async changeCodeSource(code, index) {
@@ -323,6 +310,19 @@ export default {
       await this.parseCode(code);
       await this.$nextTick();
       this.renderComponent = true;
+    },
+    convertTime: convertTime,
+    async prepareSource(source) {
+      source.forEach((el) => {
+        this.preparedSource.push({
+          src: el.src,
+          srcWasmLang: el.srcWasmLang,
+          srcTxId: el.srcTxId,
+          age: el.blockTimestamp
+            ? convertTime(dayjs.unix(el.blockTimestamp))
+            : convertTime(dayjs.unix(Math.trunc(el.sortKey.split(',')[1] / 1000))),
+        });
+      });
     },
   },
 };
