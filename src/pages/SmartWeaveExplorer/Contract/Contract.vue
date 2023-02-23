@@ -376,6 +376,10 @@
                 :initSrc="initSrc"
                 :source="codeSource"
               ></ContractCode>
+              <div v-else class="d-flex align-items-center flex-column pt-5">
+                <LoadingSpinner></LoadingSpinner>
+                <p>Loading contract code...</p>
+              </div>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -449,6 +453,7 @@ import { interactionTagsParser } from '@/utils';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
 import ContractEvents from './ContractEvents/ContractEvents.vue';
 import { convertTime } from '@/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -556,6 +561,7 @@ export default {
     ContractTags,
     TestnetLabel,
     ContractEvents,
+    LoadingSpinner,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),

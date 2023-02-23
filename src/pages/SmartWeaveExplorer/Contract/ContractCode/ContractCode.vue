@@ -1,31 +1,8 @@
 <template>
   <div class="code-container">
-    <div class="source-code-wrapper">
-      <div
-        v-if="!loaded"
-        class="state-container"
-        :class="loaded ? '' : ['d-flex', 'align-items-center', 'flex-column', 'pt-5']"
-      >
-        <LoadingSpinner></LoadingSpinner>
-        <p>Loading contract code...</p>
-      </div>
-      <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-      <pre
-        v-if="loaded && contractSrc && !wasm && renderComponent"
-      ><code class="language-javascript">{{ contractSrc }}</code></pre>
-      <div v-if="loaded && contractSrc && wasm">
-        <ul id="code-wasm">
-          <li v-for="(item, idx) in contractSrc" :key="idx">
-            <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
-
-            <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
-          </li>
-        </ul>
-      </div>
-    </div>
     <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 0">
       <nav>
-        <p>Browse versions</p>
+        <p>Code Source History</p>
         <ul>
           <li
             v-for="(version, key) in preparedSource"
@@ -50,6 +27,26 @@
           </li>
         </ul>
       </nav>
+    </div>
+    <div class="source-code-wrapper">
+      <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
+
+      <a class="current-id" :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+        currentSrcTxId
+      }}</a>
+      <pre
+        v-if="loaded && contractSrc && !wasm && renderComponent"
+        class="mt-0"
+      ><code class="language-javascript">{{ contractSrc }}</code></pre>
+      <div v-if="loaded && contractSrc && wasm">
+        <ul id="code-wasm">
+          <li v-for="(item, idx) in contractSrc" :key="idx">
+            <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
+
+            <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -91,22 +88,11 @@ export default {
       contractSrcHistory: [],
       initSrcVersion: null,
       preparedSource: [],
+      currentSrcTxId: null,
     };
   },
-  updated: function () {
-    Prism.highlightAll();
-
-    // Prism.highlightAllUnder(this.$refs.codeWrapper);
-    // Prism.hooks.add('before-sanity-check', function () {
-    //   // console.log()
-    //   // this.loaded = false
-    // });
-    // Prism.hooks.add('after-highlight', function () {
-    //   // console.log(env)
-    //   // this.loaded = true;
-
-    // });
-    // console.log(this.loaded);
+  updated: async function () {
+    await Prism.highlightAll();
   },
 
   async mounted() {
@@ -119,6 +105,7 @@ export default {
     this.contractSrcHistory.push(this.source);
     this.prepareSource(this.contractSrcHistory);
     this.contractSrc = this.preparedSource[0].src;
+    this.currentSrcTxId = this.preparedSource[0].srcTxId;
   },
   methods: {
     getAs(obj) {
@@ -282,6 +269,7 @@ export default {
         this.contractSrc = source.src;
         this.loaded = true;
       }
+      this.currentSrcTxId = source.srcTxId;
       this.loaded = true;
     },
 
@@ -317,20 +305,28 @@ export default {
 
   .source-code-wrapper {
     width: 85%;
+    display: flex;
+    flex-direction: column;
+    .current-id {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
   }
 
   .version-nav {
     width: 15%;
     display: flex;
     justify-content: center;
-    margin-top: 0.5rem;
     nav {
       width: 100%;
-      padding-left: 1rem;
+      padding-right: 1rem;
       p {
         text-align: center;
       }
       ul {
+        li:first-child {
+          margin-top: 0;
+        }
         li {
           position: relative;
           width: 100%;
