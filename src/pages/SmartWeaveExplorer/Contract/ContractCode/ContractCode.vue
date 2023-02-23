@@ -27,24 +27,6 @@
       <nav>
         <p>Browse versions</p>
         <ul>
-          <!-- <li
-            :class="{ 'active-item': activeItem == 'current' }"
-            @click="changeCodeSource(currentSrcVersion, 'current')"
-          >
-            <img
-              v-if="activeItem == 'current'"
-              src="../../../../assets/icons/tick-circle.svg"
-              alt="active item circle tick icon"
-              class="chosen-icon"
-            />
-
-            <div class="d-flex flex-column">
-              <p class="text-nowrap mb-0">Timestamp</p>
-              <a :href="`/#/app/source/${currentSrcVersion.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
-                currentSrcVersion.srcTxId | tx
-              }}</a>
-            </div>
-          </li> -->
           <li
             v-for="(version, key) in preparedSource"
             :key="key"
@@ -105,7 +87,7 @@ export default {
       code: null,
       contractSrc: null,
       renderComponent: true,
-      activeItem: 'current',
+      activeItem: 0,
       contractSrcHistory: [],
       initSrcVersion: null,
       preparedSource: [],
@@ -136,8 +118,7 @@ export default {
     }
     this.contractSrcHistory.push(this.source);
     this.prepareSource(this.contractSrcHistory);
-    this.loaded = true;
-    console.log(this.preparedSource);
+    this.contractSrc = this.preparedSource[0].src;
   },
   methods: {
     getAs(obj) {
