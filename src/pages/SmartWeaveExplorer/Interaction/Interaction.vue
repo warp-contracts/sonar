@@ -109,12 +109,38 @@
             <div style="word-break: break-all">
               {{ interaction.sortKey ? interaction.sortKey : 'N/A' }}
             </div>
+            <div
+              v-if="interaction.sortKey"
+              class="flaticon-copy-to-clipboard mb-4"
+              v-clipboard="interaction?.sortKey"
+              v-clipboard:success="onCopySortKey"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success mb-4"
+              v-bind:class="{ hidden: !copiedDisplaySortKey, visible: copiedDisplaySortKey }"
+            >
+              Copied
+            </p>
           </div>
           <div class="interaction-item">
             <div>Last Sort key</div>
             <div style="word-break: break-all">
               {{ interaction.lastSortKey ? interaction.lastSortKey : 'N/A' }}
             </div>
+            <div
+              v-if="interaction.lastSortKey"
+              class="flaticon-copy-to-clipboard mb-4"
+              v-clipboard="interaction?.lastSortKey"
+              v-clipboard:success="onCopyLastSortKey"
+              title="Copy to clipboard"
+            ></div>
+            <p
+              class="clipboard-success mb-4"
+              v-bind:class="{ hidden: !copiedDisplayLastSortKey, visible: copiedDisplayLastSortKey }"
+            >
+              Copied
+            </p>
           </div>
           <div class="interaction-item">
             <div>Confirmation status</div>
@@ -281,6 +307,8 @@ export default {
       copiedContractIdDisplay: false,
       copiedDisplayCreator: false,
       copiedDisplayBundlerId: false,
+      copiedDisplaySortKey: false,
+      copiedDisplayLastSortKey: false,
       loaded: false,
       winstonToAR: 0.000000000001,
       correct: false,
@@ -374,6 +402,14 @@ export default {
     onCopyBundlerId() {
       this.copiedDisplayBundlerId = true;
       setTimeout(() => (this.copiedDisplayBundlerId = false), 2000);
+    },
+    onCopySortKey(){
+      this.copiedDisplaySortKey = true;
+      setTimeout(() => (this.copiedDisplaySortKey = false), 2000);
+    },
+    onCopyLastSortKey(){
+      this.copiedDisplayLastSortKey = true;
+      setTimeout(() => (this.copiedDisplayLastSortKey = false), 2000);
     },
     async getInteraction() {
       this.interactions = [];
