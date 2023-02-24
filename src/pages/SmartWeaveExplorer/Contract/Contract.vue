@@ -30,7 +30,11 @@
                 <div v-if="owner" class="align-self-end d-flex">
                   <span class="d-none d-sm-block"
                     ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{ owner }}</a></span
-                  ><span class="d-block d-sm-none">{{ owner | tx }}</span>
+                  ><span class="d-block d-sm-none"
+                    ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{
+                      owner | tx
+                    }}</a></span
+                  >
                   <div
                     class="flaticon-copy-to-clipboard"
                     v-clipboard="owner"
