@@ -372,8 +372,6 @@
                 :contractId="contractId"
                 :sourceId="sourceTxId"
                 :wasm="!!wasmLang"
-                :evolvedSrc="evolvedSrc ? evolvedSrc : undefined"
-                :initSrc="initSrc"
                 :source="codeSource"
               ></ContractCode>
               <div v-else class="d-flex align-items-center flex-column pt-5">
@@ -667,11 +665,11 @@ export default {
       this.pst_name = data.pstName;
       this.wasmLang = data.srcWasmLang;
       this.initState = data.initState;
-      this.loadedContract = true;
       this.sourceTxId = data.srcTxId;
       this.bundler_id = data.bundlerTxId;
-      this.evolvedSrc = data.evolvedSrc;
-      this.initSrc = data.src;
+
+
+      this.loadedContract = true;
     },
 
     async getInteractions(page, confirmationStatus) {
