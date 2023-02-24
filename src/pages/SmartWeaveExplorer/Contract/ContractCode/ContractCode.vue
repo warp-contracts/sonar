@@ -369,4 +369,23 @@ export default {
     }
   }
 }
+
+@media (max-width: 1024px) {
+  .code-container {
+    flex-direction: column;
+
+    .source-code-wrapper {
+      width: 100%;
+    }
+
+    .version-nav {
+      width: 100%;
+    }
+
+    .current-id {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
 </style>
