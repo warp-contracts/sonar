@@ -228,10 +228,10 @@ export default {
     TxList,
   },
   async mounted() {
-    if (this.$route.params.id.length != 43) {
-      this.correct = false;
-    } else {
+    if(this.$route.params.id.length == 42 || this.$route.params.id.length == 43) {
       this.correct = true;
+    } else {
+      this.correct = false;
     }
 
     this.getTransactions(this.$route.query.page ? this.$route.query.page : this.currentPage);
