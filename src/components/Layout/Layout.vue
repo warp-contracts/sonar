@@ -10,7 +10,7 @@
       <footer class="contentFooter">
         <div>
           <b-button class="btn btn-modal rounded-pill" v-b-modal.modal-1>{{ findMoreText }}</b-button>
-          <b-modal id="modal-1" title="Redstone SmartWeave Gateway" size="lg">
+          <b-modal id="modal-1" title="Warp Gateway" size="lg">
             <Modal />
             <template #modal-footer><div></div></template>
           </b-modal>
