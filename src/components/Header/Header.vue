@@ -52,6 +52,9 @@
                 </div>
               </template>
             </vue-typeahead-bootstrap>
+            <div class="no-result list-group shadow vbt-autcomplete-list" v-if="noResultsInfo">
+              <span>{{ noResultsInfo }}</span>
+            </div>
           </b-input-group>
           <a href="javascript:window.history.back()" v-else>
             <i class="fa flaticon-chevron-back" />
@@ -74,7 +77,11 @@
         {{ switchNetworkText }}
       </div>
 
-      <b-button @click="toggleAccNav" :class="{ accNavActive: modalVisible }" class="btn btn-modal rounded-pill login-btn">
+      <b-button
+        @click="toggleAccNav"
+        :class="{ accNavActive: modalVisible }"
+        class="btn btn-modal rounded-pill login-btn"
+      >
         <div v-if="walletAccount">
           <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ walletAccount | tx }}</p>
         </div>
@@ -109,19 +116,21 @@ export default {
       searching: false,
       switchNetworkText: null,
       networkHeight: null,
+      noResultsInfo: null,
     };
   },
   async mounted() {
     this.switchNetworkText = this.isTestnet ? 'Switch to Mainnet' : 'Switch to Testnet';
     await this.getNetworkHeight();
     this.checkMetamask();
+    this.clearNoResultInfo();
   },
 
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
     ...mapState('wallet', ['walletAccount', 'modalVisible']),
-    
+
     searchBarText() {
       return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
@@ -149,7 +158,6 @@ export default {
         }
       },
     },
-
   },
 
   created() {
@@ -191,6 +199,7 @@ export default {
     },
     lookupContracts: debounce(function () {
       this.searching = true;
+      this.noResultsInfo = null;
       if (this.query?.length < 3) {
         this.searching = false;
         this.foundContracts = [];
@@ -201,6 +210,10 @@ export default {
           return response.json();
         })
         .then((data) => {
+          console.log(data);
+          if (data.length == 0) {
+            this.noResultsInfo = 'No results found. Try a different query';
+          }
           this.foundContracts = data;
           this.searching = false;
         });
@@ -215,11 +228,17 @@ export default {
         this.getTokenBalance();
       }
     },
+    clearNoResultInfo() {
+      const inputSearch = document.querySelector('[role="searchbox"]');
+      inputSearch.addEventListener('blur', (event) => {
+        this.noResultsInfo = null;
+      });
+    },
   },
 };
 </script>
 
-<style src="./Header.scss" lang="scss" ></style>
+<style src="./Header.scss" lang="scss"></style>
 
 <style scoped lang="scss">
 .login-btn {
@@ -252,9 +271,30 @@ export default {
   top: 0;
   bottom: 0;
 }
+
+.no-result {
+  position: absolute;
+  top: 100%;
+  height: 4rem;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+
+  background-color: white;
+  padding: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .login-btn {
     display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .no-result {
+    left: 0;
+    width: 100vw;
   }
 }
 </style>
