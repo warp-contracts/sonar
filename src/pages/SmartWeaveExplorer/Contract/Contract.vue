@@ -562,7 +562,7 @@ export default {
     LoadingSpinner,
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'warpGateway']),
     contractId() {
       return this.$route.params.id;
     },
@@ -647,29 +647,32 @@ export default {
     },
 
     async getContract() {
-      const response = await fetch(`https://gateway.warp.cc/gateway/v2/contract?txId=${this.contractId}`);
-      if (!response.ok) {
+      try {
+        const response = await fetch(`${this.warpGateway}/gateway/v2/contract?txId=${this.contractId}`);
+        if (!response.ok) {
+          this.correct = false;
+        }
+        const data = await response.json();
+        this.codeSource = data;
+
+        if (data.contractTx == null || data.contractTx.tags == null) {
+          this.tags = null;
+        } else {
+          this.tags = await interactionTagsParser(data.contractTx);
+        }
+
+        this.owner = data.owner;
+        this.pst_ticker = data.pstTicker;
+        this.pst_name = data.pstName;
+        this.wasmLang = data.srcWasmLang;
+        this.initState = data.initState;
+        this.sourceTxId = data.srcTxId;
+        this.bundler_id = data.bundlerTxId;
+
+        this.loadedContract = true;
+      } catch (err) {
         this.correct = false;
       }
-      const data = await response.json();
-      this.codeSource = data;
-
-      if (data.contractTx == null || data.contractTx.tags == null) {
-        this.tags = null;
-      } else {
-        this.tags = await interactionTagsParser(data.contractTx);
-      }
-
-      this.owner = data.owner;
-      this.pst_ticker = data.pstTicker;
-      this.pst_name = data.pstName;
-      this.wasmLang = data.srcWasmLang;
-      this.initState = data.initState;
-      this.sourceTxId = data.srcTxId;
-      this.bundler_id = data.bundlerTxId;
-
-
-      this.loadedContract = true;
     },
 
     async getInteractions(page, confirmationStatus) {
