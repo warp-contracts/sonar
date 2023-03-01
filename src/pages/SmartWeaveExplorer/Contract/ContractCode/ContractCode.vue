@@ -2,7 +2,7 @@
   <div class="code-container">
     <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 0">
       <nav>
-        <p>Code Source History</p>
+        <p>Contract Source History</p>
         <ul>
           <li
             v-for="(version, key) in preparedSource"
@@ -91,21 +91,16 @@ export default {
       currentSrcTxId: null,
     };
   },
-  updated: async function () {
-    await Prism.highlightAll();
+  updated: function () {
+    Prism.highlightAll();
   },
 
   async mounted() {
-    this.parseCode(this.source);
-    if (this.source.evolvedSrc.length > 0) {
-      this.source.evolvedSrc.forEach((element) => {
-        this.contractSrcHistory.push(element);
-      });
-    }
-    this.contractSrcHistory.push(this.source);
+    this.contractSrcHistory = [...this.source.evolvedSrc, this.source];
     this.prepareSource(this.contractSrcHistory);
     this.contractSrc = this.preparedSource[0].src;
     this.currentSrcTxId = this.preparedSource[0].srcTxId;
+    await this.parseCode(this.preparedSource[0]);
   },
   methods: {
     getAs(obj) {
@@ -259,6 +254,7 @@ export default {
         let objFromContractSrc = Object.fromEntries(contractSrc);
         if (source.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
+
         } else if (source.srcWasmLang == 'rust') {
           this.contractSrc = this.getRust(objFromContractSrc);
         } else if (source.srcWasmLang == 'go') {
@@ -281,10 +277,11 @@ export default {
       this.renderComponent = true;
     },
     convertTime: convertTime,
-    async prepareSource(source) {
+    prepareSource(source) {
       source.forEach((el) => {
         this.preparedSource.push({
           src: el.src,
+          srcBinary: el.srcBinary,
           srcWasmLang: el.srcWasmLang,
           srcTxId: el.srcTxId,
           age: el.blockTimestamp

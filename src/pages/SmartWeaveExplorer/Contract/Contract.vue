@@ -653,25 +653,32 @@ export default {
           this.correct = false;
         }
         const data = await response.json();
-        this.codeSource = data;
+        this.codeSource = {
+          srcTxId: data.srcTxId,
+          src: data.src,
+          srcBinary: data.srcBinary,
+          srcWasmLang: data.srcWasmLang,
+          blockTimestamp: data.blockTimestamp,
+          evolvedSrc: data.evolvedSrc,
+        };
 
         if (data.contractTx == null || data.contractTx.tags == null) {
           this.tags = null;
         } else {
           this.tags = await interactionTagsParser(data.contractTx);
         }
-
         this.owner = data.owner;
         this.pst_ticker = data.pstTicker;
         this.pst_name = data.pstName;
         this.wasmLang = data.srcWasmLang;
         this.initState = data.initState;
-        this.sourceTxId = data.srcTxId;
+        this.sourceTxId = data.evolvedSrc[0]?.srcTxId ? data.evolvedSrc[0].srcTxId : data.srcTxId;
         this.bundler_id = data.bundlerTxId;
 
         this.loadedContract = true;
       } catch (err) {
         this.correct = false;
+        console.error(err);
       }
     },
 
