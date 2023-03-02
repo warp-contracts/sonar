@@ -371,7 +371,17 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedContract" :sourceId="sourceTxId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode
+                v-if="loadedContract"
+                :contractId="contractId"
+                :sourceId="sourceTxId"
+                :wasm="!!wasmLang"
+                :source="codeSource"
+              ></ContractCode>
+              <div v-else class="d-flex align-items-center flex-column pt-5">
+                <LoadingSpinner></LoadingSpinner>
+                <p>Loading contract code...</p>
+              </div>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -438,13 +448,14 @@ import ContractState from './ContractState/ContractState';
 import ContractCurrentState from './ContractCurrentState/ContractCurrentState';
 import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
 import ContractEvents from './ContractEvents/ContractEvents.vue';
 import { convertTime } from '@/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -518,6 +529,10 @@ export default {
       dre_status: null,
       dre_evaluationError: null,
       tags: [],
+      // for code tab
+      codeSource: null,
+      evolvedSrc: null,
+      initSrc: null,
     };
   },
   watch: {
@@ -548,9 +563,10 @@ export default {
     ContractTags,
     TestnetLabel,
     ContractEvents,
+    LoadingSpinner,
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'warpGateway']),
     contractId() {
       return this.$route.params.id;
     },
@@ -576,6 +592,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations('source', ['setSource']),
+
     async getContractData() {
       axios
         .get(`${this.gatewayUrl}/gateway/contract-data/${this.contractId}`)
@@ -635,26 +653,39 @@ export default {
     },
 
     async getContract() {
-      const response = await fetch(`${this.gatewayUrl}/gateway/contract?txId=${this.contractId}`);
-      if (!response.ok) {
+      try {
+        const response = await fetch(`${this.warpGateway}/gateway/v2/contract?txId=${this.contractId}`);
+        if (!response.ok) {
+          this.correct = false;
+        }
+        const data = await response.json();
+        this.codeSource = {
+          srcTxId: data.srcTxId,
+          src: data.src,
+          srcBinary: data.srcBinary,
+          srcWasmLang: data.srcWasmLang,
+          blockTimestamp: data.blockTimestamp,
+          evolvedSrc: data.evolvedSrc,
+        };
+
+        if (data.contractTx == null || data.contractTx.tags == null) {
+          this.tags = null;
+        } else {
+          this.tags = await interactionTagsParser(data.contractTx);
+        }
+        this.owner = data.owner;
+        this.pst_ticker = data.pstTicker;
+        this.pst_name = data.pstName;
+        this.wasmLang = data.srcWasmLang;
+        this.initState = data.initState;
+        this.sourceTxId = data.evolvedSrc[0]?.srcTxId ? data.evolvedSrc[0].srcTxId : data.srcTxId;
+        this.bundler_id = data.bundlerTxId;
+
+        this.loadedContract = true;
+      } catch (err) {
         this.correct = false;
+        console.error(err);
       }
-      const data = await response.json();
-
-      if (data.contractTx == null || data.contractTx.tags == null) {
-        this.tags = null;
-      } else {
-        this.tags = await interactionTagsParser(data.contractTx);
-      }
-
-      this.owner = data.owner;
-      this.pst_ticker = data.pstTicker;
-      this.pst_name = data.pstName;
-      this.wasmLang = data.srcWasmLang;
-      this.initState = data.initState;
-      this.loadedContract = true;
-      this.sourceTxId = data.srcTxId;
-      this.bundler_id = data.bundlerTxId;
     },
 
     async getInteractions(page, confirmationStatus) {
@@ -712,7 +743,6 @@ export default {
         });
     },
     async getDreState() {
-      console.log('test1');
       this.loadedValidity = false;
       const response = await fetch(
         `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`

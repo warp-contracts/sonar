@@ -129,6 +129,7 @@
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noContractsDetected">
               <div>
+                <div v-if="contractsLoaded && paging?.total == null || paging?.total == 0 "> No info about contracts.</div>
                 <TxList :paging="pages" v-if="contractsLoaded" @page-clicked="onPageClicked">
                   <b-table
                     v-if="contracts?.length > 0"
@@ -219,7 +220,11 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedSource" :sourceId="sourceId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode v-if="loadedSource" :source="source" :isSourceView="true" :sourceId="sourceId" :wasm="!!wasmLang"></ContractCode>
+              <div v-else class="d-flex align-items-center flex-column pt-5">
+                <LoadingSpinner></LoadingSpinner>
+                <p>Loading contract code...</p>
+              </div>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -247,6 +252,8 @@ import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
+
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -331,9 +338,11 @@ export default {
     Error,
     ContractCode,
     TestnetLabel,
+    LoadingSpinner,
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+
     sourceId() {
       return this.$route.params.id;
     },
@@ -418,7 +427,6 @@ export default {
           this.contracts = [];
           this.paging = fetchedContracts.data.paging;
           const contracts = fetchedContracts.data.contracts;
-          console.log(contracts);
           for (const c of contracts) {
             this.contracts.push({
               id: c.contractId,
@@ -443,6 +451,7 @@ export default {
         .get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`)
         .then(async (fetchedContractSource) => {
           const source = fetchedContractSource.data;
+          this.source = source;
           this.loadedSource = true;
           this.wasmLang = source.srcWasmLang;
           this.owner = source.owner;

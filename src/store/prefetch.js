@@ -10,6 +10,7 @@ export default {
     gatewayUrl: null,
     switchText: null,
     isTestnet: null,
+    warpGateway: null,
   },
   mutations: {
     setArweave(state, arweave) {
@@ -25,6 +26,9 @@ export default {
     },
     setIsTestnet(state, isTestnet) {
       state.isTestnet = isTestnet;
+    },
+    setWarpGateway(state, payload) {
+      state.warpGateway = payload;
     },
   },
   getters: {},
@@ -53,6 +57,9 @@ export default {
       const warp = WarpFactory.forMainnet();
 
       commit('setWarp', warp);
+    },
+    setWarpGateway({ commit }) {
+      commit('setWarpGateway', constants.warpGateway);
     },
   },
 };

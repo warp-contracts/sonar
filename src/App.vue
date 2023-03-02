@@ -25,9 +25,10 @@ export default {
     this.setGatewayUrl();
     this.initArweave();
     this.prefetchAll();
+    this.setWarpGateway();
   },
   methods: {
-    ...mapActions('prefetch', ['setIsTestnet', 'prefetchAll', 'initArweave', 'initArweaveTest', 'setGatewayUrl']),
+    ...mapActions('prefetch', ['setIsTestnet', 'prefetchAll', 'initArweave', 'initArweaveTest', 'setGatewayUrl', 'setWarpGateway']),
   },
 };
 </script>

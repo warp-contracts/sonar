@@ -1,45 +1,85 @@
 <template>
   <div class="code-container">
-    <div v-if="!loaded" class="state-container">Loading Contract Code...</div>
-    <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-    <pre v-if="loaded && contractSrc && !wasm"><code class="language-javascript">{{contractSrc}}</code></pre>
-    <div v-if="loaded && contractSrc && wasm">
-      <ul id="code-wasm">
-        <li v-for="(item, idx) in contractSrc" :key="idx">
-          <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
-
-          <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
-        </li>
-      </ul>
+    <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 0">
+      <nav>
+        <p>Contract Source History</p>
+        <ul>
+          <li
+            v-for="(version, key) in preparedSource"
+            :key="key"
+            @click="changeCodeSource(version, key)"
+            :class="{ 'active-item': activeItem == key }"
+          >
+            <img
+              v-if="activeItem == key"
+              src="../../../../assets/icons/tick-circle.svg"
+              alt="active item circle tick icon"
+              class="chosen-icon"
+            />
+            <div class="d-flex flex-column">
+              <p class="text-nowrap mb-0">
+                {{ version.age }}
+              </p>
+              <a :href="`/#/app/source/${version.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+                version.srcTxId | tx
+              }}</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
     </div>
+    <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
+      <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
 
-    <!-- temporary - until ArCode loads contract's code from the redstone gateway -->
-    <!-- <iframe
-      v-show="loaded && !isTestnet && !wasm"
-      ref="arcode"
-      id="arcode"
-      title="ArCode iframe"
-      width="100%"
-      height="700px"
-      frameBorder="0"
-      :src="getCodeSrc()"
-    >
-    </iframe> -->
+      <a
+        v-if="!isSourceView"
+        class="current-id"
+        :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`"
+        >{{ currentSrcTxId }}</a
+      >
+      <pre
+        v-if="loaded && contractSrc && !wasm && renderComponent"
+        class="mt-0"
+      ><code class="language-javascript">{{ contractSrc }}</code></pre>
+      <div v-if="loaded && contractSrc && wasm">
+        <ul id="code-wasm">
+          <li v-for="(item, idx) in contractSrc" :key="idx">
+            <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
+
+            <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import axios from 'axios';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-okaidia.css';
 import { WasmSrc } from 'warp-contracts';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
+import { convertTime } from '@/utils';
+import dayjs from 'dayjs';
+
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 export default {
   name: 'ContractCode',
+  components: {
+    LoadingSpinner,
+  },
   props: {
+    contractId: String,
     sourceId: String,
     wasm: Boolean,
+    source: Object,
+    isSourceView: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'arweave']),
@@ -50,57 +90,27 @@ export default {
       correct: true,
       code: null,
       contractSrc: null,
+      renderComponent: true,
+      activeItem: 0,
+      contractSrcHistory: [],
+      initSrcVersion: null,
+      preparedSource: [],
+      currentSrcTxId: null,
     };
   },
   updated: function () {
     Prism.highlightAll();
   },
+
   async mounted() {
-    if (this.wasm) {
-      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then(async (fetchedSource) => {
-        if (!(fetchedSource.data.srcBinary instanceof Buffer)) {
-          fetchedSource.data.srcBinary = Buffer.from(fetchedSource.data.srcBinary.data);
-        }
-        const wasmSrc = new WasmSrc(fetchedSource.data.srcBinary);
-        let contractSrc;
-        try {
-          contractSrc = await wasmSrc.sourceCode();
-          console.log(contractSrc);
-        } catch (e) {
-          this.loaded = true;
-          this.correct = false;
-        }
-        let objFromContractSrc = Object.fromEntries(contractSrc);
-
-        if (fetchedSource.data.srcWasmLang == 'assemblyscript') {
-          this.contractSrc = this.getAs(objFromContractSrc);
-        } else if (fetchedSource.data.srcWasmLang == 'rust') {
-          this.contractSrc = this.getRust(objFromContractSrc);
-        } else if (fetchedSource.data.srcWasmLang == 'go') {
-          this.contractSrc = this.getGo(objFromContractSrc);
-        }
-        this.loaded = true;
-      });
+    if (!this.isSourceView) {
+      this.contractSrcHistory = [...this.source.evolvedSrc, this.source];
+      this.prepareSource(this.contractSrcHistory);
+      this.contractSrc = this.preparedSource[0].src;
+      this.currentSrcTxId = this.preparedSource[0].srcTxId;
+      await this.parseCode(this.preparedSource[0]);
     } else {
-      // temporary until ArCode loads contracrt from the RedStone gateway
-      // if (this.isTestnet) {
-      axios.get(`${this.gatewayUrl}/gateway/contract-source?id=${this.sourceId}`).then((fetchedSource) => {
-        this.contractSrc = fetchedSource.data.src;
-        this.loaded = true;
-      });
-      //   } else {
-      //     const contentWindow = document.getElementById('arcode').contentWindow;
-      //     window.addEventListener(
-      //       'message',
-      //       async (event) => {
-      //         const origin = event.origin;
-
-      //         const frameEvent = `${event.data.event}`.trim();
-      //         await this.handleCalls(frameEvent, event, contentWindow, origin);
-      //       },
-      //       false
-      //     );
-      //   }
+      await this.parseCode(this.source);
     }
   },
   methods: {
@@ -239,16 +249,157 @@ export default {
         }
       }
     },
-    // getCodeSrc() {
-    //   return `https://arcode.studio/#/${this.contractId}/${window.innerHeight < 768 ? '?hideToolbar=1' : ''}`;
-    // },
+    async parseCode(source) {
+      if (source.srcWasmLang) {
+        if (!(source.srcBinary instanceof Buffer)) {
+          source.srcBinary = Buffer.from(source.srcBinary.data);
+        }
+        const wasmSrc = new WasmSrc(source.srcBinary);
+        let contractSrc;
+        try {
+          contractSrc = await wasmSrc.sourceCode();
+        } catch (e) {
+          this.loaded = true;
+          this.correct = false;
+        }
+        let objFromContractSrc = Object.fromEntries(contractSrc);
+        if (source.srcWasmLang == 'assemblyscript') {
+          this.contractSrc = this.getAs(objFromContractSrc);
+        } else if (source.srcWasmLang == 'rust') {
+          this.contractSrc = this.getRust(objFromContractSrc);
+        } else if (source.srcWasmLang == 'go') {
+          this.contractSrc = this.getGo(objFromContractSrc);
+        }
+        this.loaded = true;
+      } else {
+        this.contractSrc = source.src;
+        this.loaded = true;
+      }
+      this.currentSrcTxId = source.srcTxId;
+      this.loaded = true;
+    },
+
+    async changeCodeSource(code, index) {
+      this.activeItem = index;
+      this.renderComponent = false;
+      await this.parseCode(code);
+      await this.$nextTick();
+      this.renderComponent = true;
+    },
+    convertTime: convertTime,
+    prepareSource(source) {
+      source.forEach((el) => {
+        this.preparedSource.push({
+          src: el.src,
+          srcBinary: el.srcBinary,
+          srcWasmLang: el.srcWasmLang,
+          srcTxId: el.srcTxId,
+          age: el.blockTimestamp
+            ? convertTime(dayjs.unix(el.blockTimestamp))
+            : convertTime(dayjs.unix(Math.trunc(el.sortKey.split(',')[1] / 1000))),
+        });
+      });
+    },
   },
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .code-container {
+  display: flex;
   min-height: 700px;
   width: 100%;
+
+  .code-fullView {
+    width: 100%;
+  }
+
+  .code-partView {
+    width: 85%;
+  }
+  .source-code-wrapper {
+    display: flex;
+    flex-direction: column;
+    .current-id {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  }
+
+  .version-nav {
+    width: 15%;
+    display: flex;
+    justify-content: center;
+    margin-top: calc(15px + 1rem);
+    nav {
+      width: 100%;
+      padding-right: 1rem;
+      p {
+        text-align: center;
+      }
+      ul {
+        li:first-child {
+          margin-top: 0;
+        }
+        li {
+          position: relative;
+          width: 100%;
+          height: 2.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 1.5rem 0;
+          cursor: pointer;
+          color: #a8a8a8;
+          transition: color 0.2s ease;
+          border: 1px solid grey;
+          border-radius: 5px;
+          overflow: hidden;
+          padding: 0.5rem;
+          height: 4rem;
+          box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+          &:hover {
+            color: #5e5e5e;
+          }
+
+          .chosen-icon {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 1.6rem;
+            height: 1.6rem;
+            filter: invert(42%) sepia(84%) saturate(1521%) hue-rotate(207deg) brightness(101%) contrast(89%);
+          }
+        }
+        .active-item {
+          border: 2px solid var(--warp-blue-color);
+          box-shadow: rgba(89, 130, 241, 0.3) 0px 1px 2px 0px, rgba(89, 130, 241, 0.15) 0px 2px 6px 2px;
+          color: #5e5e5e;
+          &:hover {
+            border: 2px solid var(--warp-blue-color);
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .code-container {
+    flex-direction: column;
+
+    .source-code-wrapper {
+      width: 100%;
+    }
+
+    .version-nav {
+      width: 100%;
+    }
+
+    .current-id {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 </style>
