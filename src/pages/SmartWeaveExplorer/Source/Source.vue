@@ -129,6 +129,7 @@
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noContractsDetected">
               <div>
+                <div v-if="contractsLoaded && paging?.total == null || paging?.total == 0 "> No info about contracts.</div>
                 <TxList :paging="pages" v-if="contractsLoaded" @page-clicked="onPageClicked">
                   <b-table
                     v-if="contracts?.length > 0"
