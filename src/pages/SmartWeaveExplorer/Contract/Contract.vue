@@ -663,7 +663,6 @@ export default {
           blockTimestamp: data.blockTimestamp,
           evolvedSrc: data.evolvedSrc,
         };
-        this.setSource(this.codeSource);
 
         if (data.contractTx == null || data.contractTx.tags == null) {
           this.tags = null;

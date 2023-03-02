@@ -28,12 +28,15 @@
         </ul>
       </nav>
     </div>
-    <div class="source-code-wrapper">
+    <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
 
-      <a class="current-id" :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
-        currentSrcTxId
-      }}</a>
+      <a
+        v-if="!isSourceView"
+        class="current-id"
+        :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`"
+        >{{ currentSrcTxId }}</a
+      >
       <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
         class="mt-0"
@@ -73,6 +76,10 @@ export default {
     sourceId: String,
     wasm: Boolean,
     source: Object,
+    isSourceView: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'arweave']),
@@ -96,11 +103,15 @@ export default {
   },
 
   async mounted() {
-    this.contractSrcHistory = [...this.source.evolvedSrc, this.source];
-    this.prepareSource(this.contractSrcHistory);
-    this.contractSrc = this.preparedSource[0].src;
-    this.currentSrcTxId = this.preparedSource[0].srcTxId;
-    await this.parseCode(this.preparedSource[0]);
+    if (!this.isSourceView) {
+      this.contractSrcHistory = [...this.source.evolvedSrc, this.source];
+      this.prepareSource(this.contractSrcHistory);
+      this.contractSrc = this.preparedSource[0].src;
+      this.currentSrcTxId = this.preparedSource[0].srcTxId;
+      await this.parseCode(this.preparedSource[0]);
+    } else {
+      await this.parseCode(this.source);
+    }
   },
   methods: {
     getAs(obj) {
@@ -254,7 +265,6 @@ export default {
         let objFromContractSrc = Object.fromEntries(contractSrc);
         if (source.srcWasmLang == 'assemblyscript') {
           this.contractSrc = this.getAs(objFromContractSrc);
-
         } else if (source.srcWasmLang == 'rust') {
           this.contractSrc = this.getRust(objFromContractSrc);
         } else if (source.srcWasmLang == 'go') {
@@ -300,8 +310,14 @@ export default {
   min-height: 700px;
   width: 100%;
 
-  .source-code-wrapper {
+  .code-fullView {
+    width: 100%;
+  }
+
+  .code-partView {
     width: 85%;
+  }
+  .source-code-wrapper {
     display: flex;
     flex-direction: column;
     .current-id {
