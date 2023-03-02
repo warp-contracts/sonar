@@ -219,7 +219,7 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedSource" :sourceId="sourceId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode v-if="loadedSource" :source="source" :sourceId="sourceId" :wasm="!!wasmLang"></ContractCode>
             </div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#state' }]" class="p-2">
@@ -334,6 +334,8 @@ export default {
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('source', ['source']),
+
     sourceId() {
       return this.$route.params.id;
     },

@@ -444,7 +444,7 @@ import ContractState from './ContractState/ContractState';
 import ContractCurrentState from './ContractCurrentState/ContractCurrentState';
 import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
@@ -588,6 +588,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations('source', ['setSource']),
+
     async getContractData() {
       axios
         .get(`${this.gatewayUrl}/gateway/contract-data/${this.contractId}`)
@@ -661,6 +663,7 @@ export default {
           blockTimestamp: data.blockTimestamp,
           evolvedSrc: data.evolvedSrc,
         };
+        this.setSource(this.codeSource);
 
         if (data.contractTx == null || data.contractTx.tags == null) {
           this.tags = null;
