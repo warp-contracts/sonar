@@ -330,6 +330,7 @@ export default {
     width: 15%;
     display: flex;
     justify-content: center;
+    margin-top: calc(15px + 1rem);
     nav {
       width: 100%;
       padding-right: 1rem;
