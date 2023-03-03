@@ -30,7 +30,18 @@
 
       <template slot="row-details" slot-scope="data">
         <div class="json-display">
-          <json-viewer :value="data.item" :expand-depth="1" copyable sort theme="json-theme">
+          <json-viewer
+            :value="{
+              contract_tx_id: data.item.contract_tx_id,
+              event: data.item.event,
+              message: data.item.message,
+              timestamp: data.item.timestamp,
+            }"
+            :expand-depth="1"
+            copyable
+            sort
+            theme="json-theme"
+          >
             <template v-slot:copy>
               <img
                 v-b-tooltip.hover

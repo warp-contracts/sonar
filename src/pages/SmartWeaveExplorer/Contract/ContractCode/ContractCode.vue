@@ -30,13 +30,26 @@
     </div>
     <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-
-      <a
-        v-if="!isSourceView"
-        class="current-id"
-        :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`"
-        >{{ currentSrcTxId }}</a
-      >
+      <div class="code-header">
+        <a
+          v-if="!isSourceView"
+          class="current-id"
+          :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`"
+          >{{ currentSrcTxId }}</a
+        >
+        <div
+          v-if="!wasm"
+          class="copy-source"
+          title="Copy to clipboard"
+          v-clipboard:success="onCopy"
+          v-clipboard="() => contractSrc"
+        >
+          <p>Copy source code</p>
+          <div class="flaticon-copy-to-clipboard">
+            <p v-if="copiedDisplay" class="clipboard-success copy-info">Copied</p>
+          </div>
+        </div>
+      </div>
       <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
         class="mt-0"
@@ -96,6 +109,7 @@ export default {
       initSrcVersion: null,
       preparedSource: [],
       currentSrcTxId: null,
+      copiedDisplay: false,
     };
   },
   updated: function () {
@@ -300,6 +314,10 @@ export default {
         });
       });
     },
+    onCopy() {
+      this.copiedDisplay = true;
+      setTimeout(() => (this.copiedDisplay = false), 2000);
+    },
   },
 };
 </script>
@@ -318,11 +336,39 @@ export default {
     width: 85%;
   }
   .source-code-wrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
-    .current-id {
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 1rem;
-      text-align: center;
+      .current-id {
+        text-align: center;
+      }
+      .copy-source {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: row;
+
+        p {
+          margin: 0;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .flaticon-copy-to-clipboard {
+    position: relative;
+    margin-bottom: 0.2rem;
+    margin-left: 0.4rem;
+
+    .copy-info {
+      position: absolute;
+      top: -1.2rem;
+      right: 0;
     }
   }
 
@@ -330,7 +376,6 @@ export default {
     width: 15%;
     display: flex;
     justify-content: center;
-    margin-top: calc(15px + 1rem);
     nav {
       width: 100%;
       padding-right: 1rem;
