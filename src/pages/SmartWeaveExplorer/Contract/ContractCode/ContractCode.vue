@@ -30,7 +30,7 @@
     </div>
     <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
       <div v-if="loaded">
-        <code-diff  :old-string="source.src" :new-string="contractSrc" output-format="side-by-side" />
+        <code-diff  :old-string="source.src" :new-string="contractSrc" output-format="line-by-line" context="100" />
       </div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
       <div class="code-header">
