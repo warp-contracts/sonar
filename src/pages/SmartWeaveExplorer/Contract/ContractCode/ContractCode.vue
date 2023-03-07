@@ -20,9 +20,26 @@
               <p class="text-nowrap mb-0">
                 {{ version.age }}
               </p>
-              <a :href="`/#/app/source/${version.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
+              <!-- <a :href="`/#/app/source/${version.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
                 version.srcTxId | tx
-              }}</a>
+              }}</a> -->
+              <p class="mb-0">{{ version.srcTxId | tx }}</p>
+            </div>
+          </li>
+        </ul>
+        <p>Compare Source</p>
+        <ul class="compare-source-list">
+          <li
+            v-for="(version, key) in preparedSource"
+            :key="key"
+            @click="changeCompareSource(version, key)"
+            :class="{ 'active-compare-item': activeCompareItem == key }"
+          >
+            <div class="d-flex flex-column">
+              <p class="text-nowrap mb-0">
+                {{ version.age }}
+              </p>
+              <p class="mb-0">{{ version.srcTxId | tx }}</p>
             </div>
           </li>
         </ul>
@@ -30,10 +47,16 @@
     </div>
     <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
       <div v-if="loaded">
-        <code-diff  :old-string="source.src" :new-string="contractSrc" output-format="line-by-line" context="100" />
+        <code-diff
+          :old-string="sourceToCompare"
+          :new-string="contractSrc"
+          output-format="line-by-line"
+          language="js"
+          :context="100"
+        />
       </div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
-      <div class="code-header">
+      <!-- <div class="code-header">
         <a
           v-if="!isSourceView"
           class="current-id"
@@ -52,17 +75,26 @@
             <p v-if="copiedDisplay" class="clipboard-success copy-info">Copied</p>
           </div>
         </div>
-      </div>
-      <pre
+      </div> -->
+      <!-- <pre
         v-if="loaded && contractSrc && !wasm && renderComponent"
         class="mt-0"
-      ><code class="language-javascript">{{ contractSrc }}</code></pre>
+      ><code class="language-javascript">{{ contractSrc }}</code></pre> -->
       <div v-if="loaded && contractSrc && wasm">
         <ul id="code-wasm">
           <li v-for="(item, idx) in contractSrc" :key="idx">
             <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
 
-            <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
+            <!-- <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre> -->
+            <div v-if="loaded">
+              <code-diff
+                :old-string="contractSrc[idx]"
+                :new-string="contractSrc[idx]"
+                output-format="line-by-line"
+                language="js"
+                :context="100"
+              />
+            </div>
           </li>
         </ul>
       </div>
@@ -113,7 +145,10 @@ export default {
       preparedSource: [],
       currentSrcTxId: null,
       copiedDisplay: false,
-      orgSource: null,
+      // orgSource: null,
+      sourceToCompare: null,
+      oldSourceToCompare: null,
+      activeCompareItem: null,
     };
   },
   updated: function () {
@@ -127,7 +162,8 @@ export default {
       this.contractSrc = this.preparedSource[0].src;
       this.currentSrcTxId = this.preparedSource[0].srcTxId;
       this.orgSource = this.preparedSource.length;
-      console.log(this.orgSource)
+      this.sourceToCompare = this.contractSrc;
+      this.oldSourceToCompare = this.contractSrc;
       await this.parseCode(this.preparedSource[0]);
     } else {
       await this.parseCode(this.source);
@@ -306,6 +342,10 @@ export default {
       await this.$nextTick();
       this.renderComponent = true;
     },
+    changeCompareSource(code, index) {
+      this.sourceToCompare = code.src;
+      this.activeCompareItem = index;
+    },
     convertTime: convertTime,
     prepareSource(source) {
       source.forEach((el) => {
@@ -429,6 +469,11 @@ export default {
           &:hover {
             border: 2px solid var(--warp-blue-color);
           }
+        }
+        .active-compare-item {
+          border: 2px solid red;
+          box-shadow: rgba(241, 89, 89, 0.3) 0px 1px 2px 0px, rgba(89, 130, 241, 0.15) 0px 2px 6px 2px;
+          color: #ce3a3a;
         }
       }
     }
