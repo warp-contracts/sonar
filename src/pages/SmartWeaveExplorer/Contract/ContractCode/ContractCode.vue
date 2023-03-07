@@ -29,6 +29,9 @@
       </nav>
     </div>
     <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
+      <div v-if="loaded">
+        <code-diff  :old-string="preparedSource[0].src" :new-string="contractSrc" output-format="side-by-side" />
+      </div>
       <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
       <div class="code-header">
         <a
@@ -119,7 +122,7 @@ export default {
   async mounted() {
     if (!this.isSourceView) {
       this.contractSrcHistory = [...this.source.evolvedSrc, this.source];
-      this.prepareSource(this.contractSrcHistory);
+      await this.prepareSource(this.contractSrcHistory);
       this.contractSrc = this.preparedSource[0].src;
       this.currentSrcTxId = this.preparedSource[0].srcTxId;
       await this.parseCode(this.preparedSource[0]);
