@@ -49,7 +49,7 @@
         </ul>
       </nav>
     </div>
-    <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
+    <div class="source-code-wrapper" :class="contractSrcHistory?.length > 1 ? 'code-partView' : 'code-fullView'">
       <div class="code-header">
         <a
           v-if="!isSourceView"
