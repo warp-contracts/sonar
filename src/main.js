@@ -11,13 +11,14 @@ import VueTouch from 'vue-touch';
 import Toasted from 'vue-toasted';
 import CodeDiff from 'v-code-diff';
 
-import VueCompositionAPI from '@vue/composition-api';
 
 import store from './store';
 import router from './Routes';
 import App from './App';
 import layoutMixin from './mixins/layout';
+import VueCompositionAPI from '@vue/composition-api';
 
+Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue, {
   breakpoints: [`xs`, 'sm', 'md', 'lg', 'xl', 'xxl'],
 });
@@ -27,7 +28,6 @@ Vue.use(VueTimers);
 Vue.use(Clipboard);
 Vue.use(VueTouch);
 Vue.use(Toasted);
-Vue.use(VueCompositionAPI);
 Vue.use(CodeDiff);
 
 Vue.config.productionTip = false;
