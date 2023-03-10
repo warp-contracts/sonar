@@ -483,6 +483,21 @@ export default {
   }
 }
 
+@media (max-width: 768px) {
+  .code-container {
+    .code-header {
+      flex-direction: column-reverse;
+      align-items: center;
+
+      .current-id {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
 @media (max-width: 1024px) {
   .code-container {
     flex-direction: column;

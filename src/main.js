@@ -16,9 +16,7 @@ import store from './store';
 import router from './Routes';
 import App from './App';
 import layoutMixin from './mixins/layout';
-import VueCompositionAPI from '@vue/composition-api';
 
-Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue, {
   breakpoints: [`xs`, 'sm', 'md', 'lg', 'xl', 'xxl'],
 });
