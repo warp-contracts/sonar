@@ -145,14 +145,15 @@
 
                 <template #cell(function)="data">
                   <div
-                    v-if="data.item.function.length > 14"
-                    class="text-uppercase text-ellipsis"
+                  style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+                    v-if="data.item.function.length > 10"
+                    class="function-cell text-uppercase text-ellipsis"
                     v-b-tooltip.hover
                     :title="data.item.function.toUpperCase()"
                   >
                     {{ data.item.function }}
                   </div>
-                  <div v-else class="text-uppercase text-ellipsis">{{ data.item.function }}</div>
+                  <div v-else class="function-cell text-uppercase text-ellipsis">{{ data.item.function }}</div>
                 </template>
 
                 <template #cell(source)="data">
@@ -444,6 +445,7 @@ export default {
         )
 
         .then(async (fetchedContracts) => {
+          console.log(fetchedContracts);
           this.noContractsDetected = fetchedContracts.data.contracts.length == 0;
           this.summary = fetchedContracts.data.summary;
           this.interactions = [];
@@ -463,6 +465,7 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'interaction')
             .forEach((interaction) => {
+              console.log(interaction);
               this.interactions.push({
                 interactionId: interaction.interaction_id,
                 contractId: interaction.contract_id,
@@ -503,11 +506,29 @@ export default {
   height: 22.25px;
 }
 
+::v-deep #interactions-table .function-cell {
+  width: 110px;
+}
+
 @media (max-width: 1024px) {
   .stats-wrapper {
     .total-contracts {
       margin-top: 0;
     }
   }
+}
+
+@media(min-width: 769px)  {
+  .tx-lists-wrapper {
+    .tx-list-single-wrapper {
+      min-width: 650px;
+    }
+  }
+}
+
+@media (min-width: 1000px){
+  ::v-deep #interactions-table .function-cell {
+  width: 150px;
+}
 }
 </style>
