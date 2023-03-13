@@ -2,7 +2,7 @@
   <div class="code-container">
     <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 1">
       <nav>
-        <p>Contract Source History</p>
+        <p class="source-nav-heading">Contract Source History</p>
         <ul>
           <li
             v-for="(version, key) in preparedSource"
@@ -24,8 +24,8 @@
             </div>
           </li>
         </ul>
-        <p>Compare Source</p>
-        <p v-if="wasm">Currently unavailable for wasm contracts</p>
+        <p class="source-nav-heading">Compare Source</p>
+        <p v-if="wasm">Currently unavailable for WASM contracts</p>
         <ul class="compare-source-list" v-if="!wasm && loaded && contractSrcHistory?.length > 1">
           <li
             v-for="(version, key) in preparedSource"
@@ -478,6 +478,9 @@ export default {
           box-shadow: rgba(234, 99, 135, 0.3) 0px 1px 2px 0px, rgba(89, 130, 241, 0.15) 0px 2px 6px 2px;
           color: #5e5e5e;
         }
+      }
+      .source-nav-heading {
+        font-weight: bold;
       }
     }
   }
