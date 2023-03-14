@@ -1,8 +1,8 @@
 <template>
   <div class="code-container">
-    <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 0">
+    <div class="version-nav" v-if="loaded && contractSrcHistory?.length > 1">
       <nav>
-        <p>Contract Source History</p>
+        <p class="source-nav-heading">Contract Source History</p>
         <ul>
           <li
             v-for="(version, key) in preparedSource"
@@ -20,16 +20,36 @@
               <p class="text-nowrap mb-0">
                 {{ version.age }}
               </p>
-              <a :href="`/#/app/source/${version.srcTxId}${isTestnet ? '?network=testnet' : ''}`">{{
-                version.srcTxId | tx
-              }}</a>
+              <p class="mb-0">{{ version.srcTxId | tx }}</p>
+            </div>
+          </li>
+        </ul>
+        <p class="source-nav-heading">Compare Source</p>
+        <p v-if="wasm">Currently unavailable for WASM contracts</p>
+        <ul class="compare-source-list" v-if="!wasm && loaded && contractSrcHistory?.length > 1">
+          <li
+            v-for="(version, key) in preparedSource"
+            :key="key"
+            @click="changeCompareSource(version, key)"
+            :class="{ 'active-compare-item': activeCompareItem == key }"
+          >
+            <img
+              v-if="activeCompareItem == key"
+              src="../../../../assets/icons/tick-circle.svg"
+              alt="active item circle tick icon"
+              class="chosen-icon chosen-compare-icon"
+            />
+            <div class="d-flex flex-column">
+              <p class="text-nowrap mb-0">
+                {{ version.age }}
+              </p>
+              <p class="mb-0">{{ version.srcTxId | tx }}</p>
             </div>
           </li>
         </ul>
       </nav>
     </div>
-    <div class="source-code-wrapper" :class="isSourceView ? 'code-fullView' : 'code-partView'">
-      <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
+    <div class="source-code-wrapper" :class="contractSrcHistory?.length > 1 ? 'code-partView' : 'code-fullView'">
       <div class="code-header">
         <a
           v-if="!isSourceView"
@@ -50,16 +70,28 @@
           </div>
         </div>
       </div>
-      <pre
-        v-if="loaded && contractSrc && !wasm && renderComponent"
-        class="mt-0"
-      ><code class="language-javascript">{{ contractSrc }}</code></pre>
+      <div v-if="loaded && contractSrc && !wasm && renderComponent">
+        <code-diff
+          :old-string="sourceToCompare"
+          :new-string="contractSrc"
+          output-format="line-by-line"
+          language="js"
+          :context="100"
+        />
+      </div>
+      <div v-if="loaded && !correct" class="state-container">Could not retrieve Contract Code.</div>
+
       <div v-if="loaded && contractSrc && wasm">
         <ul id="code-wasm">
           <li v-for="(item, idx) in contractSrc" :key="idx">
             <pre class="py-4"><code>{{ idx.substring(idx.split('/', 4).join('/').length + 1) }}</code></pre>
-
-            <pre><code class="language-javascript">{{contractSrc[idx]}}</code></pre>
+            <code-diff
+              :old-string="contractSrc[idx]"
+              :new-string="contractSrc[idx]"
+              output-format="line-by-line"
+              language="js"
+              :context="100"
+            />
           </li>
         </ul>
       </div>
@@ -110,6 +142,8 @@ export default {
       preparedSource: [],
       currentSrcTxId: null,
       copiedDisplay: false,
+      sourceToCompare: null,
+      activeCompareItem: null,
     };
   },
   updated: function () {
@@ -119,14 +153,16 @@ export default {
   async mounted() {
     if (!this.isSourceView) {
       this.contractSrcHistory = [...this.source.evolvedSrc, this.source];
-      this.prepareSource(this.contractSrcHistory);
+      await this.prepareSource(this.contractSrcHistory);
       this.contractSrc = this.preparedSource[0].src;
       this.currentSrcTxId = this.preparedSource[0].srcTxId;
+      this.sourceToCompare = this.contractSrc;
       await this.parseCode(this.preparedSource[0]);
     } else {
       await this.parseCode(this.source);
     }
   },
+
   methods: {
     getAs(obj) {
       const contractKey = this.getObjKey('contract.ts', obj);
@@ -300,6 +336,15 @@ export default {
       await this.$nextTick();
       this.renderComponent = true;
     },
+    changeCompareSource(code, index) {
+      if (index == this.activeCompareItem) {
+        this.activeCompareItem = null;
+        this.sourceToCompare = this.contractSrc;
+      } else {
+        this.sourceToCompare = code.src;
+        this.activeCompareItem = index;
+      }
+    },
     convertTime: convertTime,
     prepareSource(source) {
       source.forEach((el) => {
@@ -415,6 +460,10 @@ export default {
             height: 1.6rem;
             filter: invert(42%) sepia(84%) saturate(1521%) hue-rotate(207deg) brightness(101%) contrast(89%);
           }
+
+          .chosen-compare-icon {
+            filter: invert(60%) sepia(10%) saturate(6279%) hue-rotate(306deg) brightness(94%) contrast(95%);
+          }
         }
         .active-item {
           border: 2px solid var(--warp-blue-color);
@@ -424,6 +473,29 @@ export default {
             border: 2px solid var(--warp-blue-color);
           }
         }
+        .active-compare-item {
+          border: 2px solid #ea6387;
+          box-shadow: rgba(234, 99, 135, 0.3) 0px 1px 2px 0px, rgba(89, 130, 241, 0.15) 0px 2px 6px 2px;
+          color: #5e5e5e;
+        }
+      }
+      .source-nav-heading {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .code-container {
+    .code-header {
+      flex-direction: column-reverse;
+      align-items: center;
+
+      .current-id {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
       }
     }
   }
