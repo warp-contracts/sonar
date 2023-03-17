@@ -9,6 +9,8 @@ import Clipboard from 'v-clipboard';
 import 'vue-loaders/dist/vue-loaders.css';
 import VueTouch from 'vue-touch';
 import Toasted from 'vue-toasted';
+import CodeDiff from 'v-code-diff';
+
 
 import store from './store';
 import router from './Routes';
@@ -24,6 +26,7 @@ Vue.use(VueTimers);
 Vue.use(Clipboard);
 Vue.use(VueTouch);
 Vue.use(Toasted);
+Vue.use(CodeDiff);
 
 Vue.config.productionTip = false;
 
