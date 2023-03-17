@@ -22,7 +22,7 @@
               <div>Total:&nbsp;</div>
               <div class="total-field d-flex justify-content-center">
                 <div class="d-flex justify-content-center align-self-center" v-if="totalInteractionsLoaded">
-                  {{ totalInteractions }}
+                  {{ format(totalInteractions, '0,0') }}
                 </div>
                 <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
               </div>
@@ -48,7 +48,7 @@
               <div>Total:&nbsp;</div>
               <div class="total-field d-flex justify-content-center">
                 <div class="d-flex justify-content-center align-self-center" v-if="totalContractsLoaded">
-                  {{ totalContracts }}
+                  {{ format(totalContracts, '0,0') }}
                 </div>
                 <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
               </div>
@@ -61,7 +61,7 @@
           <div>Total contracts</div>
           <div class="d-flex justify-content-center">
             <div v-if="totalContractsLoaded">
-              <div>{{ totalContracts }}</div>
+              <div>{{ format(totalContracts, '0,0') }}</div>
             </div>
             <div v-else class="align-self-center mt-4">
               <div class="dot-flashing"></div>
@@ -73,7 +73,7 @@
           <div>Total interactions</div>
           <div class="d-flex justify-content-center">
             <div v-if="totalInteractionsLoaded">
-              <div>{{ totalInteractions }}</div>
+              <div>{{ format(totalInteractions, '0,0') }}</div>
             </div>
             <div v-else class="align-self-center mt-4">
               <div class="dot-flashing"></div>
@@ -145,7 +145,7 @@
 
                 <template #cell(function)="data">
                   <div
-                  style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+                    style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
                     v-if="data.item.function.length > 10"
                     class="function-cell text-uppercase text-ellipsis"
                     v-b-tooltip.hover
@@ -175,7 +175,7 @@
                       class="source-icon"
                     />
                   </div>
-                  <div v-else-if="data.item.source == 'sequencer'">
+                  <div v-else-if="data.item.source.includes('sequencer')">
                     <img
                       v-b-tooltip.hover
                       title="Warp Sequencer"
@@ -190,9 +190,14 @@
                 <template #cell(total)="data">
                   <div class="text-right">{{ data.item.total }}</div>
                 </template>
-                <template #cell(blockHeight)="data">
+                <!-- <template #cell(blockHeight)="data">
                   <div class="text-right">
                     {{ data.item.blockHeight }}
+                  </div>
+                </template> -->
+                <template #cell(age)="data">
+                  <div class="text-right">
+                    {{ data.item.age ? data.item.age : 'N/A' }}
                   </div>
                 </template>
               </b-table>
@@ -251,7 +256,7 @@
                 </template>
 
                 <template #cell(source)="data">
-                  <div v-if="data.item.source == 'warp'">
+                  <div v-if="data.item.source.includes('warp')">
                     <img
                       v-b-tooltip.hover
                       title="Warp"
@@ -281,9 +286,14 @@
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
-                <template #cell(blockHeight)="data">
+                <!-- <template #cell(blockHeight)="data">
                   <div class="text-right">
                     {{ data.item.blockHeight }}
+                  </div>
+                </template> -->
+                <template #cell(age)="data">
+                  <div class="text-right">
+                    {{ data.item.age ? data.item.age : 'N/A' }}
                   </div>
                 </template>
               </b-table>
@@ -306,6 +316,13 @@ import TxList from '@/components/TxList/TxList';
 import Charts from '@/components/Charts/Charts';
 import { mapState } from 'vuex';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
+import { subscribe, initPubSub } from 'warp-contracts-pubsub';
+import { format } from 'numerable';
+import { convertTime } from '@/utils';
+import dayjs from 'dayjs';
+
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 export default {
   name: 'Contracts',
@@ -321,11 +338,17 @@ export default {
         'type',
         'source',
         {
-          key: 'blockHeight',
-          label: 'height',
+          key: 'age',
+          label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
+        // {
+        //   key: 'blockHeight',
+        //   label: 'height',
+        //   thClass: 'text-right',
+        //   tdClass: 'text-right',
+        // },
       ],
       interactionsFields: [
         'interactionId',
@@ -333,11 +356,17 @@ export default {
         'function',
         'source',
         {
-          key: 'blockHeight',
-          label: 'height',
+          key: 'age',
+          label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
+        // {
+        //   key: 'blockHeight',
+        //   label: 'height',
+        //   thClass: 'text-right',
+        //   tdClass: 'text-right',
+        // },
       ],
       contracts: [],
       interactions: [],
@@ -362,9 +391,12 @@ export default {
     };
   },
   mounted() {
+    this.initPubSub();
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
+    this.subscribeForContracts();
+    this.subscribeForInteractions();
   },
   components: { TxList, Charts, TestnetLabel },
   watch: {
@@ -386,6 +418,8 @@ export default {
     },
   },
   methods: {
+    format: format,
+    initPubSub: initPubSub,
     refreshData() {
       if (this.currentPage > 1) {
         this.$router.push({ query: {} });
@@ -445,7 +479,6 @@ export default {
         )
 
         .then(async (fetchedContracts) => {
-          console.log(fetchedContracts);
           this.noContractsDetected = fetchedContracts.data.contracts.length == 0;
           this.summary = fetchedContracts.data.summary;
           this.interactions = [];
@@ -453,11 +486,13 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'contract')
             .forEach((contract) => {
+              // console.log(contract)
               this.contracts.push({
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                blockHeight: contract.block_height,
+                age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
+                // blockHeight: contract.block_height,
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -465,13 +500,14 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'interaction')
             .forEach((interaction) => {
-              console.log(interaction);
+              // console.log(interaction);
               this.interactions.push({
                 interactionId: interaction.interaction_id,
                 contractId: interaction.contract_id,
                 owner: interaction.owner,
                 function: interaction.function,
-                blockHeight: interaction.block_height,
+                age: convertTime(dayjs.unix(+interaction.block_timestamp), null, 'Europe/London'),
+                // blockHeight: interaction.block_height,
                 source: interaction.source,
               });
             });
@@ -482,6 +518,45 @@ export default {
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
+    },
+    async subscribeForContracts() {
+      const subscription = await subscribe(
+        `contracts`,
+        ({ data }) => {
+          let dataObj = JSON.parse(data);
+          // console.log(JSON.parse(data))
+          this.contracts.unshift({
+            contractId: dataObj.contractTxId,
+            owner: dataObj.creator,
+            // blockHeight: dataObj.height,
+            age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
+            type: dataObj.type,
+            source: dataObj.source,
+          });
+          this.contracts.pop();
+        },
+        console.error
+      );
+    },
+
+    async subscribeForInteractions() {
+      const subscription = await subscribe(
+        `interactions`,
+        ({ data }) => {
+          let dataObj = JSON.parse(data);
+          console.log(JSON.parse(data));
+          this.interactions.unshift({
+            interactionId: dataObj.interaction.id,
+            contractId: dataObj.contractTxId,
+            age: convertTime(dayjs.unix(dataObj.interaction.block.timestamp), null, 'Europe/London'),
+            function: dataObj.functionName ? dataObj.functionName : 'N/A',
+            blockHeight: dataObj.interaction.block.height,
+            source: dataObj.source,
+          });
+          this.interactions.pop();
+        },
+        console.error
+      );
     },
   },
 };
@@ -518,7 +593,7 @@ export default {
   }
 }
 
-@media(min-width: 769px)  {
+@media (min-width: 769px) {
   .tx-lists-wrapper {
     .tx-list-single-wrapper {
       min-width: 650px;
@@ -526,9 +601,10 @@ export default {
   }
 }
 
-@media (min-width: 1000px){
+@media (min-width: 1000px) {
   ::v-deep #interactions-table .function-cell {
-  width: 150px;
+    width: 150px;
+  }
 }
-}
+
 </style>
