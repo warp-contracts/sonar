@@ -144,8 +144,9 @@
                 </template>
 
                 <template #cell(function)="data">
+                  <div v-if="!data.item.function">N/A</div>
                   <div
-                    v-if="data.item.function.length > 14"
+                    v-else-if="data.item.function && data.item.function.length > 14"
                     class="text-uppercase text-ellipsis"
                     v-b-tooltip.hover
                     :title="data.item.function.toUpperCase()"
