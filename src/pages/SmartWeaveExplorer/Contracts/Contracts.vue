@@ -100,18 +100,18 @@
                 :fields="interactionsFields"
                 @row-clicked="rowClicked"
                 :busy="!contractsLoaded"
+                primary-key="interactionId"
               >
                 <template #table-busy> </template>
                 <template #cell(interactionId)="data" class="text-right">
-                  <div class="d-flex align-items-center">
+                  <div class="d-flex align-items-center fade-in-fwd">
                     <router-link
-                      style="min-width: 126px"
                       :to="{
                         path: '/app/interaction/' + data.item.interactionId,
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.interactionId | tx }}
+                      {{ data.item.interactionId.slice(0, 5) + '..' }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -145,8 +145,8 @@
 
                 <template #cell(function)="data">
                   <div
+                  v-if="data.item.function && data.item.function.length > 8"
                     style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
-                    v-if="data.item.function.length > 10"
                     class="function-cell text-uppercase text-ellipsis"
                     v-b-tooltip.hover
                     :title="data.item.function.toUpperCase()"
@@ -190,11 +190,6 @@
                 <template #cell(total)="data">
                   <div class="text-right">{{ data.item.total }}</div>
                 </template>
-                <!-- <template #cell(blockHeight)="data">
-                  <div class="text-right">
-                    {{ data.item.blockHeight }}
-                  </div>
-                </template> -->
                 <template #cell(age)="data">
                   <div class="text-right">
                     {{ data.item.age ? data.item.age : 'N/A' }}
@@ -286,11 +281,6 @@
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
-                <!-- <template #cell(blockHeight)="data">
-                  <div class="text-right">
-                    {{ data.item.blockHeight }}
-                  </div>
-                </template> -->
                 <template #cell(age)="data">
                   <div class="text-right">
                     {{ data.item.age ? data.item.age : 'N/A' }}
@@ -328,6 +318,10 @@ export default {
   name: 'Contracts',
   data() {
     return {
+      // transProps: {
+      //   // Transition name
+      //   name: 'fade',
+      // },
       selected: 'all',
       selectedSource: 'all',
       chartLoading: true,
@@ -343,12 +337,6 @@ export default {
           thClass: 'text-right',
           tdClass: 'text-right',
         },
-        // {
-        //   key: 'blockHeight',
-        //   label: 'height',
-        //   thClass: 'text-right',
-        //   tdClass: 'text-right',
-        // },
       ],
       interactionsFields: [
         'interactionId',
@@ -361,12 +349,6 @@ export default {
           thClass: 'text-right',
           tdClass: 'text-right',
         },
-        // {
-        //   key: 'blockHeight',
-        //   label: 'height',
-        //   thClass: 'text-right',
-        //   tdClass: 'text-right',
-        // },
       ],
       contracts: [],
       interactions: [],
@@ -397,12 +379,33 @@ export default {
     this.loadStats();
     this.subscribeForContracts();
     this.subscribeForInteractions();
+    // this.getTableElement();
   },
   components: { TxList, Charts, TestnetLabel },
   watch: {
     isTestnet() {
       this.refreshData();
       this.loadStats();
+    },
+    contracts: {
+      handler: function (val, oldVal) {
+        // console.log('a thing changed');
+        const newItem = document.querySelector('#contracts-table tbody tr');
+        newItem.style.opacity = 0;
+        newItem.style.transition = "opacity 0.2s ease"
+        setTimeout(() => {
+          newItem.style.opacity = 1;
+        }, 300);
+        // newItem.classList.add('fade-in-fwd')
+        // const items = document.querySelectorAll('#contracts-table td');
+        // const pickedItems = Array.from(items).slice(1, 15);
+        // pickedItems.forEach((element) => {
+        //   element.classList.remove('fade-in-fwd');
+        // });
+        // pickedItems.classList.remove('fade-in-fwd');
+        // console.log(newItem);
+      },
+      deep: true,
     },
   },
   computed: {
@@ -418,6 +421,7 @@ export default {
     },
   },
   methods: {
+    convertTime: convertTime,
     format: format,
     initPubSub: initPubSub,
     refreshData() {
@@ -486,13 +490,11 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'contract')
             .forEach((contract) => {
-              // console.log(contract)
               this.contracts.push({
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
-                // blockHeight: contract.block_height,
+                age: convertTime(dayjs.unix(+contract.block_timestamp), null),
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -500,14 +502,13 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'interaction')
             .forEach((interaction) => {
-              // console.log(interaction);
+              console.log(interaction)
               this.interactions.push({
                 interactionId: interaction.interaction_id,
                 contractId: interaction.contract_id,
                 owner: interaction.owner,
                 function: interaction.function,
                 age: convertTime(dayjs.unix(+interaction.block_timestamp), null, 'Europe/London'),
-                // blockHeight: interaction.block_height,
                 source: interaction.source,
               });
             });
@@ -524,12 +525,10 @@ export default {
         `contracts`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
-          // console.log(JSON.parse(data))
           this.contracts.unshift({
             contractId: dataObj.contractTxId,
             owner: dataObj.creator,
-            // blockHeight: dataObj.height,
-            age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
+            age: convertTime(dayjs.unix(dataObj.timestamp), null),
             type: dataObj.type,
             source: dataObj.source,
           });
@@ -544,7 +543,6 @@ export default {
         `interactions`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
-          console.log(JSON.parse(data));
           this.interactions.unshift({
             interactionId: dataObj.interaction.id,
             contractId: dataObj.contractTxId,
@@ -558,6 +556,14 @@ export default {
         console.error
       );
     },
+    getTableElement() {
+      const tableBody = document.querySelectorAll('tbody');
+      tableBody.forEach((element) => {
+        element.setAttribute('is', 'transition-group');
+        element.setAttribute('name', 'fade');
+      });
+      console.log(tableBody);
+    },
   },
 };
 </script>
@@ -568,6 +574,36 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+// ::v-deep #interactions-table.fade-enter-active,
+// ::v-deep #interactions-table.fade-leave-active {
+//   background-color: none;
+//   transition: all 2s;
+// }
+// ::v-deep #interactions-table.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+//   background-color: yellow;
+// }
+.total-field {
+  min-width: 80px;
+}
+
+// ::v-deep #contracts-table.fade-enter-active,
+// ::v-deep #contracts-table.fade-leave-active {
+//   background-color: none;
+//   transition: all 2s;
+// }
+// ::v-deep #contracts-table.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+//   background-color: yellow;
+// }
+
+::v-deep #contracts-table.v-enter-active tbody tr td,
+::v-deep #contracts-table.v-leave-active tbody tr td {
+  transition: opacity 0.5s ease;
+}
+
+::v-deep #contracts-table.v-enter-from tbody tr td,
+::v-deep #contracts-table.v-leave-to tbody tr td {
+  opacity: 0;
+}
 .total-field {
   min-width: 80px;
 }
@@ -603,8 +639,58 @@ export default {
 
 @media (min-width: 1000px) {
   ::v-deep #interactions-table .function-cell {
-    width: 150px;
+    width: 80px;
   }
 }
 
+.fade-in-fwd {
+  -webkit-animation: fade-in-fwd 1.6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  animation: fade-in-fwd 1.6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2023-3-20 17:26:4
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation fade-in-fwd
+ * ----------------------------------------
+ */
+@-webkit-keyframes fade-in-fwd {
+  0% {
+    -webkit-transform: translateZ(-80px);
+    transform: translateZ(-80px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    opacity: 1;
+  }
+}
+@keyframes fade-in-fwd {
+  0% {
+    -webkit-transform: translateZ(-80px);
+    transform: translateZ(-80px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeMe {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 </style>
