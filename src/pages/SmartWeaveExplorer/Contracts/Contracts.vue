@@ -145,7 +145,7 @@
 
                 <template #cell(function)="data">
                   <div
-                  v-if="data.item.function && data.item.function.length > 8"
+                    v-if="data.item.function && data.item.function.length > 8"
                     style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
                     class="function-cell text-uppercase text-ellipsis"
                     v-b-tooltip.hover
@@ -318,10 +318,6 @@ export default {
   name: 'Contracts',
   data() {
     return {
-      transProps: {
-          // Transition name
-          name: 'flip-list'
-        },
       selected: 'all',
       selectedSource: 'all',
       chartLoading: true,
@@ -378,8 +374,7 @@ export default {
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
     this.subscribeForContracts();
-    // this.subscribeForInteractions();
-    // this.getTableElement();
+    this.subscribeForInteractions();
   },
   components: { TxList, Charts, TestnetLabel },
   watch: {
@@ -389,22 +384,16 @@ export default {
     },
     contracts: {
       handler: function (val, oldVal) {
-        // console.log('a thing changed');
         const newItem = document.querySelector('#contracts-table tbody tr');
-        console.log(newItem)
-        newItem.style.opacity = 0;
-        newItem.style.transition = "opacity 0.2s ease"
-        setTimeout(() => {
-          newItem.style.opacity = 1;
-        }, 300);
-        // newItem.classList.add('fade-in-fwd')
-        // const items = document.querySelectorAll('#contracts-table td');
-        // const pickedItems = Array.from(items).slice(1, 15);
-        // pickedItems.forEach((element) => {
-        //   element.classList.remove('fade-in-fwd');
-        // });
-        // pickedItems.classList.remove('fade-in-fwd');
-        // console.log(newItem);
+        this.animateTableRow(newItem);
+      },
+      deep: true,
+    },
+    interactions: {
+      handler: function (val, oldVal) {
+        const newItem = document.querySelector('#interactions-table tbody tr');
+        this.animateTableRow(newItem);
+
       },
       deep: true,
     },
@@ -495,7 +484,7 @@ export default {
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                age: convertTime(dayjs.unix(+contract.block_timestamp), null),
+                age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -503,7 +492,7 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'interaction')
             .forEach((interaction) => {
-              console.log(interaction)
+              console.log(interaction);
               this.interactions.push({
                 interactionId: interaction.interaction_id,
                 contractId: interaction.contract_id,
@@ -529,7 +518,7 @@ export default {
           this.contracts.unshift({
             contractId: dataObj.contractTxId,
             owner: dataObj.creator,
-            age: convertTime(dayjs.unix(dataObj.timestamp), null),
+            age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
             type: dataObj.type,
             source: dataObj.source,
           });
@@ -557,14 +546,13 @@ export default {
         console.error
       );
     },
-    // getTableElement() {
-    //   const tableBody = document.querySelectorAll('tbody');
-    //   tableBody.forEach((element) => {
-    //     element.setAttribute('is', 'transition-group');
-    //     element.setAttribute('name', 'fade');
-    //   });
-    //   console.log(tableBody);
-    // },
+    animateTableRow(row) {
+      row.style.opacity = 0;
+      row.style.transition = 'opacity 0.2s ease';
+      setTimeout(() => {
+        row.style.opacity = 1;
+      }, 300);
+    },
   },
 };
 </script>
@@ -575,7 +563,6 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-
 .tx-list {
   max-height: 700px;
   overflow: hidden;
@@ -627,45 +614,6 @@ export default {
 @media (min-width: 1000px) {
   ::v-deep #interactions-table .function-cell {
     width: 80px;
-  }
-}
-
-.fade-in-fwd {
-  -webkit-animation: fade-in-fwd 1.6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
-  animation: fade-in-fwd 1.6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
-}
-
-@-webkit-keyframes fade-in-fwd {
-  0% {
-    -webkit-transform: translateZ(-80px);
-    transform: translateZ(-80px);
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    opacity: 1;
-  }
-}
-@keyframes fade-in-fwd {
-  0% {
-    -webkit-transform: translateZ(-80px);
-    transform: translateZ(-80px);
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeMe {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 </style>
