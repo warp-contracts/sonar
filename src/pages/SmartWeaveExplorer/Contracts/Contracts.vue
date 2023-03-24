@@ -190,9 +190,9 @@
                 <template #cell(total)="data">
                   <div class="text-right">{{ data.item.total }}</div>
                 </template>
-                <template #cell(age)="data">
+                <template #cell(countdown)="data">
                   <div class="text-right">
-                    {{ data.item.age ? data.item.age : 'N/A' }}
+                    {{ data.item.countdown ? data.item.countdown : '0 s' }}
                   </div>
                 </template>
               </b-table>
@@ -281,9 +281,9 @@
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
-                <template #cell(age)="data">
+                <template #cell(countdown)="data">
                   <div class="text-right">
-                    {{ data.item.age ? data.item.age : 'N/A' }}
+                    {{ data.item.countdown ? data.item.countdown : '0 s' }}
                   </div>
                 </template>
               </b-table>
@@ -310,6 +310,7 @@ import { subscribe, initPubSub } from 'warp-contracts-pubsub';
 import { format } from 'numerable';
 import { convertTime } from '@/utils';
 import dayjs from 'dayjs';
+import countdown from 'countdown';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -328,7 +329,7 @@ export default {
         'type',
         'source',
         {
-          key: 'age',
+          key: 'countdown',
           label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
@@ -340,7 +341,7 @@ export default {
         'function',
         'source',
         {
-          key: 'age',
+          key: 'countdown',
           label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
@@ -369,9 +370,12 @@ export default {
     };
   },
   mounted() {
+    countdown.setLabels('ms|s|min| h| d', 'ms|s|min||| wks|| yrs', ' ');
     this.initPubSub();
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
+    this.updateCountdowns();
+    setInterval(this.updateCountdowns, 1000);
     this.loadStats();
     this.subscribeForContracts();
     this.subscribeForInteractions();
@@ -385,15 +389,14 @@ export default {
     contracts: {
       handler: function (val, oldVal) {
         const newItem = document.querySelector('#contracts-table tbody tr');
-        this.animateTableRow(newItem);
+        // this.animateTableRow(newItem);
       },
       deep: true,
     },
     interactions: {
       handler: function (val, oldVal) {
         const newItem = document.querySelector('#interactions-table tbody tr');
-        this.animateTableRow(newItem);
-
+        // this.animateTableRow(newItem);
       },
       deep: true,
     },
@@ -425,6 +428,14 @@ export default {
         this.selected == 'all' ? null : this.selected,
         this.selectedSource == 'all' ? null : this.selectedSource
       );
+    },
+    updateCountdowns() {
+      Object.values(this.contracts).forEach((row) => {
+        row.countdown = countdown(row.age).toString();
+      });
+      Object.values(this.interactions).forEach((row) => {
+        row.countdown = countdown(row.age).toString();
+      });
     },
     async getStats() {
       axios.get(`${this.gatewayUrl}/gateway/stats${this.isTestnet ? '?testnet=true' : ''}`).then((fetchedData) => {
@@ -484,7 +495,8 @@ export default {
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
+                age: dayjs.unix(+contract.block_timestamp),
+                countdown: countdown(dayjs.unix(+contract.block_timestamp)),
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -492,14 +504,14 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'interaction')
             .forEach((interaction) => {
-              console.log(interaction);
               this.interactions.push({
                 interactionId: interaction.interaction_id,
                 contractId: interaction.contract_id,
                 owner: interaction.owner,
                 function: interaction.function,
-                age: convertTime(dayjs.unix(+interaction.block_timestamp), null, 'Europe/London'),
+                age: dayjs.unix(+interaction.block_timestamp),
                 source: interaction.source,
+                countdown: null,
               });
             });
         });
@@ -515,10 +527,12 @@ export default {
         `contracts`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
+          const time = Date.now();
           this.contracts.unshift({
             contractId: dataObj.contractTxId,
             owner: dataObj.creator,
-            age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
+            age: time,
+            countdown: countdown(time).toString(),
             type: dataObj.type,
             source: dataObj.source,
           });
@@ -533,10 +547,12 @@ export default {
         `interactions`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
+          const time = Date.now();
           this.interactions.unshift({
             interactionId: dataObj.interaction.id,
             contractId: dataObj.contractTxId,
-            age: convertTime(dayjs.unix(dataObj.interaction.block.timestamp), null, 'Europe/London'),
+            age: time,
+            countdown: countdown(time).toString(),
             function: dataObj.functionName ? dataObj.functionName : 'N/A',
             blockHeight: dataObj.interaction.block.height,
             source: dataObj.source,
