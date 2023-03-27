@@ -100,7 +100,6 @@
                 :fields="interactionsFields"
                 @row-clicked="rowClicked"
                 :busy="!contractsLoaded"
-                primary-key="interactionId"
               >
                 <template #table-busy> </template>
                 <template #cell(interactionId)="data" class="text-right">
@@ -111,7 +110,7 @@
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.interactionId.slice(0, 5) + '..' }}
+                      {{ formatIdPattern(data.item.interactionId) }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -125,13 +124,12 @@
                 <template #cell(contractId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                      style="min-width: 126px"
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.contractId | tx }}
+                      {{ formatIdPattern(data.item.contractId) }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -190,9 +188,10 @@
                 <template #cell(total)="data">
                   <div class="text-right">{{ data.item.total }}</div>
                 </template>
-                <template #cell(age)="data">
-                  <div class="text-right">
-                    {{ data.item.age ? data.item.age : 'N/A' }}
+                <template #cell(interactionCountdown)="data">
+                  <div class="text-right" style="min-width: 150px">
+                    <!-- {{ data.item.age ? data.item.age : 'N/A' }} -->
+                    {{ data.item.interactionCountdown ? data.item.interactionCountdown : '0 s' }}
                   </div>
                 </template>
               </b-table>
@@ -224,13 +223,12 @@
                 <template #cell(contractId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                      style="min-width: 126px"
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.contractId | tx }}
+                      {{ formatIdPattern(data.item.contractId) }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -242,8 +240,10 @@
                   </div>
                 </template>
                 <template #cell(creator)="data">
-                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
-                  <span v-else>{{ data.item.owner | tx }}</span>
+                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`">
+                    {{ formatIdPattern(data.item.owner) }}</a
+                  >
+                  <span v-else>{{ formatIdPattern(data.item.owner) }}</span>
                 </template>
 
                 <template #cell(type)="data">
@@ -281,9 +281,10 @@
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
-                <template #cell(age)="data">
-                  <div class="text-right">
-                    {{ data.item.age ? data.item.age : 'N/A' }}
+                <template #cell(contractCountdown)="data">
+                  <div class="text-right" style="min-width: 150px">
+                    <!-- {{ data.item.age ? data.item.age : 'N/A' }} -->
+                    {{ data.item.contractCountdown ? data.item.contractCountdown : '0 s' }}
                   </div>
                 </template>
               </b-table>
@@ -310,6 +311,8 @@ import { subscribe, initPubSub } from 'warp-contracts-pubsub';
 import { format } from 'numerable';
 import { convertTime } from '@/utils';
 import dayjs from 'dayjs';
+import { formatIdPattern } from '@/utils';
+import countdown from 'countdown';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -328,7 +331,7 @@ export default {
         'type',
         'source',
         {
-          key: 'age',
+          key: 'contractCountdown',
           label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
@@ -340,7 +343,7 @@ export default {
         'function',
         'source',
         {
-          key: 'age',
+          key: 'interactionCountdown',
           label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
@@ -369,12 +372,15 @@ export default {
     };
   },
   mounted() {
+    countdown.setLabels('ms|s|min| h| d', 'ms|s|min||| wks|| yrs', ' ');
     this.initPubSub();
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
     this.subscribeForContracts();
     this.subscribeForInteractions();
+    this.updateCountdowns();
+    setInterval(this.updateCountdowns, 1000);
   },
   components: { TxList, Charts, TestnetLabel },
   watch: {
@@ -385,15 +391,14 @@ export default {
     contracts: {
       handler: function (val, oldVal) {
         const newItem = document.querySelector('#contracts-table tbody tr');
-        this.animateTableRow(newItem);
+        // this.animateTableRow(newItem);
       },
       deep: true,
     },
     interactions: {
       handler: function (val, oldVal) {
         const newItem = document.querySelector('#interactions-table tbody tr');
-        this.animateTableRow(newItem);
-
+        // this.animateTableRow(newItem);
       },
       deep: true,
     },
@@ -411,6 +416,7 @@ export default {
     },
   },
   methods: {
+    formatIdPattern: formatIdPattern,
     convertTime: convertTime,
     format: format,
     initPubSub: initPubSub,
@@ -484,7 +490,9 @@ export default {
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
+                // age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
+                age: dayjs.unix(+contract.block_timestamp),
+                contractCountdown: countdown(dayjs.unix(+contract.block_timestamp)),
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -492,14 +500,16 @@ export default {
           fetchedContracts.data.contracts
             .filter((item) => item.contract_or_interaction === 'interaction')
             .forEach((interaction) => {
-              console.log(interaction);
               this.interactions.push({
                 interactionId: interaction.interaction_id,
                 contractId: interaction.contract_id,
                 owner: interaction.owner,
                 function: interaction.function,
-                age: convertTime(dayjs.unix(+interaction.block_timestamp), null, 'Europe/London'),
+                age: dayjs.unix(+interaction.block_timestamp),
+
+                // age: convertTime(dayjs.unix(+interaction.block_timestamp), null, 'Europe/London'),
                 source: interaction.source,
+                interactionCountdown: null,
               });
             });
         });
@@ -515,14 +525,20 @@ export default {
         `contracts`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
+          const time = Date.now();
+
           this.contracts.unshift({
             contractId: dataObj.contractTxId,
             owner: dataObj.creator,
-            age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
+            // age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
+            age: time,
+            contractCountdown: countdown(time).toString(),
             type: dataObj.type,
             source: dataObj.source,
           });
           this.contracts.pop();
+          const newItem = document.querySelector('#contracts-table tbody tr');
+          this.animateTableRow(newItem);
         },
         console.error
       );
@@ -533,15 +549,20 @@ export default {
         `interactions`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
+          const time = Date.now();
           this.interactions.unshift({
             interactionId: dataObj.interaction.id,
             contractId: dataObj.contractTxId,
-            age: convertTime(dayjs.unix(dataObj.interaction.block.timestamp), null, 'Europe/London'),
+            // age: convertTime(dayjs.unix(dataObj.interaction.block.timestamp), null, 'Europe/London'),
+            age: time,
+            interactionCountdown: countdown(time).toString(),
             function: dataObj.functionName ? dataObj.functionName : 'N/A',
             blockHeight: dataObj.interaction.block.height,
             source: dataObj.source,
           });
           this.interactions.pop();
+          const newItem = document.querySelector('#interactions-table tbody tr');
+          this.animateTableRow(newItem);
         },
         console.error
       );
@@ -552,6 +573,14 @@ export default {
       setTimeout(() => {
         row.style.opacity = 1;
       }, 300);
+    },
+    updateCountdowns() {
+      Object.values(this.contracts).forEach((row) => {
+        row.contractCountdown = countdown(row.age).toString();
+      });
+      Object.values(this.interactions).forEach((row) => {
+        row.interactionCountdown = countdown(row.age).toString();
+      });
     },
   },
 };
