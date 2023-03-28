@@ -189,8 +189,7 @@
                   <div class="text-right">{{ data.item.total }}</div>
                 </template>
                 <template #cell(interactionCountdown)="data">
-                  <div class="text-right" style="min-width: 150px">
-                    <!-- {{ data.item.age ? data.item.age : 'N/A' }} -->
+                  <div class="text-right" style="min-width: 80px">
                     {{ data.item.interactionCountdown ? data.item.interactionCountdown : '0 s' }}
                   </div>
                 </template>
@@ -282,8 +281,7 @@
                 </template>
 
                 <template #cell(contractCountdown)="data">
-                  <div class="text-right" style="min-width: 150px">
-                    <!-- {{ data.item.age ? data.item.age : 'N/A' }} -->
+                  <div class="text-right" style="min-width: 50px;">
                     {{ data.item.contractCountdown ? data.item.contractCountdown : '0 s' }}
                   </div>
                 </template>
@@ -388,20 +386,6 @@ export default {
       this.refreshData();
       this.loadStats();
     },
-    contracts: {
-      handler: function (val, oldVal) {
-        const newItem = document.querySelector('#contracts-table tbody tr');
-        // this.animateTableRow(newItem);
-      },
-      deep: true,
-    },
-    interactions: {
-      handler: function (val, oldVal) {
-        const newItem = document.querySelector('#interactions-table tbody tr');
-        // this.animateTableRow(newItem);
-      },
-      deep: true,
-    },
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
@@ -490,7 +474,6 @@ export default {
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                // age: convertTime(dayjs.unix(+contract.block_timestamp), null, 'Europe/London'),
                 age: dayjs.unix(+contract.block_timestamp),
                 contractCountdown: countdown(dayjs.unix(+contract.block_timestamp)),
                 type: contract.contract_type,
@@ -506,8 +489,6 @@ export default {
                 owner: interaction.owner,
                 function: interaction.function,
                 age: dayjs.unix(+interaction.block_timestamp),
-
-                // age: convertTime(dayjs.unix(+interaction.block_timestamp), null, 'Europe/London'),
                 source: interaction.source,
                 interactionCountdown: null,
               });
@@ -530,7 +511,6 @@ export default {
           this.contracts.unshift({
             contractId: dataObj.contractTxId,
             owner: dataObj.creator,
-            // age: convertTime(dayjs.unix(dataObj.timestamp), null, 'Europe/London'),
             age: time,
             contractCountdown: countdown(time).toString(),
             type: dataObj.type,
@@ -553,7 +533,6 @@ export default {
           this.interactions.unshift({
             interactionId: dataObj.interaction.id,
             contractId: dataObj.contractTxId,
-            // age: convertTime(dayjs.unix(dataObj.interaction.block.timestamp), null, 'Europe/London'),
             age: time,
             interactionCountdown: countdown(time).toString(),
             function: dataObj.functionName ? dataObj.functionName : 'N/A',
