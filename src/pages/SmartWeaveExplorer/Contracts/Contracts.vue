@@ -142,6 +142,7 @@
                 </template>
 
                 <template #cell(function)="data">
+                  <div v-if="!data.item.function">N/A</div>
                   <div
                     v-if="data.item.function && data.item.function.length > 8"
                     style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
