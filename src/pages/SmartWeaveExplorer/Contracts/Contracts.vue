@@ -22,7 +22,7 @@
               <div>Total:&nbsp;</div>
               <div class="total-field d-flex justify-content-center">
                 <div class="d-flex justify-content-center align-self-center" v-if="totalInteractionsLoaded">
-                  {{ totalInteractions }}
+                  {{ format(totalInteractions, '0,0') }}
                 </div>
                 <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
               </div>
@@ -48,7 +48,7 @@
               <div>Total:&nbsp;</div>
               <div class="total-field d-flex justify-content-center">
                 <div class="d-flex justify-content-center align-self-center" v-if="totalContractsLoaded">
-                  {{ totalContracts }}
+                  {{ format(totalContracts, '0,0') }}
                 </div>
                 <div class="d-flex justify-content-center align-self-center dot-flashing" v-else></div>
               </div>
@@ -61,7 +61,7 @@
           <div>Total contracts</div>
           <div class="d-flex justify-content-center">
             <div v-if="totalContractsLoaded">
-              <div>{{ totalContracts }}</div>
+              <div>{{ format(totalContracts, '0,0') }}</div>
             </div>
             <div v-else class="align-self-center mt-4">
               <div class="dot-flashing"></div>
@@ -73,7 +73,7 @@
           <div>Total interactions</div>
           <div class="d-flex justify-content-center">
             <div v-if="totalInteractionsLoaded">
-              <div>{{ totalInteractions }}</div>
+              <div>{{ format(totalInteractions, '0,0') }}</div>
             </div>
             <div v-else class="align-self-center mt-4">
               <div class="dot-flashing"></div>
@@ -103,15 +103,14 @@
               >
                 <template #table-busy> </template>
                 <template #cell(interactionId)="data" class="text-right">
-                  <div class="d-flex align-items-center">
+                  <div class="d-flex align-items-center fade-in-fwd">
                     <router-link
-                      style="min-width: 126px"
                       :to="{
                         path: '/app/interaction/' + data.item.interactionId,
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.interactionId | tx }}
+                      {{ formatIdPattern(data.item.interactionId) }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -125,13 +124,12 @@
                 <template #cell(contractId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                      style="min-width: 126px"
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.contractId | tx }}
+                      {{ formatIdPattern(data.item.contractId) }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -146,14 +144,15 @@
                 <template #cell(function)="data">
                   <div v-if="!data.item.function">N/A</div>
                   <div
-                    v-else-if="data.item.function && data.item.function.length > 14"
-                    class="text-uppercase text-ellipsis"
+                    v-if="data.item.function && data.item.function.length > 8"
+                    style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+                    class="function-cell text-uppercase text-ellipsis"
                     v-b-tooltip.hover
                     :title="data.item.function.toUpperCase()"
                   >
                     {{ data.item.function }}
                   </div>
-                  <div v-else class="text-uppercase text-ellipsis">{{ data.item.function }}</div>
+                  <div v-else class="function-cell text-uppercase text-ellipsis">{{ data.item.function }}</div>
                 </template>
 
                 <template #cell(source)="data">
@@ -175,7 +174,7 @@
                       class="source-icon"
                     />
                   </div>
-                  <div v-else-if="data.item.source == 'sequencer'">
+                  <div v-else-if="data.item.source.includes('sequencer')">
                     <img
                       v-b-tooltip.hover
                       title="Warp Sequencer"
@@ -190,9 +189,9 @@
                 <template #cell(total)="data">
                   <div class="text-right">{{ data.item.total }}</div>
                 </template>
-                <template #cell(blockHeight)="data">
-                  <div class="text-right">
-                    {{ data.item.blockHeight }}
+                <template #cell(interactionCountdown)="data">
+                  <div class="text-right" style="min-width: 80px">
+                    {{ data.item.interactionCountdown ? data.item.interactionCountdown : '0 s' }}
                   </div>
                 </template>
               </b-table>
@@ -224,13 +223,12 @@
                 <template #cell(contractId)="data" class="text-right">
                   <div class="d-flex align-items-center">
                     <router-link
-                      style="min-width: 126px"
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
                         query: isTestnet ? { network: 'testnet' } : '',
                       }"
                     >
-                      {{ data.item.contractId | tx }}
+                      {{ formatIdPattern(data.item.contractId) }}
                     </router-link>
                     <div class="table-icon-handler">
                       <div
@@ -242,8 +240,10 @@
                   </div>
                 </template>
                 <template #cell(creator)="data">
-                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
-                  <span v-else>{{ data.item.owner | tx }}</span>
+                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`">
+                    {{ formatIdPattern(data.item.owner) }}</a
+                  >
+                  <span v-else>{{ formatIdPattern(data.item.owner) }}</span>
                 </template>
 
                 <template #cell(type)="data">
@@ -251,7 +251,7 @@
                 </template>
 
                 <template #cell(source)="data">
-                  <div v-if="data.item.source == 'warp'">
+                  <div v-if="data.item.source.includes('warp')">
                     <img
                       v-b-tooltip.hover
                       title="Warp"
@@ -281,9 +281,9 @@
                   <div v-else class="source-text">{{ data.item.source.toUpperCase() }}</div>
                 </template>
 
-                <template #cell(blockHeight)="data">
-                  <div class="text-right">
-                    {{ data.item.blockHeight }}
+                <template #cell(contractCountdown)="data">
+                  <div class="text-right" style="min-width: 50px">
+                    {{ data.item.contractCountdown ? data.item.contractCountdown : '0 s' }}
                   </div>
                 </template>
               </b-table>
@@ -306,6 +306,15 @@ import TxList from '@/components/TxList/TxList';
 import Charts from '@/components/Charts/Charts';
 import { mapState } from 'vuex';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
+import { subscribe, initPubSub } from 'warp-contracts-pubsub';
+import { format } from 'numerable';
+import { convertTime } from '@/utils';
+import dayjs from 'dayjs';
+import { formatIdPattern } from '@/utils';
+import countdown from 'countdown';
+
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 export default {
   name: 'Contracts',
@@ -319,10 +328,15 @@ export default {
         'contractId',
         'creator',
         'type',
-        'source',
         {
-          key: 'blockHeight',
-          label: 'height',
+          key: "source",
+          label: "source",
+          thClass: 'text-center',
+          tdClass: 'text-center',
+        },
+        {
+          key: 'contractCountdown',
+          label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
@@ -331,10 +345,15 @@ export default {
         'interactionId',
         'contractId',
         'function',
-        'source',
         {
-          key: 'blockHeight',
-          label: 'height',
+          key: "source",
+          label: "source",
+          thClass: 'text-center',
+          tdClass: 'text-center',
+        },
+        {
+          key: 'interactionCountdown',
+          label: 'ago',
           thClass: 'text-right',
           tdClass: 'text-right',
         },
@@ -362,9 +381,15 @@ export default {
     };
   },
   mounted() {
+    countdown.setLabels('ms|s|min| h| d', 'ms|s|min||| wks|| yrs', ' ');
+    this.initPubSub();
     this.currentPage = this.$route.query.page ? this.$route.query.page : 1;
     this.getContracts(this.$route.query.page ? this.$route.query.page : this.currentPage);
     this.loadStats();
+    this.subscribeForContracts();
+    this.subscribeForInteractions();
+    this.updateCountdowns();
+    setInterval(this.updateCountdowns, 1000);
   },
   components: { TxList, Charts, TestnetLabel },
   watch: {
@@ -386,6 +411,10 @@ export default {
     },
   },
   methods: {
+    formatIdPattern: formatIdPattern,
+    convertTime: convertTime,
+    format: format,
+    initPubSub: initPubSub,
     refreshData() {
       if (this.currentPage > 1) {
         this.$router.push({ query: {} });
@@ -456,7 +485,8 @@ export default {
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                blockHeight: contract.block_height,
+                age: dayjs.unix(Math.floor(contract.sync_timestamp / 1000)),
+                contractCountdown: countdown(dayjs.unix(Math.floor(contract.sync_timestamp / 1000))),
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -469,8 +499,9 @@ export default {
                 contractId: interaction.contract_id,
                 owner: interaction.owner,
                 function: interaction.function,
-                blockHeight: interaction.block_height,
+                age: dayjs.unix(Math.floor(interaction.sync_timestamp / 1000)),
                 source: interaction.source,
+                interactionCountdown: countdown(dayjs.unix(Math.floor(interaction.sync_timestamp / 1000))),
               });
             });
         });
@@ -480,6 +511,66 @@ export default {
     },
     styleCategory(text, numberOfCategories, index) {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
+    },
+    async subscribeForContracts() {
+      const subscription = await subscribe(
+        `contracts`,
+        ({ data }) => {
+          let dataObj = JSON.parse(data);
+          const time = Date.now();
+
+          this.contracts.unshift({
+            contractId: dataObj.contractTxId,
+            owner: dataObj.creator,
+            age: dataObj.syncTimestamp,
+            contractCountdown: countdown(dataObj.syncTimestamp).toString(),
+            type: dataObj.type,
+            source: dataObj.source,
+          });
+          this.contracts.pop();
+          const newItem = document.querySelector('#contracts-table tbody tr');
+          this.animateTableRow(newItem);
+        },
+        console.error
+      );
+    },
+
+    async subscribeForInteractions() {
+      const subscription = await subscribe(
+        `interactions`,
+        ({ data }) => {
+          let dataObj = JSON.parse(data);
+          const time = Date.now();
+          this.interactions.unshift({
+            interactionId: dataObj.interaction.id,
+            contractId: dataObj.contractTxId,
+            age: dataObj.syncTimestamp,
+            interactionCountdown: countdown(dataObj.syncTimestamp).toString(),
+            function: dataObj.functionName ? dataObj.functionName : 'N/A',
+            blockHeight: dataObj.interaction.block.height,
+            source: dataObj.source,
+          });
+          this.interactions.pop();
+          const newItem = document.querySelector('#interactions-table tbody tr');
+          this.animateTableRow(newItem);
+        },
+        console.error
+      );
+    },
+    animateTableRow(row) {
+      row.style.opacity = 0;
+      row.style.transition = 'opacity 0.2s ease';
+      setTimeout(() => {
+        row.style.opacity = 1;
+      }, 300);
+    },
+    updateCountdowns() {
+      Object.values(this.contracts).forEach((row) => {
+        row.contractCountdown = countdown(row.age).toString();
+      });
+      Object.values(this.interactions).forEach((row) => {
+        row.interactionCountdown = countdown(row.age).toString();
+      });
     },
   },
 };
@@ -491,6 +582,20 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+.tx-list {
+  overflow: hidden;
+}
+.total-field {
+  min-width: 80px;
+}
+
+::v-deep table#contracts-table {
+  max-height: 703px;
+}
+
+::v-deep table#contracts-table .flip-list-move {
+  transition: transform 1s;
+}
 .total-field {
   min-width: 80px;
 }
@@ -504,11 +609,29 @@ export default {
   height: 22.25px;
 }
 
+::v-deep #interactions-table .function-cell {
+  width: 110px;
+}
+
 @media (max-width: 1024px) {
   .stats-wrapper {
     .total-contracts {
       margin-top: 0;
     }
+  }
+}
+
+@media (min-width: 769px) {
+  .tx-lists-wrapper {
+    .tx-list-single-wrapper {
+      min-width: 650px;
+    }
+  }
+}
+
+@media (min-width: 1000px) {
+  ::v-deep #interactions-table .function-cell {
+    width: 80px;
   }
 }
 </style>

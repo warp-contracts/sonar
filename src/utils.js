@@ -59,3 +59,8 @@ export function convertTime(date, sortKeyTimestamp, timezoneType = 'Europe/Berli
   timeAgo(date, sortKeyTimestamp);
   return fullDate;
 }
+
+export function formatIdPattern(id) {
+  const newString = id.slice(0, 3) + '...' + id.slice(-3);
+  return newString;
+}
