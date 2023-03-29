@@ -328,7 +328,12 @@ export default {
         'contractId',
         'creator',
         'type',
-        'source',
+        {
+          key: "source",
+          label: "source",
+          thClass: 'text-center',
+          tdClass: 'text-center',
+        },
         {
           key: 'contractCountdown',
           label: 'ago',
@@ -340,7 +345,12 @@ export default {
         'interactionId',
         'contractId',
         'function',
-        'source',
+        {
+          key: "source",
+          label: "source",
+          thClass: 'text-center',
+          tdClass: 'text-center',
+        },
         {
           key: 'interactionCountdown',
           label: 'ago',
@@ -559,7 +569,6 @@ export default {
         row.contractCountdown = countdown(row.age).toString();
       });
       Object.values(this.interactions).forEach((row) => {
-        console.log(countdown(row.age).toString());
         row.interactionCountdown = countdown(row.age).toString();
       });
     },
@@ -574,7 +583,6 @@ export default {
 </style>
 <style lang="scss" scoped>
 .tx-list {
-  max-height: 700px;
   overflow: hidden;
 }
 .total-field {
