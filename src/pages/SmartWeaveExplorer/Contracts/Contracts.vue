@@ -282,7 +282,7 @@
                 </template>
 
                 <template #cell(contractCountdown)="data">
-                  <div class="text-right" style="min-width: 50px;">
+                  <div class="text-right" style="min-width: 50px">
                     {{ data.item.contractCountdown ? data.item.contractCountdown : '0 s' }}
                   </div>
                 </template>
@@ -475,8 +475,8 @@ export default {
                 id: contract.contract,
                 contractId: contract.contract_id,
                 owner: contract.owner,
-                age: dayjs.unix(+contract.block_timestamp),
-                contractCountdown: countdown(dayjs.unix(+contract.block_timestamp)),
+                age: dayjs.unix(Math.floor(contract.sync_timestamp / 1000)),
+                contractCountdown: countdown(dayjs.unix(Math.floor(contract.sync_timestamp / 1000))),
                 type: contract.contract_type,
                 source: contract.source,
               });
@@ -489,9 +489,9 @@ export default {
                 contractId: interaction.contract_id,
                 owner: interaction.owner,
                 function: interaction.function,
-                age: dayjs.unix(+interaction.block_timestamp),
+                age: dayjs.unix(Math.floor(interaction.sync_timestamp / 1000)),
                 source: interaction.source,
-                interactionCountdown: null,
+                interactionCountdown: countdown(dayjs.unix(Math.floor(interaction.sync_timestamp / 1000))),
               });
             });
         });
@@ -512,8 +512,8 @@ export default {
           this.contracts.unshift({
             contractId: dataObj.contractTxId,
             owner: dataObj.creator,
-            age: time,
-            contractCountdown: countdown(time).toString(),
+            age: dataObj.syncTimestamp,
+            contractCountdown: countdown(dataObj.syncTimestamp).toString(),
             type: dataObj.type,
             source: dataObj.source,
           });
@@ -534,8 +534,8 @@ export default {
           this.interactions.unshift({
             interactionId: dataObj.interaction.id,
             contractId: dataObj.contractTxId,
-            age: time,
-            interactionCountdown: countdown(time).toString(),
+            age: dataObj.syncTimestamp,
+            interactionCountdown: countdown(dataObj.syncTimestamp).toString(),
             function: dataObj.functionName ? dataObj.functionName : 'N/A',
             blockHeight: dataObj.interaction.block.height,
             source: dataObj.source,
@@ -559,6 +559,7 @@ export default {
         row.contractCountdown = countdown(row.age).toString();
       });
       Object.values(this.interactions).forEach((row) => {
+        console.log(countdown(row.age).toString());
         row.interactionCountdown = countdown(row.age).toString();
       });
     },
