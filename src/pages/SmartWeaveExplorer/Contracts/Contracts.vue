@@ -191,7 +191,7 @@
                 </template>
                 <template #cell(interactionCountdown)="data">
                   <div class="text-right" style="min-width: 80px">
-                    {{ data.item.interactionCountdown ? data.item.interactionCountdown : '0 s' }}
+                    {{ data.item.interactionCountdown ? data.item.interactionCountdown : '0s' }}
                   </div>
                 </template>
               </b-table>
@@ -283,7 +283,7 @@
 
                 <template #cell(contractCountdown)="data">
                   <div class="text-right" style="min-width: 50px">
-                    {{ data.item.contractCountdown ? data.item.contractCountdown : '0 s' }}
+                    {{ data.item.contractCountdown ? data.item.contractCountdown : '0s' }}
                   </div>
                 </template>
               </b-table>
@@ -329,8 +329,8 @@ export default {
         'creator',
         'type',
         {
-          key: "source",
-          label: "source",
+          key: 'source',
+          label: 'source',
           thClass: 'text-center',
           tdClass: 'text-center',
         },
@@ -346,8 +346,8 @@ export default {
         'contractId',
         'function',
         {
-          key: "source",
-          label: "source",
+          key: 'source',
+          label: 'source',
           thClass: 'text-center',
           tdClass: 'text-center',
         },
