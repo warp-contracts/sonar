@@ -2,19 +2,20 @@
   <div>
     <div class="charts-wrapper">
       <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
-      <div class="charts d-none d-md-flex">
+      <div class="charts justify-content-center d-none d-md-flex">
         <div class="chart-single-wrapper">
           <div class="chart-header">
-            <div>Interactions</div>
-            <router-link
-              class="d-xl-block d-none"
-              :to="{
-                path: `/app/stats/interactions${this.isTestnet ? '?network=testnet' : ''}`,
-              }"
-              style="margin-left: auto; cursor: pointer"
-            >
-              <div class="flaticon-fullscreen" />
-            </router-link>
+            <div class="d-flex justify-content-center">
+              <router-link
+                class="d-xl-block d-none"
+                :to="{
+                  path: `/app/stats/interactions${this.isTestnet ? '?network=testnet' : ''}`,
+                }"
+                style="margin-left: auto; cursor: pointer"
+              >
+                <div class="flaticon-fullscreen" /> </router-link
+              >Interactions
+            </div>
           </div>
           <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
           <div class="d-flex justify-content-center item-text">
@@ -31,16 +32,17 @@
         </div>
         <div class="d-none d-md-block chart-single-wrapper">
           <div class="chart-header">
-            <div>Contracts</div>
-            <router-link
-              class="d-xl-block d-none"
-              :to="{
-                path: `/app/stats/contracts${this.isTestnet ? '?network=testnet' : ''}`,
-              }"
-              style="margin-left: auto; cursor: pointer"
-            >
-              <div class="flaticon-fullscreen" />
-            </router-link>
+            <div class="d-flex justify-content-center">
+              <router-link
+                class="d-xl-block d-none"
+                :to="{
+                  path: `/app/stats/contracts${this.isTestnet ? '?network=testnet' : ''}`,
+                }"
+                style="margin-left: auto; cursor: pointer"
+              >
+                <div class="flaticon-fullscreen" /> </router-link
+              >Contracts
+            </div>
           </div>
           <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
           <div class="d-flex justify-content-center item-text">
@@ -247,7 +249,7 @@
                 </template>
 
                 <template #cell(type)="data">
-                  <div class="text-uppercase">{{ data.item.type }}</div>
+                  <div class="text-uppercase type-cell">{{ data.item.type }}</div>
                 </template>
 
                 <template #cell(source)="data">
@@ -282,7 +284,7 @@
                 </template>
 
                 <template #cell(contractCountdown)="data">
-                  <div class="text-right" style="min-width: 50px">
+                  <div class="" style="min-width: 50px">
                     {{ data.item.contractCountdown ? data.item.contractCountdown : '0 s' }}
                   </div>
                 </template>
@@ -329,8 +331,8 @@ export default {
         'creator',
         'type',
         {
-          key: "source",
-          label: "source",
+          key: 'source',
+          label: 'source',
           thClass: 'text-center',
           tdClass: 'text-center',
         },
@@ -346,8 +348,8 @@ export default {
         'contractId',
         'function',
         {
-          key: "source",
-          label: "source",
+          key: 'source',
+          label: 'source',
           thClass: 'text-center',
           tdClass: 'text-center',
         },
@@ -593,9 +595,6 @@ export default {
   max-height: 703px;
 }
 
-::v-deep table#contracts-table .flip-list-move {
-  transition: transform 1s;
-}
 .total-field {
   min-width: 80px;
 }
@@ -611,6 +610,21 @@ export default {
 
 ::v-deep #interactions-table .function-cell {
   width: 110px;
+  background-color: rgba(48, 178, 214, 0.208);
+  border-radius: 15px;
+  padding: 5px 5px;
+}
+
+::v-deep #contracts-table .type-cell {
+  max-width: 100px;
+  padding: 5px 5px;
+  border-radius: 15px;
+  background-color: rgba(97, 131, 253, 0.208);
+}
+
+.flaticon-fullscreen {
+  filter: invert(66%) sepia(0%) saturate(275%) hue-rotate(191deg) brightness(95%) contrast(97%);
+  margin-right: 1rem;
 }
 
 @media (max-width: 1024px) {

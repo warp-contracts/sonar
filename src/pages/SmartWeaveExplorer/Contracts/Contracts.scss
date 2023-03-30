@@ -4,7 +4,7 @@
   text-align: center;
   text-transform: uppercase;
   font-size: 16px;
-  margin-top: -20px;
+  margin-top: -25px;
 
   div:nth-of-type(2) {
     color: var(--warp-blue-color);
@@ -19,7 +19,7 @@
 .charts-wrapper {
   background-color: $gray-100;
   border-radius: 10px;
-  padding: 2rem;
+  // padding: 2rem;
   margin: 0.5rem;
   box-shadow: var(--content-shadow);
   margin-bottom: 30px;
