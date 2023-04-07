@@ -378,6 +378,8 @@ export default {
       axiosSource: null,
       contractsPerDay: null,
       interactionsPerDay: null,
+      contractSubscription: null,
+      interactionSubscription: null,
     };
   },
   mounted() {
@@ -390,6 +392,10 @@ export default {
     this.subscribeForInteractions();
     this.updateCountdowns();
     setInterval(this.updateCountdowns, 1000);
+  },
+  destroyed() {
+    this.contractSubscription.unsubscribe();
+    this.interactionSubscription.unsubscribe();
   },
   components: { TxList, Charts, TestnetLabel },
   watch: {
@@ -513,7 +519,7 @@ export default {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
     async subscribeForContracts() {
-      const subscription = await subscribe(
+      this.contractSubscription = await subscribe(
         `contracts`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
@@ -536,7 +542,7 @@ export default {
     },
 
     async subscribeForInteractions() {
-      const subscription = await subscribe(
+      this.interactionSubscription = await subscribe(
         `interactions`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
