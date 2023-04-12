@@ -129,8 +129,10 @@
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
             <div v-if="!noContractsDetected">
               <div>
-                <div v-if="contractsLoaded && paging?.total == null || paging?.total == 0 "> No info about contracts.</div>
-                <TxList :paging="pages" v-if="contractsLoaded" @page-clicked="onPageClicked">
+                <div v-if="(contractsLoaded && paging?.total == null) || paging?.total == 0">
+                  No info about contracts.
+                </div>
+                <TxList :paging="pages" v-if="contractsLoaded && !pageLoading" @page-clicked="onPageClicked">
                   <b-table
                     v-if="contracts?.length > 0"
                     ref="table"
@@ -220,7 +222,13 @@
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
-              <ContractCode v-if="loadedSource" :source="source" :isSourceView="true" :sourceId="sourceId" :wasm="!!wasmLang"></ContractCode>
+              <ContractCode
+                v-if="loadedSource"
+                :source="source"
+                :isSourceView="true"
+                :sourceId="sourceId"
+                :wasm="!!wasmLang"
+              ></ContractCode>
               <div v-else class="d-flex align-items-center flex-column pt-5">
                 <LoadingSpinner></LoadingSpinner>
                 <p>Loading contract code...</p>
@@ -253,7 +261,6 @@ import { mapState } from 'vuex';
 import constants from '@/constants';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
-
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -419,6 +426,7 @@ export default {
       }
     },
     async getContracts(page) {
+      this.contracts = null;
       axios
         .get(
           `${this.gatewayUrl}/gateway/contracts-by-source?id=${this.sourceId}&limit=${this.limit}&page=${page}&sort=desc`
