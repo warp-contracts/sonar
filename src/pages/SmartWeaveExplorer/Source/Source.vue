@@ -132,7 +132,7 @@
                 <div v-if="(contractsLoaded && paging?.total == null) || paging?.total == 0">
                   No info about contracts.
                 </div>
-                <TxList :paging="pages" v-if="contractsLoaded && !pageLoading" @page-clicked="onPageClicked">
+                <TxList :paging="pages" v-if="contractsLoaded" @page-clicked="onPageClicked">
                   <b-table
                     v-if="contracts?.length > 0"
                     ref="table"

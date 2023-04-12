@@ -28,7 +28,14 @@ export default {
     this.setWarpGateway();
   },
   methods: {
-    ...mapActions('prefetch', ['setIsTestnet', 'prefetchAll', 'initArweave', 'initArweaveTest', 'setGatewayUrl', 'setWarpGateway']),
+    ...mapActions('prefetch', [
+      'setIsTestnet',
+      'prefetchAll',
+      'initArweave',
+      'initArweaveTest',
+      'setGatewayUrl',
+      'setWarpGateway',
+    ]),
   },
 };
 </script>
@@ -72,5 +79,9 @@ span.badge-info {
   @media (min-width: breakpoint-min(md)) {
     font-size: $font-size-base;
   }
+}
+
+.contract-tabs {
+  overflow-x: auto;
 }
 </style>
