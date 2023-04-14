@@ -402,7 +402,15 @@
                 :manifest="dre_manifest"
               ></ContractCurrentState>
               <div v-else-if="!currentState && dre_evaluationError">
-                <p class="text-break">{{ dre_evaluationError }}</p>
+                <span v-if="dre_status == 'blacklisted'" class="blacklist-error">Contract blacklisted</span>
+                <json-viewer
+                  class="mt-4"
+                  :value="dreErrors[0]"
+                  :expand-depth="1"
+                  copyable
+                  sort
+                  theme="json-theme"
+                ></json-viewer>
               </div>
               <div v-else-if="!loadedValidity">Loading...</div>
               <div v-else-if="loadedValidity && !currentState && !dre_evaluationError">
@@ -418,6 +426,7 @@
               </div>
             </div>
           </div>
+
           <div :class="['tab-pane', { active: $route.hash === '#tags' }]" class="p-2">
             <div>
               <ContractTags :contractTags="tags"></ContractTags>
@@ -533,6 +542,7 @@ export default {
       codeSource: null,
       evolvedSrc: null,
       initSrc: null,
+      dreErrors: null,
     };
   },
   watch: {
@@ -773,8 +783,9 @@ export default {
       this.dre_events = data.events;
       this.dre_status = data.status;
 
-      if (data.status == 'error') {
+      if (data.status == 'error' || data.status == 'blacklisted') {
         this.dre_evaluationError = data.errors[0].failure;
+        this.dreErrors = data.errors;
       }
       this.loadedValidity = true;
     },
@@ -816,6 +827,12 @@ export default {
   color: red;
 }
 
+.blacklist-error {
+  background-color: rgba(0, 0, 0, 0.142);
+  color: black;
+  padding: 0.5rem;
+  border-radius: 50rem;
+}
 .state-evaluated-tab > a,
 .transactions-tab > a {
   display: flex;
