@@ -2,6 +2,7 @@
   <div>
     <div class="charts-wrapper">
       <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
+      {{ isTestnet }}
       <div class="charts d-none d-md-flex">
         <div class="chart-single-wrapper">
           <div class="chart-header">
@@ -519,8 +520,9 @@ export default {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
     async subscribeForContracts() {
+      let channel = this.isTestnet ? 'testnet/contracts' : 'contracts';
       this.contractSubscription = await subscribe(
-        `contracts`,
+        `${channel}`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
           const time = Date.now();
@@ -542,8 +544,9 @@ export default {
     },
 
     async subscribeForInteractions() {
+      let channel = this.isTestnet ? 'testnet/interactions' : 'interactions';
       this.interactionSubscription = await subscribe(
-        `interactions`,
+        `${channel}`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
           const time = Date.now();
