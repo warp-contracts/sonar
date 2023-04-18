@@ -2,7 +2,6 @@
   <div>
     <div class="charts-wrapper">
       <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
-      {{ isTestnet }}
       <div class="charts d-none d-md-flex">
         <div class="chart-single-wrapper">
           <div class="chart-header">
