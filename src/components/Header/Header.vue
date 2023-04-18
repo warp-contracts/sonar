@@ -210,7 +210,6 @@ export default {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
           if (data.length == 0) {
             this.noResultsInfo = 'No results found. Try a different query';
           }

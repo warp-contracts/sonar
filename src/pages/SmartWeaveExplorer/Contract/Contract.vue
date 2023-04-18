@@ -166,12 +166,14 @@
             <div v-else class="dot-flashing ml-4 mr-2"></div>
           </b-nav-item>
           <b-nav-item
+            class="transactions-tab"
             :to="`${isTestnet ? '?network=testnet' : ''}#code`"
             :active="$route.hash === '#code'"
             @click="onInput($route.hash)"
           >
             Code
-            <b-badge :class="wasmLang === 'rust' ? 'rust-badge' : 'js-badge'">
+            <div v-if="wasmLang === 'loading'" class="dot-flashing ml-4 mr-2"></div>
+            <b-badge v-else class="ml-2" :class="wasmLang === 'rust' ? 'rust-badge' : 'js-badge'">
               <div v-if="wasmLang">{{ wasmLang }}</div>
               <div v-else>JS</div>
             </b-badge>
@@ -518,7 +520,7 @@ export default {
       pst_name: null,
       bundler_id: null,
       noInteractionsDetected: false,
-      wasmLang: null,
+      wasmLang: 'loading',
       initState: null,
       currentState: null,
       loadedValidity: true,
