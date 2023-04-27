@@ -326,6 +326,7 @@ export default {
         this.loaded = true;
       }
       this.currentSrcTxId = source.srcTxId;
+      this.sourceToCompare = this.contractSrc;
       this.loaded = true;
     },
 
