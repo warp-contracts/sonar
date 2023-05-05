@@ -121,3 +121,20 @@
   font-size: 11px;
   font-weight: 500;
 }
+
+.led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: #000 0 -1px 6px 1px;
+}
+.led-red {
+  background-color: #f00;
+  box-shadow: #e30d0d 0 0 0 0, inset rgb(199, 8, 8) 0 -1px 8px, #f00 0 3px 11px;
+}
+
+.led-green {
+  background-color: #80ff00;
+  box-shadow: #46e715 0 0 0 0, inset rgb(122, 173, 19) 0 -1px 8px, #80ff00 0 3px 11px;
+}

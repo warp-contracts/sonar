@@ -552,6 +552,15 @@ export default {
       this.$router.go(0);
     },
   },
+  async created() {
+    this.$vueEventBus.$on('changeActiveDre', async (data) => {
+      console.log(data);
+      await this.getDreState();
+    });
+  },
+  beforeUnmount() {
+    this.$vueEventBus.$off('changeActiveDre');
+  },
   async mounted() {
     if (this.$route.params.id.length != 43) {
       this.correct = false;
@@ -579,6 +588,7 @@ export default {
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'warpGateway']),
+    ...mapState('drestatus', ['activeDre']),
     contractId() {
       return this.$route.params.id;
     },
@@ -757,7 +767,7 @@ export default {
     async getDreState() {
       this.loadedValidity = false;
       const response = await fetch(
-        `https://dre-1.warp.cc/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
+        `${this.activeDre.link}/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
       );
       if (response.status == 500) {
         this.loadedValidity = true;

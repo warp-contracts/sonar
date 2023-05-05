@@ -26,6 +26,10 @@ export default {
     this.initArweave();
     this.prefetchAll();
     this.setWarpGateway();
+    const activeDre = localStorage.getItem('activeDre');
+    if (activeDre) {
+      this.setActiveDre(JSON.parse(activeDre));
+    }
   },
   methods: {
     ...mapActions('prefetch', [
@@ -36,6 +40,7 @@ export default {
       'setGatewayUrl',
       'setWarpGateway',
     ]),
+    ...mapActions('drestatus', ['setActiveDre']),
   },
 };
 </script>
@@ -79,9 +84,42 @@ span.badge-info {
   @media (min-width: breakpoint-min(md)) {
     font-size: $font-size-base;
   }
+
+  &-outline {
+    background-color: white;
+    border: 0.1em solid var(--warp-blue-color);
+
+    &:hover,
+    &:focus,
+    &:active {
+      color: #5e5e5e !important;
+      background-color: white !important;
+      border: 0.1em solid var(--warp-blue-color) !important;
+    }
+  }
 }
 
 .contract-tabs {
   overflow-x: auto;
+}
+
+.flaticon-check {
+  height: 12px;
+  width: 12px;
+  filter: invert(47%) sepia(86%) saturate(460%) hue-rotate(56deg) brightness(108%) contrast(94%);
+
+  &.centered {
+    margin: 0 auto;
+  }
+}
+
+.flaticon-cross {
+  height: 12px;
+  width: 12px;
+  filter: invert(14%) sepia(48%) saturate(6784%) hue-rotate(338deg) brightness(107%) contrast(97%);
+
+  &.centered {
+    margin: 0 auto;
+  }
 }
 </style>

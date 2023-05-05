@@ -21,8 +21,11 @@ export default {
     switchWallet(state) {
       state.walletAccount = null;
     },
-    changeModalVisible(state) {
-      state.modalVisible = !state.modalVisible;
+    closeModalVisible(state) {
+      state.modalVisible = false;
+    },
+    showModal(state) {
+      state.modalVisible = true;
     },
   },
   actions: {
