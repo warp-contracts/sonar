@@ -142,10 +142,6 @@ export default {
         dre: 'dre5',
         link: 'https://dre-5.warp.cc/status',
       },
-      dre6Payload: {
-        dre: 'dre6',
-        link: 'https://dre-6.warp.cc/status',
-      },
     };
   },
   async mounted() {
@@ -158,7 +154,6 @@ export default {
     this.checkDreStatus(this.dre3Payload);
     this.checkDreStatus(this.dre4Payload);
     this.checkDreStatus(this.dre5Payload);
-    this.checkDreStatus(this.dre6Payload);
   },
 
   computed: {
