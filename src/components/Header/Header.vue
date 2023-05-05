@@ -78,7 +78,7 @@
       </div>
       <b-button class="btn btn-modal-outline rounded-pill login-btn outline-primary mr-1" @click="toggleDreModal">
         <div class="d-flex align-items-center justify-content-space-between">
-          <div class="led mr-3" :class="activeDre.status == false ? 'led-red' : 'led-green'"></div>
+          <div class="led mr-3" :class="activeDre.isActive == false ? 'led-red' : 'led-green'"></div>
           <p>{{ activeDre.dre.substring(0, 3).toUpperCase() + '-' + activeDre.dre.substring(3) }}</p>
         </div>
       </b-button>
@@ -143,8 +143,8 @@ export default {
         link: 'https://dre-5.warp.cc/status',
       },
       dre6Payload: {
-        dre: 'dre5',
-        link: 'https://dre-5.warp.cc/status',
+        dre: 'dre6',
+        link: 'https://dre-6.warp.cc/status',
       },
     };
   },
@@ -158,6 +158,7 @@ export default {
     this.checkDreStatus(this.dre3Payload);
     this.checkDreStatus(this.dre4Payload);
     this.checkDreStatus(this.dre5Payload);
+    this.checkDreStatus(this.dre6Payload);
   },
 
   computed: {

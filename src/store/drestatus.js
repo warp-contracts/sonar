@@ -27,13 +27,19 @@ export default {
         isActive: false,
         warp: null,
       },
+      dre6: {
+        isActive: false,
+        warp: null,
+      },
     },
   },
   mutations: {
     updateStatus(state, payload) {
       state.status[payload.dre].isActive = true;
       state.status[payload.dre].warp = payload.warp;
-      state.activeDre.isActive = payload[state.activeDre.dre];
+      if (payload.dre == state.activeDre.dre) {
+        state.activeDre.isActive = true;
+      }
     },
     updateActiveDre(state, payload) {
       state.activeDre = payload;
@@ -45,6 +51,8 @@ export default {
       if (response.ok) {
         const data = await response.json().then((res) => res);
         commit('updateStatus', { dre: payload.dre, warp: data.manifest.warpSdkConfig['warp-contracts'] });
+      } else if (payload.dre == state.activeDre.dre) {
+        state.activeDre.isActive = false;
       }
     },
     changeActiveDre({ commit, state }, payload) {

@@ -46,7 +46,7 @@ export default {
     changeDre(value, key) {
       const activeDreData = {
         dre: key,
-        status: value.isActive,
+        isActive: value.isActive,
         link: `https://dre-${key.substring(3)}.warp.cc`,
       };
       this.$emit('changeActiveDre', activeDreData);
