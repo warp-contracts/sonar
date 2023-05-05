@@ -76,20 +76,22 @@
       <div class="text-uppercase mr-4 switch-link" role="button" @click="toggleGateway">
         {{ switchNetworkText }}
       </div>
-
-      <b-button
-        @click="toggleAccNav"
-        :class="{ accNavActive: modalVisible }"
-        class="btn btn-modal rounded-pill login-btn"
-      >
+      <b-button class="btn btn-modal-outline rounded-pill login-btn outline-primary mr-1" @click="toggleDreModal">
+        <div class="d-flex align-items-center justify-content-space-between">
+          <div class="led mr-3" :class="activeDre.status == false ? 'led-red' : 'led-green'"></div>
+          <p>{{ activeDre.dre.substring(0, 3).toUpperCase() + '-' + activeDre.dre.substring(3) }}</p>
+        </div>
+      </b-button>
+      <b-button @click="showModal" :class="{ accNavActive: modalVisible }" class="btn btn-modal rounded-pill login-btn">
         <div v-if="walletAccount">
           <p><img src="../../assets/icons/wallet-svgrepo-com.svg" alt="" />{{ walletAccount | tx }}</p>
         </div>
         <p v-else>Login</p>
       </b-button>
     </b-nav>
+    <DreStatus v-if="dreModalVisible" :activeDre="activeDre" @changeActiveDre="updateDre"></DreStatus>
     <AccountNavigation v-if="modalVisible"></AccountNavigation>
-    <div class="nav-closing" v-if="modalVisible" @click="toggleAccNav"></div>
+    <div class="nav-closing" v-if="modalVisible || dreModalVisible" @click="toggleAccNav"></div>
   </b-navbar>
 </template>
 
@@ -100,12 +102,14 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 import { debounce } from 'lodash/function';
 import constants from '@/constants';
 import AccountNavigation from '../AccountNavigation/AccountNavigation.vue';
+import DreStatus from '../DreStatus/DreStatus.vue';
 
 export default {
   name: 'Header',
   components: {
     VueTypeaheadBootstrap,
     AccountNavigation,
+    DreStatus,
   },
   data() {
     return {
@@ -117,6 +121,31 @@ export default {
       switchNetworkText: null,
       networkHeight: null,
       noResultsInfo: null,
+      dreModalVisible: false,
+      dre1Payload: {
+        dre: 'dre1',
+        link: 'https://dre-1.warp.cc/status',
+      },
+      dre2Payload: {
+        dre: 'dre2',
+        link: 'https://dre-2.warp.cc/status',
+      },
+      dre3Payload: {
+        dre: 'dre3',
+        link: 'https://dre-3.warp.cc/status',
+      },
+      dre4Payload: {
+        dre: 'dre4',
+        link: 'https://dre-4.warp.cc/status',
+      },
+      dre5Payload: {
+        dre: 'dre5',
+        link: 'https://dre-5.warp.cc/status',
+      },
+      dre6Payload: {
+        dre: 'dre5',
+        link: 'https://dre-5.warp.cc/status',
+      },
     };
   },
   async mounted() {
@@ -124,9 +153,15 @@ export default {
     await this.getNetworkHeight();
     this.checkMetamask();
     this.clearNoResultInfo();
+    this.checkDreStatus(this.dre1Payload);
+    this.checkDreStatus(this.dre2Payload);
+    this.checkDreStatus(this.dre3Payload);
+    this.checkDreStatus(this.dre4Payload);
+    this.checkDreStatus(this.dre5Payload);
   },
 
   computed: {
+    ...mapState('drestatus', ['status', 'activeDre']),
     ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
     ...mapState('layout', ['showSearchInputInHeader']),
     ...mapState('wallet', ['walletAccount', 'modalVisible']),
@@ -167,8 +202,10 @@ export default {
     ...mapActions('layout', ['updateSearchTerm']),
     ...mapActions('prefetch', ['setIsTestnet']),
 
+    ...mapActions('drestatus', ['checkDreStatus', 'changeActiveDre']),
+
     ...mapActions('wallet', ['getTokenBalance']),
-    ...mapMutations('wallet', ['setAccount', 'changeModalVisible']),
+    ...mapMutations('wallet', ['setAccount', 'closeModalVisible', 'showModal']),
     async toggleGateway() {
       if (!this.isTestnet) {
         this.setIsTestnet('testnet');
@@ -218,7 +255,11 @@ export default {
         });
     }, 500),
     toggleAccNav() {
-      this.changeModalVisible();
+      this.closeModalVisible();
+      this.dreModalVisible = false;
+    },
+    toggleDreModal() {
+      this.dreModalVisible = !this.dreModalVisible;
     },
     async checkMetamask() {
       const wallet = localStorage.getItem('walletId');
@@ -233,6 +274,13 @@ export default {
         this.noResultsInfo = null;
       });
     },
+    updateDre(dre) {
+      this.changeActiveDre(dre);
+
+      setTimeout(() => {
+        this.dreModalVisible = false;
+      }, 1000);
+    },
   },
 };
 </script>
@@ -241,6 +289,7 @@ export default {
 
 <style scoped lang="scss">
 .login-btn {
+  cursor: pointer;
   p {
     margin: 0;
   }

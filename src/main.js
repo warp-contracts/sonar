@@ -11,7 +11,6 @@ import VueTouch from 'vue-touch';
 import Toasted from 'vue-toasted';
 import CodeDiff from 'v-code-diff';
 
-
 import store from './store';
 import router from './Routes';
 import App from './App';
@@ -31,6 +30,8 @@ Vue.use(CodeDiff);
 Vue.config.productionTip = false;
 
 Vue.directive('observe-visibility', ObserveVisibility);
+
+Vue.prototype.$vueEventBus = new Vue();
 
 function setupFilters() {
   Vue.filter('tx', function (value) {
