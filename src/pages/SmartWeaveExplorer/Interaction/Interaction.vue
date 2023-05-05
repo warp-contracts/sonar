@@ -152,7 +152,7 @@
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
-                    ? `${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
+                    ? `http://${interaction.confirmingPeer[0]}:1984/tx/${interactionId}/status`
                     : `https://node1.bundlr.network`
                 }`"
                 target="_blank"
@@ -163,7 +163,7 @@
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
-                    ? `http://${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
+                    ? `http://${interaction.confirmingPeer[1]}:1984/tx/${interactionId}/status`
                     : `https://node1.bundlr.network`
                 }`"
                 target="_blank"
@@ -174,7 +174,7 @@
               <a
                 :href="`${
                   interaction.source && interaction.source == 'arweave'
-                    ? `http://${interaction.confirmingPeer[0]}/tx/${interaction.bundlerTxId}/status`
+                    ? `http://${interaction.confirmingPeer[2]}:1984/tx/${interactionId}/status`
                     : `https://node1.bundlr.network`
                 }`"
                 target="_blank"
@@ -403,11 +403,11 @@ export default {
       this.copiedDisplayBundlerId = true;
       setTimeout(() => (this.copiedDisplayBundlerId = false), 2000);
     },
-    onCopySortKey(){
+    onCopySortKey() {
       this.copiedDisplaySortKey = true;
       setTimeout(() => (this.copiedDisplaySortKey = false), 2000);
     },
-    onCopyLastSortKey(){
+    onCopyLastSortKey() {
       this.copiedDisplayLastSortKey = true;
       setTimeout(() => (this.copiedDisplayLastSortKey = false), 2000);
     },
