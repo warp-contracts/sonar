@@ -16,16 +16,14 @@
         <div class="led m-4" :class="value.isActive ? 'led-green' : 'led-red'"></div>
         <div>
           <p class="my-0 status-text">
-            <a :href="value.link" @click.stop="goToDre($event, key)">{{
+            <a :href="value.link" @click.stop="goToDre(key)">{{
               key.substring(0, 3).toUpperCase() + '-' + key.substring(3)
             }}</a>
           </p>
           <p class="mb-0 sdk-text">Warp Contracts: {{ value.warp || 'N/A' }}</p>
-          <!-- <button class="ml-5">SWITCH</button> -->
         </div>
       </li>
     </ul>
-    <!-- <button @click="test"></button> -->
   </div>
 </template>
 
@@ -52,8 +50,7 @@ export default {
       this.$emit('changeActiveDre', activeDreData);
       this.$vueEventBus.$emit('changeActiveDre', activeDreData);
     },
-    goToDre(e, dre) {
-      e.stopPropagation();
+    goToDre(dre) {
       window.open(`https://dre-${dre.substring(3)}.warp.cc`, '_blank');
     },
   },

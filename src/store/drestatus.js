@@ -43,12 +43,14 @@ export default {
   },
   actions: {
     async checkDreStatus({ commit, state }, payload) {
-      const response = await fetch(payload.link);
-      if (response.ok) {
+      try {
+        const response = await fetch(payload.link);
         const data = await response.json().then((res) => res);
         commit('updateStatus', { dre: payload.dre, warp: data.manifest.warpSdkConfig['warp-contracts'] });
-      } else if (payload.dre == state.activeDre.dre) {
-        state.activeDre.isActive = false;
+      } catch (e) {
+        if (payload.dre == state.activeDre.dre) {
+          state.activeDre.isActive = false;
+        }
       }
     },
     changeActiveDre({ commit, state }, payload) {
