@@ -27,6 +27,10 @@ export default {
         isActive: false,
         warp: null,
       },
+      dre6: {
+        isActive: false,
+        warp: null,
+      },
     },
   },
   mutations: {
