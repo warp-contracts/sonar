@@ -49,6 +49,7 @@ export default {
     async checkDreStatus({ commit, state }, payload) {
       try {
         const response = await fetch(payload.link);
+        console.log(response);
         const data = await response.json().then((res) => res);
         commit('updateStatus', { dre: payload.dre, warp: data.manifest.warpSdkConfig['warp-contracts'] });
       } catch (e) {
@@ -62,7 +63,7 @@ export default {
       localStorage.setItem('activeDre', JSON.stringify(payload));
     },
     setActiveDre({ commit, state }, payload) {
-      commit('updateActiveDre', payload);
+      commit('updateActiveDre', { ...payload, isActive: false });
     },
   },
 };
