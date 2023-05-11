@@ -209,14 +209,6 @@
           >
             Tags
           </b-nav-item>
-          <b-nav-item
-            v-if="dre_events"
-            :to="`${isTestnet ? '?network=testnet' : ''}#events`"
-            :active="$route.hash === '#events'"
-            @click="onInput($route.hash)"
-          >
-            Evaluation logs
-          </b-nav-item>
         </b-nav>
         <div class="tab-content">
           <div :class="['tab-pane', { active: $route.hash === '#' || $route.hash === '' }]" class="p-2">
@@ -434,11 +426,6 @@
               <ContractTags :contractTags="tags"></ContractTags>
             </div>
           </div>
-          <div :class="['tab-pane', { active: $route.hash === '#events' }]" class="p-2">
-            <div>
-              <ContractEvents v-if="dre_events" :events="dre_events"></ContractEvents>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -464,7 +451,6 @@ import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
 import TestnetLabel from '../../../components/TestnetLabel.vue';
-import ContractEvents from './ContractEvents/ContractEvents.vue';
 import { convertTime } from '@/utils';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
@@ -536,7 +522,6 @@ export default {
       dre_signature: null,
       dre_stateHash: null,
       dre_manifest: null,
-      dre_events: null,
       dre_status: null,
       dre_evaluationError: null,
       tags: [],
@@ -583,7 +568,6 @@ export default {
     ContractCode,
     ContractTags,
     TestnetLabel,
-    ContractEvents,
     LoadingSpinner,
   },
   computed: {
@@ -767,7 +751,7 @@ export default {
     async getDreState() {
       this.loadedValidity = false;
       const response = await fetch(
-        `${this.activeDre.link}/contract?id=${this.contractId}&validity=true&errorMessages=true&events=true`
+        `${this.activeDre.link}/contract?id=${this.contractId}&validity=true&errorMessages=true`
       );
       if (response.status == 500) {
         this.loadedValidity = true;
@@ -792,7 +776,6 @@ export default {
       this.dre_signature = data.signature;
       this.dre_stateHash = data.stateHash;
       this.dre_manifest = data.manifest;
-      this.dre_events = data.events;
       this.dre_status = data.status;
 
       if (data.status == 'error' || data.status == 'blacklisted') {
