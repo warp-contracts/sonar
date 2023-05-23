@@ -49,7 +49,6 @@ export default {
     async checkDreStatus({ commit, state }, payload) {
       try {
         const response = await fetch(payload.link);
-        console.log(response);
         const data = await response.json().then((res) => res);
         commit('updateStatus', { dre: payload.dre, warp: data.manifest.warpSdkConfig['warp-contracts'] });
       } catch (e) {

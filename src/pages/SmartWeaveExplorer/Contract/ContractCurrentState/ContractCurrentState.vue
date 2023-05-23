@@ -35,7 +35,7 @@
           <a
             v-if="state"
             target="_blank"
-            :href="`https://dre-1.warp.cc/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
+            :href="`${this.activeDre.link}/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
             >evaluator node</a
           ></span
         >
@@ -103,6 +103,7 @@ export default {
   components: { JsonViewer, ExportButton },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('drestatus', ['activeDre']),
   },
 };
 </script>

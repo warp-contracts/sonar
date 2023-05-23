@@ -539,7 +539,6 @@ export default {
   },
   async created() {
     this.$vueEventBus.$on('changeActiveDre', async (data) => {
-      console.log(data);
       await this.getDreState();
     });
   },
@@ -761,6 +760,7 @@ export default {
         this.loadedValidity = true;
       }
       const data = await response.json();
+      console.log(data);
       if (data.state === undefined) {
         this.currentState = null;
       } else {
@@ -768,6 +768,8 @@ export default {
       }
       if (data.validity && Object.keys(data.validity).length > 0) {
         this.validity = data.validity;
+      } else {
+        this.validity = false;
       }
 
       this.dre_sortKey = data.sortKey;
