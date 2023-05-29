@@ -409,10 +409,10 @@
               <div v-else-if="!loadedValidity">Loading...</div>
               <div v-else-if="loadedValidity && !currentState && !dre_evaluationError">
                 <p class="text-break">
-                  State is evaluated for contracts which are registered as safe (which do not do not use unsafeClient).
+                  State is evaluated for contracts which are registered as safe (which do not use unsafeClient).
                   If contracts perform internal reads or internal writes on unsafe contracts, these interactions are
                   skipped during the evaluation process. Please contact us to get the instruction on how to submit the
-                  contract for evaluation.State is evaluated for contracts which are registered as safe (which do not do
+                  contract for evaluation. State is evaluated for contracts which are registered as safe (which do not do
                   not use unsafeClient). If contracts perform internal reads or internal writes on unsafe contracts,
                   these interactions are skipped during the evaluation process. Please contact us to get the instruction
                   on how to submit the contract for evaluation.
