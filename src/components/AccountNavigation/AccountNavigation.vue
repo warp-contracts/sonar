@@ -18,6 +18,7 @@ import { ArweaveWebWallet } from 'arweave-wallet-connector';
 import WalletConnected from './WalletConnected.vue';
 import WalletDisconnected from './WalletDisconnected.vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
+import * as web3 from 'web3';
 
 export default {
   name: 'AccountNavigation',
@@ -51,7 +52,7 @@ export default {
       this.loading = true;
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const walletId = accounts[0];
-      this.setWallet(walletId);
+      this.setWallet(web3.utils.toChecksumAddress(walletId));
       this.getTokenBalance();
       this.loading = false;
     },
