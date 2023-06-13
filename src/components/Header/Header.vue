@@ -73,13 +73,34 @@
         <span class="pr-5 pl-2 height">{{ networkHeight }}</span>
       </div>
 
-      <div class="text-uppercase mr-4 switch-link" role="button" @click="toggleGateway">
-        {{ switchNetworkText }}
+      <div>
+        <b-dropdown class="m-md-2" variant="outline-primary">
+          <template #button-content>
+            {{ currentNetwork }} <b-icon-chevron-compact-down></b-icon-chevron-compact-down>
+          </template>
+          <!-- <template><b-icon icon="chevron-compact-down"></b-icon>{{ currentNetwork }}</template> -->
+          <b-dropdown-item :active="currentNetwork == 'Mainnet'" @click="switchToNetwork('mainnet')"
+            >Mainnet</b-dropdown-item
+          >
+          <b-dropdown-item :active="currentNetwork == 'Testnet'" @click="switchToNetwork('testnet')"
+            >Testnet</b-dropdown-item
+          >
+          <b-dropdown-item :active="currentNetwork == 'Devnet'" @click="switchToNetwork('devnet')"
+            >Devnet</b-dropdown-item
+          >
+        </b-dropdown>
       </div>
+
       <b-button class="btn btn-modal-outline rounded-pill login-btn outline-primary mr-1" @click="toggleDreModal">
         <div class="d-flex align-items-center justify-content-space-between">
           <div class="led mr-3" :class="activeDre.isActive == false ? 'led-red' : 'led-green'"></div>
-          <p>{{ activeDre.dre.substring(0, 3).toUpperCase() + '-' + activeDre.dre.substring(3) }}</p>
+          <p>
+            {{
+              activeDre[this.network].dre.substring(0, 3).toUpperCase() +
+              '-' +
+              activeDre[this.network].dre.substring(3).toUpperCase()
+            }}
+          </p>
         </div>
       </b-button>
       <b-button @click="showModal" :class="{ accNavActive: modalVisible }" class="btn btn-modal rounded-pill login-btn">
@@ -118,60 +139,32 @@ export default {
       selectedContract: null,
       foundContracts: [],
       searching: false,
-      switchNetworkText: null,
       networkHeight: null,
       noResultsInfo: null,
       dreModalVisible: false,
-      dre1Payload: {
-        dre: 'dre1',
-        link: 'https://dre-1.warp.cc/status',
-      },
-      dre2Payload: {
-        dre: 'dre2',
-        link: 'https://dre-2.warp.cc/status',
-      },
-      dre3Payload: {
-        dre: 'dre3',
-        link: 'https://dre-3.warp.cc/status',
-      },
-      dre4Payload: {
-        dre: 'dre4',
-        link: 'https://dre-4.warp.cc/status',
-      },
-      dre5Payload: {
-        dre: 'dre5',
-        link: 'https://dre-5.warp.cc/status',
-      },
-      dre6Payload: {
-        dre: 'dre6',
-        link: 'https://dre-6.warp.cc/status',
-      },
     };
   },
   async mounted() {
-    this.switchNetworkText = this.isTestnet ? 'Switch to Mainnet' : 'Switch to Testnet';
     await this.getNetworkHeight();
     this.checkMetamask();
     this.clearNoResultInfo();
-    this.checkDreStatus(this.dre1Payload);
-    this.checkDreStatus(this.dre2Payload);
-    this.checkDreStatus(this.dre3Payload);
-    this.checkDreStatus(this.dre4Payload);
-    this.checkDreStatus(this.dre5Payload);
-    this.checkDreStatus(this.dre6Payload);
+    this.checkDreStatus(this.network);
   },
 
   computed: {
     ...mapState('drestatus', ['status', 'activeDre']),
-    ...mapState('prefetch', ['gatewayUrl', 'arweave', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'arweave', 'network']),
     ...mapState('layout', ['showSearchInputInHeader']),
     ...mapState('wallet', ['walletAccount', 'modalVisible']),
 
+    currentNetwork() {
+      return this.network.charAt(0).toUpperCase() + this.network.slice(1);
+    },
     searchBarText() {
       return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
     logoUrl() {
-      return this.isTestnet ? '/#/app/contracts?network=testnet' : '/';
+      return `/#/app/contracts?network=${this.network}`;
     },
 
     searchTerm: {
@@ -201,36 +194,42 @@ export default {
   },
   methods: {
     ...mapActions('layout', ['updateSearchTerm']),
-    ...mapActions('prefetch', ['setIsTestnet']),
+    ...mapActions('prefetch', ['setNetwork', 'setGatewayUrl']),
 
     ...mapActions('drestatus', ['checkDreStatus', 'changeActiveDre']),
 
     ...mapActions('wallet', ['getTokenBalance']),
     ...mapMutations('wallet', ['setAccount', 'closeModalVisible', 'showModal']),
-    async toggleGateway() {
-      if (!this.isTestnet) {
-        this.setIsTestnet('testnet');
-        this.switchNetworkText = 'Switch to Mainnet';
-        this.$router.push('/app/contracts?network=testnet');
-      } else {
-        this.setIsTestnet('mainnet');
-        this.switchNetworkText = 'Switch to Testnet';
-        this.$router.push('/app/contracts');
-      }
+    switchToNetwork(network) {
+      this.setGatewayUrl(network);
+      this.$router.push(`/app/contracts?network=${network}`);
+      this.setNetwork(network);
+      this.checkDreStatus(this.network);
     },
+    // async toggleGateway() {
+    //   if (!this.isTestnet) {
+    //     this.setIsTestnet('testnet');
+    //     this.switchNetworkText = 'Switch to Mainnet';
+    //     this.$router.push('/app/contracts?network=testnet');
+    //   } else {
+    //     this.setIsTestnet('mainnet');
+    //     this.switchNetworkText = 'Switch to Testnet';
+    //     this.$router.push('/app/contracts');
+    //   }
+    // },
     async getNetworkHeight() {
       const info = await this.arweave.network.getInfo();
       this.networkHeight = info.height;
     },
     goToContract(data) {
       if (data.type == 'contract' || data.type == 'pst') {
-        this.$router.push(`/app/contract/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
+        this.$router.push(`/app/contract/${data.id}?network=${this.network}`);
       } else if (data.type == 'interaction') {
-        this.$router.push(`/app/interaction/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
+        this.$router.push(`/app/interaction/${data.id}?network=${this.network}`);
       } else if (data.type === 'creator') {
-        this.$router.push(`/app/creator/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
+        this.$router.push(`/app/creator/${data.id}?network=${this.network}`);
       } else {
-        this.$router.push(`/app/source/${data.id}${this.isTestnet ? '?network=testnet' : ''}`);
+        this.$router.push(`/app/source/${data.id}?network=${this.network}`);
       }
       this.foundContracts = [];
       this.query = '';

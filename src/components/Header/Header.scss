@@ -194,3 +194,33 @@
 .height-text {
   border-right: solid 2px;
 }
+
+.btn-outline-primary {
+  color: var(--warp-blue-color) !important;
+  border-color: transparent !important;
+
+  &:hover,
+  &:active {
+    color: #fff !important;
+    background-color: var(--warp-blue-color) !important;
+  }
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  color: #fff;
+  text-decoration: none;
+  background-color: var(--warp-blue-color) !important;
+}
+
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.show > .btn-outline-primary.dropdown-toggle {
+  color: #fff !important;
+  background-color: var(--warp-blue-color) !important;
+  border-color: var(--warp-blue-color) !important;
+}
+
+.dropdown-toggle::after {
+  content: '' !important;
+}

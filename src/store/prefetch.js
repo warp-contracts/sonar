@@ -9,8 +9,7 @@ export default {
     warp: null,
     gatewayUrl: null,
     switchText: null,
-    isTestnet: null,
-    warpGateway: null,
+    network: null,
   },
   mutations: {
     setArweave(state, arweave) {
@@ -24,20 +23,17 @@ export default {
     setGatewayUrl(state, gatewayUrl) {
       state.gatewayUrl = gatewayUrl;
     },
-    setIsTestnet(state, isTestnet) {
-      state.isTestnet = isTestnet;
-    },
-    setWarpGateway(state, payload) {
-      state.warpGateway = payload;
+    setNetwork(state, network) {
+      state.network = network;
     },
   },
   getters: {},
   actions: {
-    setGatewayUrl({ commit }) {
-      commit('setGatewayUrl', constants.gatewayProdUrl);
+    setGatewayUrl({ commit }, payload) {
+      commit('setGatewayUrl', payload == 'devnet' ? constants.gatewayDevUrl : constants.gatewayProdUrl);
     },
-    setIsTestnet({ commit }, payload) {
-      commit('setIsTestnet', payload == 'testnet');
+    setNetwork({ commit }, payload) {
+      commit('setNetwork', payload);
     },
     async prefetchAll({ dispatch }) {
       dispatch('initArweave').then(() => {
@@ -57,9 +53,6 @@ export default {
       const warp = WarpFactory.forMainnet();
 
       commit('setWarp', warp);
-    },
-    setWarpGateway({ commit }) {
-      commit('setWarpGateway', constants.warpGateway);
     },
   },
 };

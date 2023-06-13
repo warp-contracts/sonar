@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="charts-wrapper">
-      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
+      <NetworkLabel :network="network"></NetworkLabel>
       <div class="charts d-none d-md-flex">
         <div class="chart-single-wrapper">
           <div class="chart-header">
@@ -9,14 +9,20 @@
             <router-link
               class="d-xl-block d-none"
               :to="{
-                path: `/app/stats/interactions${this.isTestnet ? '?network=testnet' : ''}`,
+                path: `/app/stats/interactions?network=${this.network}`,
               }"
               style="margin-left: auto; cursor: pointer"
             >
               <div class="flaticon-fullscreen" />
             </router-link>
           </div>
-          <Charts :gatewayUrl="gatewayUrl" :statsPerDay="interactionsPerDay" title="Interactions" :fullscreen="false" />
+          <Charts
+            :gatewayUrl="gatewayUrl"
+            :statsPerDay="interactionsPerDay"
+            title="Interactions"
+            :fullscreen="false"
+            :key="network"
+          />
           <div class="d-flex justify-content-center item-text">
             <div class="d-flex flex-row justify-content-between">
               <div>Total:&nbsp;</div>
@@ -35,14 +41,20 @@
             <router-link
               class="d-xl-block d-none"
               :to="{
-                path: `/app/stats/contracts${this.isTestnet ? '?network=testnet' : ''}`,
+                path: `/app/stats/contracts?network=${this.network}`,
               }"
               style="margin-left: auto; cursor: pointer"
             >
               <div class="flaticon-fullscreen" />
             </router-link>
           </div>
-          <Charts :gatewayUrl="gatewayUrl" :statsPerDay="contractsPerDay" title="Contracts" :fullscreen="false" />
+          <Charts
+            :gatewayUrl="gatewayUrl"
+            :statsPerDay="contractsPerDay"
+            title="Contracts"
+            :fullscreen="false"
+            :key="network"
+          />
           <div class="d-flex justify-content-center item-text">
             <div class="d-flex flex-row justify-content-between">
               <div>Total:&nbsp;</div>
@@ -107,7 +119,7 @@
                     <router-link
                       :to="{
                         path: '/app/interaction/' + data.item.interactionId,
-                        query: isTestnet ? { network: 'testnet' } : '',
+                        query: { network },
                       }"
                     >
                       {{ formatIdPattern(data.item.interactionId) }}
@@ -126,7 +138,7 @@
                     <router-link
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
-                        query: isTestnet ? { network: 'testnet' } : '',
+                        query: { network },
                       }"
                     >
                       {{ formatIdPattern(data.item.contractId) }}
@@ -225,7 +237,7 @@
                     <router-link
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
-                        query: isTestnet ? { network: 'testnet' } : '',
+                        query: { network },
                       }"
                     >
                       {{ formatIdPattern(data.item.contractId) }}
@@ -240,10 +252,7 @@
                   </div>
                 </template>
                 <template #cell(creator)="data">
-                  <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`">
-                    {{ formatIdPattern(data.item.owner) }}</a
-                  >
-                  <span v-else>{{ formatIdPattern(data.item.owner) }}</span>
+                  <a :href="`#/app/creator/${data.item.owner}`"> {{ formatIdPattern(data.item.owner) }}</a>
                 </template>
 
                 <template #cell(type)="data">
@@ -305,7 +314,7 @@ import axios from 'axios';
 import TxList from '@/components/TxList/TxList';
 import Charts from '@/components/Charts/Charts';
 import { mapState } from 'vuex';
-import TestnetLabel from '../../../components/TestnetLabel.vue';
+import NetworkLabel from '../../../components/NetworkLabel.vue';
 import { subscribe, initPubSub } from 'warp-contracts-pubsub';
 import { format } from 'numerable';
 import { convertTime } from '@/utils';
@@ -397,15 +406,17 @@ export default {
     this.contractSubscription.unsubscribe();
     this.interactionSubscription.unsubscribe();
   },
-  components: { TxList, Charts, TestnetLabel },
+  components: { TxList, Charts, NetworkLabel },
   watch: {
-    isTestnet() {
+    network() {
       this.refreshData();
       this.loadStats();
+      this.subscribeForContracts();
+      this.subscribeForInteractions();
     },
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
     contractsLoaded() {
       const totalLimit = this.contractsLimit + this.integrationsLimit;
       const allItems = this.contracts.length + this.interactions.length;
@@ -434,24 +445,28 @@ export default {
       );
     },
     async getStats() {
-      axios.get(`${this.gatewayUrl}/gateway/stats${this.isTestnet ? '?testnet=true' : ''}`).then((fetchedData) => {
-        this.totalContracts = fetchedData.data.total_contracts;
-        this.totalInteractions = fetchedData.data.total_interactions;
-        this.totalContractsLoaded = true;
-        this.totalInteractionsLoaded = true;
-      });
+      this.totalContractsLoaded = false;
+      this.totalInteractionsLoaded = false;
+
+      axios
+        .get(`${this.gatewayUrl}/gateway/stats${this.network == 'testnet' ? '?testnet=true' : ''}`)
+        .then((fetchedData) => {
+          this.totalContracts = fetchedData.data.total_contracts;
+          this.totalInteractions = fetchedData.data.total_interactions;
+          this.totalContractsLoaded = true;
+          this.totalInteractionsLoaded = true;
+        });
     },
     async getStatsPerDay() {
       axios
-        .get(`${this.gatewayUrl}/gateway/stats/per-day${this.isTestnet ? '?testnet=true' : ''}`)
+        .get(`${this.gatewayUrl}/gateway/stats/per-day${this.network == 'testnet' ? '?testnet=true' : ''}`)
         .then((fetchedData) => {
           this.contractsPerDay = fetchedData.data.contracts_per_day;
           this.interactionsPerDay = fetchedData.data.interactions_per_day;
         });
     },
-    loadStats() {
-      this.getStatsPerDay();
-      this.getStats();
+    async loadStats() {
+      await Promise.all([this.getStatsPerDay(), this.getStats()]);
     },
     async onPageClicked(pageNumber) {
       this.currentPage = pageNumber;
@@ -473,7 +488,7 @@ export default {
         .get(
           `${this.gatewayUrl}/gateway/dashboard?contractLimit=${this.contractsLimit}&interactionLimit=${
             this.integrationsLimit
-          }${this.isTestnet ? '&testnet=true' : ''}`,
+          }${this.network == 'testnet' ? '&testnet=true' : ''}`,
           {
             cancelToken: this.axiosSource.token,
           }
@@ -519,7 +534,7 @@ export default {
       return _.startCase(text) + (index < numberOfCategories - 1 ? ', ' : '');
     },
     async subscribeForContracts() {
-      let channel = this.isTestnet ? 'testnet/contracts' : 'contracts';
+      let channel = this.network == 'mainnet' ? 'contracts' : `${this.network}/contracts`;
       this.contractSubscription = await subscribe(
         `${channel}`,
         ({ data }) => {
@@ -543,7 +558,7 @@ export default {
     },
 
     async subscribeForInteractions() {
-      let channel = this.isTestnet ? 'testnet/interactions' : 'interactions';
+      let channel = this.network == 'mainnet' ? 'interactions' : `${this.network}/interactions`;
       this.interactionSubscription = await subscribe(
         `${channel}`,
         ({ data }) => {

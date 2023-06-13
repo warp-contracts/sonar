@@ -7,17 +7,17 @@
       </p>
       <li
         class="status my-1"
-        v-for="(value, key) in status"
+        v-for="(value, key) in status[this.network]"
         :key="key"
         @click="changeDre(value, key)"
-        :class="key == activeDre.dre ? 'selected' : ''"
+        :class="key == activeDreName ? 'selected' : ''"
       >
-        <div :class="key == activeDre.dre ? 'flaticon-check' : 'empty'" class="ml-5"></div>
+        <div :class="key == activeDreName ? 'flaticon-check' : 'empty'" class="ml-5"></div>
         <div class="led m-4" :class="value.isActive ? 'led-green' : 'led-red'"></div>
         <div>
           <p class="my-0 status-text">
             <a :href="value.link" @click.stop="goToDre(key)">{{
-              key.substring(0, 3).toUpperCase() + '-' + key.substring(3)
+              key.substring(0, 3).toUpperCase() + '-' + key.substring(3).toUpperCase()
             }}</a>
           </p>
           <p class="mb-0 sdk-text">Warp Contracts: {{ value.warp || 'N/A' }}</p>
@@ -39,10 +39,15 @@ export default {
 
   computed: {
     ...mapState('drestatus', ['status', 'activeDre']),
+    ...mapState('prefetch', ['network']),
+    activeDreName() {
+      return this.activeDre[this.network].dre;
+    },
   },
   methods: {
     changeDre(value, key) {
       const activeDreData = {
+        network: this.network,
         dre: key,
         isActive: value.isActive,
         link: `https://dre-${key.substring(3)}.warp.cc`,
@@ -61,7 +66,6 @@ export default {
 @import '../../styles/mixins';
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .container {
-  min-height: 20rem;
   width: 24rem;
   padding: 1rem;
 

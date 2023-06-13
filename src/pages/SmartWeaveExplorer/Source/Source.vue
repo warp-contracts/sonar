@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
-      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
+      <NetworkLabel :network="network"></NetworkLabel>
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
           <div class="flaticon-file-signature m-0-auto"></div>
@@ -259,7 +259,7 @@ import dayjs from 'dayjs';
 import Error from '@/components/Error/Error';
 import { mapState } from 'vuex';
 import constants from '@/constants';
-import TestnetLabel from '../../../components/TestnetLabel.vue';
+import NetworkLabel from '../../../components/NetworkLabel.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const duration = require('dayjs/plugin/duration');
@@ -344,7 +344,7 @@ export default {
     JsonViewer,
     Error,
     ContractCode,
-    TestnetLabel,
+    NetworkLabel,
     LoadingSpinner,
   },
   computed: {

@@ -1,7 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
+import BootstrapVue, { BIconChevronCompactDown } from 'bootstrap-vue';
 import VueLoaders from 'vue-loaders';
 import VueTimers from 'vue-timers';
 import { ObserveVisibility } from 'vue-observe-visibility';
@@ -19,6 +19,7 @@ import layoutMixin from './mixins/layout';
 Vue.use(BootstrapVue, {
   breakpoints: [`xs`, 'sm', 'md', 'lg', 'xl', 'xxl'],
 });
+Vue.component('BIconChevronCompactDown', BIconChevronCompactDown);
 Vue.mixin(layoutMixin);
 Vue.use(VueLoaders);
 Vue.use(VueTimers);

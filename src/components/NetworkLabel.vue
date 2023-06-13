@@ -1,26 +1,27 @@
 <template>
-  <div class="label"><p>testnet</p></div>
+  <div class="label">
+    <p>{{ network }}</p>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'TestnetLabel',
+  name: 'NetworkLabel',
 
-  data() {
-    return {
-      props: {
-        isTestnet: Boolean,
-      },
-    };
+  props: {
+    network: {
+      type: String,
+      default: '',
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .label {
-position: absolute;
-top: 1rem;
-right: 1.5rem;
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
 
   width: 8rem;
   height: 2rem;
