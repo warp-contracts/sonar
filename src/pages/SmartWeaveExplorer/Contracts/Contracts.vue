@@ -411,6 +411,8 @@ export default {
     network() {
       this.refreshData();
       this.loadStats();
+      this.contractSubscription.unsubscribe();
+      this.interactionSubscription.unsubscribe();
       this.subscribeForContracts();
       this.subscribeForInteractions();
     },
