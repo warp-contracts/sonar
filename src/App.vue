@@ -14,32 +14,19 @@ export default {
     const currentPath = this.$router.history.current.path;
 
     if (currentPath === '/' || currentPath === '/app') {
-      this.$router.push('/app/contracts');
+      this.$router.push('/app/contracts?network=mainnet');
     }
-    if (this.$route.query.network === 'testnet') {
-      currentGateway = 'testnet';
-    } else {
-      currentGateway = 'mainnet';
-    }
-    this.setIsTestnet(currentGateway);
-    this.setGatewayUrl();
+    this.setNetwork(this.$route.query.network);
+    this.setGatewayUrl(this.$route.query.network);
     this.initArweave();
     this.prefetchAll();
-    this.setWarpGateway();
     const activeDre = localStorage.getItem('activeDre');
     if (activeDre) {
       this.setActiveDre(JSON.parse(activeDre));
     }
   },
   methods: {
-    ...mapActions('prefetch', [
-      'setIsTestnet',
-      'prefetchAll',
-      'initArweave',
-      'initArweaveTest',
-      'setGatewayUrl',
-      'setWarpGateway',
-    ]),
+    ...mapActions('prefetch', ['setNetwork', 'prefetchAll', 'initArweave', 'initArweaveTest', 'setGatewayUrl']),
     ...mapActions('drestatus', ['setActiveDre']),
   },
 };

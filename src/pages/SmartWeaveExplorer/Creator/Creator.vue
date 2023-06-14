@@ -26,16 +26,14 @@
             <div class="cell">
               <div class="cell-header">Total transactions</div>
               <div v-if="total">{{ total }}</div>
-              <div v-else-if="total == 0"> 0 </div>
+              <div v-else-if="total == 0">0</div>
               <div v-else class="pl-3 pt-3">
                 <div class="dot-flashing"></div>
               </div>
             </div>
             <div class="cell">
               <div class="cell-header">
-                <a
-                  target="_blank"
-                  :href="`https://v2.viewblock.io/arweave/address/${contractId}${isTestnet ? '?network=testnet' : ''}`"
+                <a target="_blank" :href="`https://v2.viewblock.io/arweave/address/${contractId}?network=${network}`"
                   >Viewblock link</a
                 >
               </div>
@@ -46,7 +44,7 @@
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
           <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#`"
+            :to="`?network=${network}#`"
             :active="$route.hash === '#' || $route.hash === ''"
             @click="onInput($route.hash)"
           >
@@ -58,14 +56,13 @@
             <div v-if="!noTransactionsDetected">
               <div class="d-block d-sm-flex justify-content-between mb-4">
                 <b-col lg="9" class="my-1 d-sm-flex d-block py-3 px-0">
-                  <p class="filter-header mr-4 ml-2" v-if="!isTestnet">Type</p>
+                  <p class="filter-header mr-4 ml-2">Type</p>
                   <b-form-radio-group
                     id="confirmation-status-group"
                     name="confirmation-status-group"
                     @change="refreshData"
                     v-model="selected"
                     class="confirmation-status-group"
-                    v-if="!isTestnet"
                   >
                     <div class="confirmation-status-item">
                       <b-form-radio value="all">All</b-form-radio>
@@ -127,13 +124,13 @@
                       <div class="d-flex">
                         <a
                           v-if="data.item.transactionType == 'contract'"
-                          :href="`/#/app/contract/${data.item.id}${isTestnet ? '?network=testnet' : ''}`"
+                          :href="`/#/app/contract/${data.item.id}?network=${network}`"
                         >
                           {{ data.item.id | tx }}</a
                         >
                         <a
                           v-if="data.item.transactionType == 'interaction'"
-                          :href="`/#/app/interaction/${data.item.id}${isTestnet ? '?network=testnet' : ''}`"
+                          :href="`/#/app/interaction/${data.item.id}?network=${network}`"
                         >
                           {{ data.item.id | tx }}</a
                         >
@@ -228,7 +225,7 @@ export default {
     TxList,
   },
   async mounted() {
-    if(this.$route.params.id.length == 42 || this.$route.params.id.length == 43) {
+    if (this.$route.params.id.length == 42 || this.$route.params.id.length == 43) {
       this.correct = true;
     } else {
       this.correct = false;
@@ -243,7 +240,9 @@ export default {
       this.total = null;
 
       const response = await fetch(
-        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}${txType ? `&txType=${txType}` : ''}`
+        `${this.gatewayUrl}/gateway/creator?id=${this.contractId}&limit=${this.limit}&totalCount=true&page=${page}${
+          txType ? `&txType=${txType}` : ''
+        }`
       );
       if (!response.ok) {
         this.correct = false;
@@ -337,7 +336,7 @@ export default {
   },
 
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
     contractId() {
       return this.$route.params.id;
     },

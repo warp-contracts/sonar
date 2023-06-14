@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
-      <TestnetLabel v-if="isTestnet" :isTestnet="isTestnet"></TestnetLabel>
+      <NetworkLabel :network="network"></NetworkLabel>
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
           <div class="flaticon-file-signature m-0-auto"></div>
@@ -29,11 +29,9 @@
               <div class="d-flex">
                 <div v-if="owner" class="align-self-end d-flex">
                   <span class="d-none d-sm-block"
-                    ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{ owner }}</a></span
+                    ><a :href="`/#/app/creator/${owner}?network=${network}`">{{ owner }}</a></span
                   ><span class="d-block d-sm-none"
-                    ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{
-                      owner | tx
-                    }}</a></span
+                    ><a :href="`/#/app/creator/${owner}?network=${network}`">{{ owner | tx }}</a></span
                   >
                   <div
                     class="flaticon-copy-to-clipboard"
@@ -107,13 +105,9 @@
               <div class="d-flex">
                 <div v-if="sourceTxId" class="align-self-end d-flex">
                   <span class="d-none d-sm-block"
-                    ><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{
-                      sourceTxId
-                    }}</a></span
+                    ><a :href="`/#/app/source/${sourceTxId}?network=${network}`">{{ sourceTxId }}</a></span
                   ><span class="d-block d-sm-none"
-                    ><a :href="`/#/app/source/${sourceTxId}${isTestnet ? '?network=testnet' : ''}`">{{
-                      sourceTxId | tx
-                    }}</a></span
+                    ><a :href="`/#/app/source/${sourceTxId}${network}`">{{ sourceTxId | tx }}</a></span
                   >
                   <div
                     class="flaticon-copy-to-clipboard"
@@ -150,7 +144,7 @@
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
           <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#`"
+            :to="`?network=${network}#`"
             :active="$route.hash === '#' || $route.hash === ''"
             @click="onInput($route.hash)"
             class="transactions-tab"
@@ -167,7 +161,7 @@
           </b-nav-item>
           <b-nav-item
             class="transactions-tab"
-            :to="`${isTestnet ? '?network=testnet' : ''}#code`"
+            :to="`?network=${network}#code`"
             :active="$route.hash === '#code'"
             @click="onInput($route.hash)"
           >
@@ -179,14 +173,14 @@
             </b-badge>
           </b-nav-item>
           <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#state`"
+            :to="`?network=${network}#state`"
             :active="$route.hash === '#state'"
             @click="onInput($route.hash)"
           >
             Initial State
           </b-nav-item>
           <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#current-state`"
+            :to="`?network=${network}#current-state`"
             :active="$route.hash === '#current-state'"
             @click="onInput($route.hash)"
             class="state-evaluated-tab"
@@ -202,11 +196,7 @@
             ></b-badge>
           </b-nav-item>
 
-          <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#tags`"
-            :active="$route.hash === '#tags'"
-            @click="onInput($route.hash)"
-          >
+          <b-nav-item :to="`?network=${network}#tags`" :active="$route.hash === '#tags'" @click="onInput($route.hash)">
             Tags
           </b-nav-item>
         </b-nav>
@@ -240,9 +230,7 @@
 
                     <template #cell(id)="data">
                       <div class="d-flex">
-                        <a
-                          :href="`/#/app/interaction/${data.item.interactionId}${isTestnet ? '?network=testnet' : ''}`"
-                        >
+                        <a :href="`/#/app/interaction/${data.item.interactionId}?network=${network}`">
                           {{ data.item.interactionId | tx }}</a
                         >
                         <div
@@ -296,8 +284,8 @@
                     </template>
 
                     <template #cell(creator)="data">
-                      <a v-if="!isTestnet" :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
-                      <span v-else> {{ data.item.owner | tx }}</span>
+                      <a :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
+                      <!-- <span v-else> {{ data.item.owner | tx }}</span> -->
                     </template>
 
                     <template #cell(function)="data">
@@ -409,11 +397,11 @@
               <div v-else-if="!loadedValidity">Loading...</div>
               <div v-else-if="loadedValidity && !currentState && !dre_evaluationError">
                 <p class="text-break">
-                  State is evaluated for contracts which are registered as safe (which do not use unsafeClient).
-                  If contracts perform internal reads or internal writes on unsafe contracts, these interactions are
+                  State is evaluated for contracts which are registered as safe (which do not use unsafeClient). If
+                  contracts perform internal reads or internal writes on unsafe contracts, these interactions are
                   skipped during the evaluation process. Please contact us to get the instruction on how to submit the
-                  contract for evaluation. State is evaluated for contracts which are registered as safe (which do not do
-                  not use unsafeClient). If contracts perform internal reads or internal writes on unsafe contracts,
+                  contract for evaluation. State is evaluated for contracts which are registered as safe (which do not
+                  do not use unsafeClient). If contracts perform internal reads or internal writes on unsafe contracts,
                   these interactions are skipped during the evaluation process. Please contact us to get the instruction
                   on how to submit the contract for evaluation.
                 </p>
@@ -450,7 +438,7 @@ import { mapMutations, mapState } from 'vuex';
 import constants from '@/constants';
 import ContractTags from './ContractTags/ContractTags.vue';
 import { interactionTagsParser } from '@/utils';
-import TestnetLabel from '../../../components/TestnetLabel.vue';
+import NetworkLabel from '../../../components/NetworkLabel.vue';
 import { convertTime } from '@/utils';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
@@ -566,11 +554,11 @@ export default {
     ContractCurrentState,
     ContractCode,
     ContractTags,
-    TestnetLabel,
+    NetworkLabel,
     LoadingSpinner,
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'warpGateway']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
     ...mapState('drestatus', ['activeDre']),
     contractId() {
       return this.$route.params.id;
@@ -659,7 +647,7 @@ export default {
 
     async getContract() {
       try {
-        const response = await fetch(`${this.warpGateway}/gateway/v2/contract?txId=${this.contractId}`);
+        const response = await fetch(`${this.gatewayUrl}/gateway/v2/contract?txId=${this.contractId}`);
         if (!response.ok) {
           this.correct = false;
         }
@@ -722,6 +710,7 @@ export default {
           this.total = fetchedInteractions.data.paging.total;
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
+            console.log(i.interaction, this.contractId);
             const inputFunc = JSON.parse(tagsParser.getInputTag(i.interaction, this.contractId).value).function;
             const isBundled =
               i.confirming_peers == 'https://node2.bundlr.network' ||
@@ -750,7 +739,7 @@ export default {
     async getDreState() {
       this.loadedValidity = false;
       const response = await fetch(
-        `${this.activeDre.link}/contract?id=${this.contractId}&validity=true&errorMessages=true`
+        `${this.activeDre[this.network].link}/contract?id=${this.contractId}&validity=true&errorMessages=true`
       );
       if (response.status == 500) {
         this.loadedValidity = true;
@@ -760,7 +749,6 @@ export default {
         this.loadedValidity = true;
       }
       const data = await response.json();
-      console.log(data);
       if (data.state === undefined) {
         this.currentState = null;
       } else {
