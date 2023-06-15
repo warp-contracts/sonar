@@ -8,10 +8,22 @@
       <div class="json-display">
         <json-viewer theme="json-theme" v-if="state" :value="state" :expand-depth="1" copyable sort>
           <template v-slot:copy>
-            <img v-b-tooltip.hover title="Copy JSON data" src="@/assets/icons/copy-to-clipboard.svg" class="jviewer-copy-icon" alt="copy icon" />
+            <img
+              v-b-tooltip.hover
+              title="Copy JSON data"
+              src="@/assets/icons/copy-to-clipboard.svg"
+              class="jviewer-copy-icon"
+              alt="copy icon"
+            />
           </template>
         </json-viewer>
-        <ExportButton v-b-tooltip.hover title="Download JSON data" :exportData="state" :fileName="'initial-state'" :fileType="'application/json'"></ExportButton>
+        <ExportButton
+          v-b-tooltip.hover
+          title="Download JSON data"
+          :exportData="state"
+          :fileName="'initial-state'"
+          :fileType="'application/json'"
+        ></ExportButton>
       </div>
     </div>
   </div>
@@ -50,14 +62,12 @@ export default {
 
   components: { JsonViewer, ExportButton },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
   },
 };
 </script>
 
 <style>
-
-
 .state-container {
   height: 600px;
 }

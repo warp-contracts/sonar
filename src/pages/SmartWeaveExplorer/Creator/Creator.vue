@@ -1,6 +1,7 @@
 <template>
   <div>
     <div v-if="correct" class="contract-wrapper">
+      <NetworkLabel :network="network"></NetworkLabel>
       <div class="d-block d-md-flex pl-3">
         <div class="contract-header-wrapper">
           <div class="flaticon-file-signature m-0-auto"></div>
@@ -190,6 +191,7 @@ import { mapState } from 'vuex';
 import Error from '@/components/Error/Error';
 import dayjs from 'dayjs';
 import TxList from '@/components/TxList/TxList';
+import NetworkLabel from '../../../components/NetworkLabel.vue';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
@@ -223,6 +225,7 @@ export default {
   components: {
     Error,
     TxList,
+    NetworkLabel,
   },
   async mounted() {
     if (this.$route.params.id.length == 42 || this.$route.params.id.length == 43) {

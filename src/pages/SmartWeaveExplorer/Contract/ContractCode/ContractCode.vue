@@ -51,12 +51,9 @@
     </div>
     <div class="source-code-wrapper" :class="contractSrcHistory?.length > 1 ? 'code-partView' : 'code-fullView'">
       <div class="code-header">
-        <a
-          v-if="!isSourceView"
-          class="current-id"
-          :href="`/#/app/source/${currentSrcTxId}${isTestnet ? '?network=testnet' : ''}`"
-          >{{ currentSrcTxId }}</a
-        >
+        <a v-if="!isSourceView" class="current-id" :href="`/#/app/source/${currentSrcTxId}?network=${network}`">{{
+          currentSrcTxId
+        }}</a>
         <div
           v-if="!wasm"
           class="copy-source"
@@ -127,7 +124,7 @@ export default {
     },
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet', 'arweave']),
+    ...mapState('prefetch', ['gatewayUrl', 'network', 'arweave']),
   },
   data() {
     return {

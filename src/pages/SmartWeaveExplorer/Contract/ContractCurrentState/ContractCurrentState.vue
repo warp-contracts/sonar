@@ -102,7 +102,7 @@ export default {
 
   components: { JsonViewer, ExportButton },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
     ...mapState('drestatus', ['activeDre']),
   },
 };

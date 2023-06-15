@@ -45,14 +45,10 @@
           </div>
           <div class="interaction-item">
             <div>Creator</div>
-            <a v-if="!isTestnet" :href="`#/app/creator/${interaction.interaction?.owner.address}`">
+            <a :href="`#/app/creator/${interaction.interaction?.owner.address}?network=${network}`">
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>
-            <div v-else>
-              <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
-              ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
-            </div>
             <div
               class="flaticon-copy-to-clipboard"
               v-clipboard="interaction.interaction?.owner.address"
@@ -328,7 +324,7 @@ export default {
   },
   components: { JsonViewer, Error, NetworkLabel },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
     interactionId() {
       return this.$route.params.id;
     },

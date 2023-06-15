@@ -206,17 +206,6 @@ export default {
       this.setNetwork(network);
       this.checkDreStatus(this.network);
     },
-    // async toggleGateway() {
-    //   if (!this.isTestnet) {
-    //     this.setIsTestnet('testnet');
-    //     this.switchNetworkText = 'Switch to Mainnet';
-    //     this.$router.push('/app/contracts?network=testnet');
-    //   } else {
-    //     this.setIsTestnet('mainnet');
-    //     this.switchNetworkText = 'Switch to Testnet';
-    //     this.$router.push('/app/contracts');
-    //   }
-    // },
     async getNetworkHeight() {
       const info = await this.arweave.network.getInfo();
       this.networkHeight = info.height;
@@ -242,7 +231,7 @@ export default {
         this.foundContracts = [];
         return;
       }
-      fetch(`${this.gatewayUrl}/gateway/search/${this.query}${this.isTestnet ? '?testnet=true' : ''}`)
+      fetch(`${this.gatewayUrl}/gateway/search/${this.query}${this.network == 'testnet' ? '?testnet=true' : ''}`)
         .then((response) => {
           return response.json();
         })

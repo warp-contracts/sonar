@@ -29,7 +29,7 @@
               <div class="d-flex">
                 <div v-if="owner" class="align-self-end d-flex">
                   <span class="d-none d-sm-block"
-                    ><a :href="`/#/app/creator/${owner}${isTestnet ? '?network=testnet' : ''}`">{{ owner }}</a></span
+                    ><a :href="`/#/app/creator/${owner}?network=${network}`">{{ owner }}</a></span
                   ><span class="d-block d-sm-none"
                     ><a :href="`https://v2.viewblock.io/arweave/address/${owner}`" target="_blank">{{
                       owner | tx
@@ -111,17 +111,13 @@
       <div>
         <b-nav tabs class="contract-tabs" @changed="onInput">
           <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#`"
+            :to="`?network=${network}#`"
             :active="$route.hash === '#' || $route.hash === ''"
             @click="onInput($route.hash)"
           >
             Contracts
           </b-nav-item>
-          <b-nav-item
-            :to="`${isTestnet ? '?network=testnet' : ''}#code`"
-            :active="$route.hash === '#code'"
-            @click="onInput($route.hash)"
-          >
+          <b-nav-item :to="`?network=${network}#code`" :active="$route.hash === '#code'" @click="onInput($route.hash)">
             Code
           </b-nav-item>
         </b-nav>
@@ -148,9 +144,7 @@
 
                     <template #cell(id)="data">
                       <div class="d-flex">
-                        <a :href="`/#/app/contract/${data.item.id}${isTestnet ? '?network=testnet' : ''}`">
-                          {{ data.item.id | tx }}</a
-                        >
+                        <a :href="`/#/app/contract/${data.item.id}?network=${network}`"> {{ data.item.id | tx }}</a>
                         <div
                           class="flaticon-copy-to-clipboard small"
                           v-clipboard="data.item.id"
@@ -195,14 +189,9 @@
 
                     <template #cell(owner)="data">
                       <div class="d-flex">
-                        <a
-                          v-if="!isTestnet"
-                          :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`"
-                          target="_blank"
-                        >
+                        <a :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`" target="_blank">
                           {{ data.item.owner | tx }}</a
                         >
-                        <span v-else> {{ data.item.owner | tx }}</span>
                         <div
                           class="flaticon-copy-to-clipboard small"
                           v-clipboard="data.item.owner"
@@ -348,7 +337,7 @@ export default {
     LoadingSpinner,
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'isTestnet']),
+    ...mapState('prefetch', ['gatewayUrl', 'network:']),
 
     sourceId() {
       return this.$route.params.id;

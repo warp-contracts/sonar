@@ -33,7 +33,7 @@
               @click="changeModalVisible"
               :to="{
                 path: '/app/contract/' + data.item.contract_tx_id,
-                query: isTestnet ? { network: 'testnet' } : '',
+                query: { network },
               }"
             >
               {{ data.item.contract_tx_id | tx }}
@@ -52,9 +52,17 @@
         </template>
         <template #cell(balance)="data">
           <div
-            style="max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; text-decoration: underline;"
+            style="
+              max-width: 210px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              cursor: pointer;
+              text-decoration: underline;
+            "
             v-clipboard="data.item.balance"
-            v-b-tooltip.hover title="Copy to clipboard"
+            v-b-tooltip.hover
+            title="Copy to clipboard"
             v-if="data.item.balance"
           >
             {{ data.item.balance }}
@@ -97,12 +105,12 @@ export default {
     return {
       currentPage: 1,
       perPage: 7,
-      fields: [{key: 'id', label: 'id', thStyle: { width: '140px'}}, 'name', 'balance'],
+      fields: [{ key: 'id', label: 'id', thStyle: { width: '140px' } }, 'name', 'balance'],
     };
   },
 
   computed: {
-    ...mapState('prefetch', ['isTestnet']),
+    ...mapState('prefetch', ['network']),
     ...mapState('wallet', ['tableLoading']),
 
     rows() {
