@@ -337,7 +337,7 @@ export default {
     LoadingSpinner,
   },
   computed: {
-    ...mapState('prefetch', ['gatewayUrl', 'network:']),
+    ...mapState('prefetch', ['gatewayUrl', 'network']),
 
     sourceId() {
       return this.$route.params.id;

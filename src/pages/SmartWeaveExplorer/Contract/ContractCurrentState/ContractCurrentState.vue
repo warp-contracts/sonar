@@ -35,7 +35,9 @@
           <a
             v-if="state"
             target="_blank"
-            :href="`${this.activeDre.link}/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
+            :href="`${
+              this.activeDre[this.network].link
+            }/contract?id=${contractId}&validity=true&errorMessages=true&events=true`"
             >evaluator node</a
           ></span
         >
