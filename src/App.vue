@@ -13,7 +13,7 @@ export default {
     let currentGateway;
     const currentPath = this.$router.history.current.path;
 
-    if (currentPath === '/' || currentPath === '/app') {
+    if (currentPath === '/' || currentPath === '/app' || currentPath === '/app/contracts') {
       this.$router.push('/app/contracts?network=mainnet');
     }
     this.setNetwork(this.$route.query.network);
