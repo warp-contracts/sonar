@@ -187,13 +187,14 @@
           >
             State Evaluated
             <b-badge variant="light">
-              <div v-if="!loadedValidity" class="pl-3">
+              <div v-if="loadedValidity">
+                <div v-if="dre_status == 'evaluated'" class="flaticon-check" />
+                <div v-else class="flaticon-cross" />
+              </div>
+              <div v-else class="pl-3">
                 <div class="dot-flashing mr-1"></div>
               </div>
-              <div v-else>
-                <div v-if="dre_status == 'evaluated'" class="flaticon-check" />
-                <div v-else class="flaticon-cross" /></div
-            ></b-badge>
+            </b-badge>
           </b-nav-item>
 
           <b-nav-item :to="`?network=${network}#tags`" :active="$route.hash === '#tags'" @click="onInput($route.hash)">
@@ -265,14 +266,19 @@
 
                     <template #cell(validity)="data">
                       <div
-                        v-show="validity && validity[data.item.interactionId] == true"
+                        v-show="loadedValidity && validity && validity[data.item.interactionId] == true"
                         class="flaticon-check centered"
                       />
                       <div
-                        v-show="validity && validity[data.item.interactionId] == false"
+                        v-show="loadedValidity && validity && validity[data.item.interactionId] == false"
                         class="flaticon-cross centered"
                       />
-                      <div v-if="validity && !(data.item.interactionId in validity)" class="text-center">N/A</div>
+                      <div
+                        v-if="loadedValidity && validity && !(data.item.interactionId in validity)"
+                        class="text-center"
+                      >
+                        N/A
+                      </div>
                       <div v-show="loadedValidity && !validity" class="text-center">N/A</div>
                       <div v-show="!loadedValidity" class="dot-flashing centered"></div>
                     </template>
@@ -607,7 +613,7 @@ export default {
     },
     refreshData() {
       this.currentPage = 1;
-      this.$router.push({ query: {} });
+      this.$router.push(`/app/contracts?network=${this.network}`);
       this.selected == 'all'
         ? this.getInteractions(this.currentPage)
         : this.getInteractions(this.currentPage, this.selected);
@@ -710,7 +716,6 @@ export default {
           this.total = fetchedInteractions.data.paging.total;
           const tagsParser = new TagsParser();
           for (const i of fetchedInteractions.data.interactions) {
-            console.log(i.interaction, this.contractId);
             const inputFunc = JSON.parse(tagsParser.getInputTag(i.interaction, this.contractId).value).function;
             const isBundled =
               i.confirming_peers == 'https://node2.bundlr.network' ||

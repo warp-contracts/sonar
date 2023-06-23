@@ -436,7 +436,7 @@ export default {
     initPubSub: initPubSub,
     refreshData() {
       if (this.currentPage > 1) {
-        this.$router.push({ query: {} });
+        this.$router.push(`/app/contracts?network=${this.network}`);
       }
       this.currentPage = 1;
 

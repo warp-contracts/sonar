@@ -1,7 +1,8 @@
 <template>
   <div class="tx-list">
     <slot></slot>
-    <b-pagination-nav v-if="paging"
+    <b-pagination-nav
+      v-if="paging"
       :link-gen="linkGen"
       :number-of-pages="rows"
       @page-click="handleClick"
@@ -14,6 +15,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   name: 'TxList',
   data() {
@@ -31,11 +33,12 @@ export default {
       this.$emit('page-clicked', this.currentPage);
     },
     linkGen(pageNum) {
-      return pageNum === 1 ? '?' : `?page=${pageNum}`;
+      return pageNum === 1 ? `?network=${this.network}` : `?network=${this.network}&page=${pageNum}`;
     },
   },
 
   computed: {
+    ...mapState('prefetch', ['network']),
     rows() {
       if (this.paging) {
         return this.paging.pages;

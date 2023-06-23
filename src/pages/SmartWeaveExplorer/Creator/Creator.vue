@@ -331,7 +331,7 @@ export default {
     },
     refreshData() {
       this.currentPage = 1;
-      this.$router.push({ query: {} });
+      this.$router.push(`/app/contracts?network=${this.network}`);
       this.selected == 'all'
         ? this.getTransactions(this.currentPage)
         : this.getTransactions(this.currentPage, this.selected);

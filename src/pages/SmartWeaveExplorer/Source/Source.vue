@@ -383,7 +383,7 @@ export default {
     },
     refreshData() {
       this.currentPage = 1;
-      this.$router.push({ query: {} });
+      this.$router.push(`/app/contracts?network=${this.network}`);
       this.selected == 'all' ? this.getContracts(this.currentPage) : this.getContracts(this.currentPage, this.selected);
     },
     onCopy() {
