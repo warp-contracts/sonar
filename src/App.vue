@@ -14,8 +14,12 @@ export default {
     const currentPath = this.$router.history.current.path;
 
     if (currentPath === '/' || currentPath === '/app' || currentPath === '/app/contracts') {
-      this.$router.push('/app/contracts?network=mainnet');
+      this.$router.push(`/app/contracts?network=${this.$route.query.network || 'mainnet'}`);
     }
+    if (!this.$route.query.network) {
+      this.$router.push({ query: { ...this.$route.query, network: 'mainnet' } });
+    }
+
     this.setNetwork(this.$route.query.network);
     this.setGatewayUrl(this.$route.query.network);
     this.initArweave();
