@@ -325,6 +325,7 @@ export default {
   components: { JsonViewer, Error, NetworkLabel },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'network']),
+    ...mapState('drestatus', ['activeDre']),
     interactionId() {
       return this.$route.params.id;
     },
@@ -463,7 +464,7 @@ export default {
     },
     async getErrorMessages() {
       const response = await fetch(
-        `https://dre-1.warp.cc/contract?id=${this.interaction.contractId}&errorMessages=true`
+        `{this.activeDre[this.network].link}/contract?id=${this.interaction.contractId}&errorMessages=true`
       );
       const data = await response.json();
       if (data.errorMessages && Object.keys(data.errorMessages).length > 0) {
