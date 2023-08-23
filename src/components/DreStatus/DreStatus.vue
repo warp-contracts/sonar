@@ -66,7 +66,7 @@ export default {
 @import '../../styles/mixins';
 $warp-blue-filter: invert(45%) sepia(80%) saturate(2104%) hue-rotate(207deg) brightness(99%) contrast(91%);
 .container {
-  width: 24rem;
+  width: 26rem;
   padding: 1rem;
 
   position: fixed;

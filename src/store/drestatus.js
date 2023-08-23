@@ -50,6 +50,11 @@ export default {
           warp: null,
           link: 'https://dre-6.warp.cc/status',
         },
+        dreU: {
+          isActive: false,
+          warp: null,
+          link: 'https://dre-u.warp.cc/status',
+        }
       },
       testnet: {
         dre1: {
@@ -82,6 +87,11 @@ export default {
           warp: null,
           link: 'https://dre-6.warp.cc/status',
         },
+          dreU: {
+          isActive: false,
+          warp: null,
+          link: 'https://dre-u.warp.cc/status',
+        }
       },
       devnet: {
         dreDev: {
