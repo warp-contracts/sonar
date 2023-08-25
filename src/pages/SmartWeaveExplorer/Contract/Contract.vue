@@ -248,7 +248,7 @@
                         <a
                           :href="`${
                             daysAgo(data.item.timestamp) > 1
-                              ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerTxId}`
+                              ? `https://viewblock.io/arweave/tx/${data.item.bundlerTxId}`
                               : `https://arweave.net/${data.item.bundlerTxId}`
                           }`"
                           target="_blank"
@@ -284,7 +284,7 @@
                     </template>
 
                     <template #cell(block_height)="data">
-                      <a :href="`https://v2.viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
+                      <a :href="`https://viewblock.io/arweave/block/${data.item.blockId}`" target="_blank">
                         {{ data.item.blockHeight }}
                       </a>
                     </template>

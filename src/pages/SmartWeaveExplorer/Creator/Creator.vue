@@ -34,7 +34,7 @@
             </div>
             <div class="cell">
               <div class="cell-header">
-                <a target="_blank" :href="`https://v2.viewblock.io/arweave/address/${contractId}?network=${network}`"
+                <a target="_blank" :href="`https://viewblock.io/arweave/address/${contractId}?network=${network}`"
                   >Viewblock link</a
                 >
               </div>
@@ -149,7 +149,7 @@
                         <a
                           :href="`${
                             daysAgo(data.item.timestamp) > 1
-                              ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerId}`
+                              ? `https://viewblock.io/arweave/tx/${data.item.bundlerId}`
                               : `https://arweave.net/${data.item.bundlerId}`
                           }`"
                           target="_blank"

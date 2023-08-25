@@ -31,7 +31,7 @@
                   <span class="d-none d-sm-block"
                     ><a :href="`/#/app/creator/${owner}?network=${network}`">{{ owner }}</a></span
                   ><span class="d-block d-sm-none"
-                    ><a :href="`https://v2.viewblock.io/arweave/address/${owner}`" target="_blank">{{
+                    ><a :href="`https://viewblock.io/arweave/address/${owner}`" target="_blank">{{
                       owner | tx
                     }}</a></span
                   >
@@ -61,11 +61,11 @@
               <div class="d-flex">
                 <div v-if="bundlerSrcTxId" class="align-self-end d-flex">
                   <span class="d-none d-sm-block"
-                    ><a :href="`https://v2.viewblock.io/arweave/tx/${bundlerSrcTxId}`" target="_blank">{{
+                    ><a :href="`https://viewblock.io/arweave/tx/${bundlerSrcTxId}`" target="_blank">{{
                       bundlerSrcTxId
                     }}</a></span
                   ><span class="d-block d-sm-none"
-                    ><a :href="`https://v2.viewblock.io/arweave/tx/${bundlerSrcTxId}`" target="_blank">{{
+                    ><a :href="`https://viewblock.io/arweave/tx/${bundlerSrcTxId}`" target="_blank">{{
                       bundlerSrcTxId | tx
                     }}</a></span
                   >
@@ -159,7 +159,7 @@
                         <a
                           :href="`${
                             daysAgo(data.item.timestamp) > 1
-                              ? `https://v2.viewblock.io/arweave/tx/${data.item.bundlerId}`
+                              ? `https://viewblock.io/arweave/tx/${data.item.bundlerId}`
                               : `https://arweave.net/${data.item.bundlerId}`
                           }`"
                           target="_blank"
@@ -189,7 +189,7 @@
 
                     <template #cell(owner)="data">
                       <div class="d-flex">
-                        <a :href="`https://v2.viewblock.io/arweave/address/${data.item.owner}`" target="_blank">
+                        <a :href="`https://viewblock.io/arweave/address/${data.item.owner}`" target="_blank">
                           {{ data.item.owner | tx }}</a
                         >
                         <div

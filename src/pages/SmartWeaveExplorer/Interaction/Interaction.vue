@@ -68,7 +68,7 @@
               <a
                 :href="`${
                   daysAgo(interaction.timestamp) > 1
-                    ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                    ? `https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`
                     : `https://arweave.net/${interaction.bundlerTxId}`
                 }`"
                 target="_blank"
@@ -77,7 +77,7 @@
               ><a
                 :href="`${
                   daysAgo(interaction.timestamp) > 1
-                    ? `https://v2.viewblock.io/arweave/tx/${interaction.bundlerTxId}`
+                    ? `https://viewblock.io/arweave/tx/${interaction.bundlerTxId}`
                     : `https://arweave.net/${interaction.bundlerTxId}`
                 }`"
                 target="_blank"
@@ -209,11 +209,13 @@
           </div>
           <div class="interaction-item">
             <div>Block height</div>
-            <div>{{ interaction.blockHeight }}</div>
+            <a :href="`https://viewblock.io/arweave/block/${interaction.blockHeight}`" target="_blank">{{
+              interaction.blockHeight
+            }}</a>
           </div>
           <div class="interaction-item">
             <div>Block id</div>
-            <a :href="`https://v2.viewblock.io/arweave/block/${interaction.blockId}`" target="_blank">
+            <a :href="`https://arweave.net/block/hash/${interaction.blockId}`" target="_blank">
               <span class="d-none d-sm-block">{{ interaction?.blockId }}</span
               ><span class="d-block d-sm-none">{{ interaction?.blockId | tx }}</span>
             </a>
