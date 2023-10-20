@@ -12,10 +12,11 @@ export default {
   beforeMount() {
     let currentGateway;
     const currentPath = this.$router.history.current.path;
-    const activeDre =
-      this.$route.query.dre || localStorage.getItem('activeDre')
-        ? JSON.parse(localStorage.getItem('activeDre')).dre
-        : 'dre1';
+    const activeDre = this.$route.query.dre
+      ? this.$route.query.dre
+      : localStorage.getItem('activeDre')
+      ? JSON.parse(localStorage.getItem('activeDre')).dre
+      : 'dre1';
     if (currentPath === '/' || currentPath === '/app' || currentPath === '/app/contracts') {
       this.$router
         .push(`/app/contracts?network=${this.$route.query.network || 'mainnet'}&dre=${activeDre}`)
