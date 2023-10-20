@@ -23,7 +23,11 @@
         <div v-if="loaded" class="pl-3 col-lg-7 col-12 info-container">
           <div class="interaction-item">
             <div>Contract id</div>
-            <a :href="`/#/app/contract/${interaction?.contractId}`">
+            <a
+              :href="`/#/app/contract/${interaction?.contractId}?network=${this.network}&dre=${
+                this.activeDre[this.network].dre
+              }`"
+            >
               <span class="d-none d-sm-block">{{ interaction?.contractId }}</span
               ><span class="d-block d-sm-none">{{ interaction?.contractId | tx }}</span>
             </a>
@@ -45,7 +49,11 @@
           </div>
           <div class="interaction-item">
             <div>Creator</div>
-            <a :href="`#/app/creator/${interaction.interaction?.owner.address}?network=${network}`">
+            <a
+              :href="`#/app/creator/${interaction.interaction?.owner.address}?network=${network}&dre=${
+                activeDre[_vm.network].dre
+              }`"
+            >
               <span class="d-none d-sm-block">{{ interaction.interaction?.owner.address }}</span
               ><span class="d-block d-sm-none">{{ interaction.interaction?.owner.address | tx }}</span>
             </a>

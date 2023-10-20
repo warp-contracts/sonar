@@ -31,6 +31,7 @@ export default {
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'network']),
+    ...mapState('drestatus', ['activeDre']),
     perDay() {
       return this.$route.params.id == 'contracts' ? this.contractsPerDay : this.interactionsPerDay;
     },
@@ -38,7 +39,7 @@ export default {
       return this.$route.params.id == 'contracts' ? 'Contracts' : 'Interactions';
     },
     returnUrl() {
-      return `/#/app/contracts?network=${this.network}`;
+      return `/#/app/contracts?network=${this.network}&dre=${this.activeDre[this.network].dre}`;
     },
   },
   async mounted() {

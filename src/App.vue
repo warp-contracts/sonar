@@ -12,25 +12,42 @@ export default {
   beforeMount() {
     let currentGateway;
     const currentPath = this.$router.history.current.path;
-
+    const activeDre =
+      this.$route.query.dre || localStorage.getItem('activeDre')
+        ? JSON.parse(localStorage.getItem('activeDre')).dre
+        : 'dre1';
     if (currentPath === '/' || currentPath === '/app' || currentPath === '/app/contracts') {
-      this.$router.push(`/app/contracts?network=${this.$route.query.network || 'mainnet'}`);
+      this.$router
+        .push(`/app/contracts?network=${this.$route.query.network || 'mainnet'}&dre=${activeDre}`)
+        .catch(() => {});
     }
-    if (!this.$route.query.network) {
-      this.$router.push({ query: { ...this.$route.query, network: 'mainnet' } });
-    }
+    // if (!this.$route.query.network) {
+    //   this.$router.push({ query: { ...this.$route.query, network: 'mainnet' } });
+    // }
 
     this.setNetwork(this.$route.query.network);
     this.setGatewayUrl(this.$route.query.network);
     this.initArweave();
     this.prefetchAll();
-    const activeDre = localStorage.getItem('activeDre');
-    if (activeDre) {
-      this.setActiveDre(JSON.parse(activeDre));
-    }
+    // const activeDre = localStorage.getItem('activeDre');
+    // if (activeDre) {
+    this.setActiveDre({
+      network: this.$route.query.network,
+      dre: activeDre,
+      isActive: true,
+      link: `https://${activeDre.substring(0, 3) + '-' + activeDre.substring(3).toLowerCase()}.warp.cc`,
+    });
+    // }
   },
   methods: {
-    ...mapActions('prefetch', ['setNetwork', 'prefetchAll', 'initArweave', 'initArweaveTest', 'setGatewayUrl']),
+    ...mapActions('prefetch', [
+      'setNetwork',
+      'prefetchAll',
+      'initArweave',
+      'initArweaveTest',
+      'setGatewayUrl',
+      'network',
+    ]),
     ...mapActions('drestatus', ['setActiveDre']),
   },
 };

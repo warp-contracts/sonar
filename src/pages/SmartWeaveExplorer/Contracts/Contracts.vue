@@ -9,7 +9,7 @@
             <router-link
               class="d-xl-block d-none"
               :to="{
-                path: `/app/stats/interactions?network=${this.network}`,
+                path: `/app/stats/interactions?network=${this.network}&dre=${this.activeDre[this.network].dre}`,
               }"
               style="margin-left: auto; cursor: pointer"
             >
@@ -41,7 +41,7 @@
             <router-link
               class="d-xl-block d-none"
               :to="{
-                path: `/app/stats/contracts?network=${this.network}`,
+                path: `/app/stats/contracts?network=${this.network}&dre=${this.activeDre[this.network].dre}`,
               }"
               style="margin-left: auto; cursor: pointer"
             >
@@ -119,7 +119,7 @@
                     <router-link
                       :to="{
                         path: '/app/interaction/' + data.item.interactionId,
-                        query: { network },
+                        query: { network, dre: activeDre[_vm.network].dre },
                       }"
                     >
                       {{ formatIdPattern(data.item.interactionId) }}
@@ -138,7 +138,8 @@
                     <router-link
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
-                        query: { network },
+                        query: { network, dre: activeDre[_vm.network].dre },
+                        dre: {},
                       }"
                     >
                       {{ formatIdPattern(data.item.contractId) }}
@@ -237,7 +238,7 @@
                     <router-link
                       :to="{
                         path: '/app/contract/' + data.item.contractId,
-                        query: { network },
+                        query: { network, dre: activeDre[_vm.network].dre },
                       }"
                     >
                       {{ formatIdPattern(data.item.contractId) }}
@@ -419,6 +420,7 @@ export default {
   },
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'network']),
+    ...mapState('drestatus', ['activeDre']),
     contractsLoaded() {
       const totalLimit = this.contractsLimit + this.integrationsLimit;
       const allItems = this.contracts.length + this.interactions.length;
@@ -436,7 +438,7 @@ export default {
     initPubSub: initPubSub,
     refreshData() {
       if (this.currentPage > 1) {
-        this.$router.push(`/app/contracts?network=${this.network}`);
+        this.$router.push(`/app/contracts?network=${this.network}&dre=${this.activeDre[this.network].dre}`);
       }
       this.currentPage = 1;
 

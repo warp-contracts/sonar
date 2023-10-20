@@ -34,7 +34,11 @@
             </div>
             <div class="cell">
               <div class="cell-header">
-                <a target="_blank" :href="`https://viewblock.io/arweave/address/${contractId}?network=${network}`"
+                <a
+                  target="_blank"
+                  :href="`https://viewblock.io/arweave/address/${contractId}?network=${network}&dre=${
+                    activeDre[_vm.network].dre
+                  }`"
                   >Viewblock link</a
                 >
               </div>
@@ -125,13 +129,15 @@
                       <div class="d-flex">
                         <a
                           v-if="data.item.transactionType == 'contract'"
-                          :href="`/#/app/contract/${data.item.id}?network=${network}`"
+                          :href="`/#/app/contract/${data.item.id}?network=${network}&dre=${activeDre[_vm.network].dre}`"
                         >
                           {{ data.item.id | tx }}</a
                         >
                         <a
                           v-if="data.item.transactionType == 'interaction'"
-                          :href="`/#/app/interaction/${data.item.id}?network=${network}`"
+                          :href="`/#/app/interaction/${data.item.id}?network=${network}&dre=${
+                            activeDre[_vm.network].dre
+                          }`"
                         >
                           {{ data.item.id | tx }}</a
                         >
@@ -331,7 +337,7 @@ export default {
     },
     refreshData() {
       this.currentPage = 1;
-      this.$router.push(`/app/contracts?network=${this.network}`);
+      this.$router.push(`/app/contracts?network=${this.network}&dre=${this.activeDre[this.network].dre}`);
       this.selected == 'all'
         ? this.getTransactions(this.currentPage)
         : this.getTransactions(this.currentPage, this.selected);
@@ -340,6 +346,7 @@ export default {
 
   computed: {
     ...mapState('prefetch', ['gatewayUrl', 'network']),
+    ...mapState('drestatus', ['activeDre']),
     contractId() {
       return this.$route.params.id;
     },

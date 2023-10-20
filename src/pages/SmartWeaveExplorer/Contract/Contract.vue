@@ -29,9 +29,13 @@
               <div class="d-flex">
                 <div v-if="owner" class="align-self-end d-flex">
                   <span class="d-none d-sm-block"
-                    ><a :href="`/#/app/creator/${owner}?network=${network}`">{{ owner }}</a></span
+                    ><a :href="`/#/app/creator/${owner}?network=${network}&dre=${activeDre[_vm.network].dre}`">{{
+                      owner
+                    }}</a></span
                   ><span class="d-block d-sm-none"
-                    ><a :href="`/#/app/creator/${owner}?network=${network}`">{{ owner | tx }}</a></span
+                    ><a :href="`/#/app/creator/${owner}?network=${network}&dre=${activeDre[_vm.network].dre}`">{{
+                      owner | tx
+                    }}</a></span
                   >
                   <div
                     class="flaticon-copy-to-clipboard"
@@ -231,7 +235,11 @@
 
                     <template #cell(id)="data">
                       <div class="d-flex">
-                        <a :href="`/#/app/interaction/${data.item.interactionId}?network=${network}`">
+                        <a
+                          :href="`/#/app/interaction/${data.item.interactionId}?network=${network}&dre=${
+                            activeDre[_vm.network].dre
+                          }`"
+                        >
                           {{ data.item.interactionId | tx }}</a
                         >
                         <div
@@ -290,7 +298,11 @@
                     </template>
 
                     <template #cell(creator)="data">
-                      <a :href="`#/app/creator/${data.item.owner}`"> {{ data.item.owner | tx }}</a>
+                      <a
+                        :href="`#/app/creator/${data.item.owner}?network=${network}&dre=${activeDre[_vm.network].dre}`"
+                      >
+                        {{ data.item.owner | tx }}</a
+                      >
                       <!-- <span v-else> {{ data.item.owner | tx }}</span> -->
                     </template>
 

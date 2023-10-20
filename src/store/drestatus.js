@@ -40,21 +40,21 @@ export default {
           warp: null,
           link: 'https://dre-4.warp.cc/status',
         },
-        dre5: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-5.warp.cc/status',
-        },
-        dre6: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-6.warp.cc/status',
-        },
         dreU: {
           isActive: false,
           warp: null,
           link: 'https://dre-u.warp.cc/status',
-        }
+        },
+        dreWarpy: {
+          isActive: false,
+          warp: null,
+          link: 'https://dre-warpy.warp.cc/status',
+        },
+        dreAftr: {
+          isActive: false,
+          warp: null,
+          link: 'https://dre-aftr.warp.cc/status',
+        },
       },
       testnet: {
         dre1: {
@@ -77,21 +77,21 @@ export default {
           warp: null,
           link: 'https://dre-4.warp.cc/status',
         },
-        dre5: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-5.warp.cc/status',
-        },
-        dre6: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-6.warp.cc/status',
-        },
-          dreU: {
+        dreU: {
           isActive: false,
           warp: null,
           link: 'https://dre-u.warp.cc/status',
-        }
+        },
+        dreWarpy: {
+          isActive: false,
+          warp: null,
+          link: 'https://dre-warpy.warp.cc/status',
+        },
+        dreAftr: {
+          isActive: false,
+          warp: null,
+          link: 'https://dre-aftr.warp.cc/status',
+        },
       },
       devnet: {
         dreDev: {

@@ -164,7 +164,7 @@ export default {
       return screen.width >= 1024 ? 'Search PST, Contracts, Interactions, Sources...' : 'Search...';
     },
     logoUrl() {
-      return `/#/app/contracts?network=${this.network}`;
+      return `/#/app/contracts?network=${this.network}&dre=${this.activeDre[this.network].dre}`;
     },
 
     searchTerm: {
@@ -263,8 +263,9 @@ export default {
         this.noResultsInfo = null;
       });
     },
-    updateDre(dre) {
-      this.changeActiveDre(dre);
+    updateDre(drePayload) {
+      this.changeActiveDre(drePayload);
+      this.$router.push({ query: { ...this.$route.query, dre: drePayload.dre } });
 
       setTimeout(() => {
         this.dreModalVisible = false;
