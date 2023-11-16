@@ -183,10 +183,6 @@
                       <div class="text-right">{{ data.item.ago }}</div>
                     </template>
 
-                    <template #cell(interactions)="data" class="text-right">
-                      <div class="text-right">{{ data.item.interactions }}</div>
-                    </template>
-
                     <template #cell(owner)="data">
                       <div class="d-flex">
                         <a :href="`https://viewblock.io/arweave/address/${data.item.owner}`" target="_blank">
@@ -207,7 +203,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="interactions-wrapper">Contract has no interactions!</div>
+            <div v-else class="interactions-wrapper">Source has no contracts!</div>
           </div>
           <div :class="['tab-pane', { active: $route.hash === '#code' }]" class="p-2">
             <div v-if="visitedTabs.includes('#code')">
@@ -269,19 +265,7 @@ export default {
         ['minute', 60],
         ['second', 1],
       ],
-      fields: [
-        'id',
-        'owner',
-        'bundlerId',
-        'blockHeight',
-        'age',
-        {
-          key: 'interactions',
-          label: 'interactions',
-          thClass: 'text-right',
-          tdClass: 'text-right',
-        },
-      ],
+      fields: ['id', 'owner', 'bundlerId', 'blockHeight', 'age'],
       contracts: null,
       currentPage: 1,
       paging: null,
@@ -292,7 +276,6 @@ export default {
       copiedDisplay: false,
       copiedDisplayOwner: false,
       copiedDisplayBundler: false,
-      copiedDisplayInteraction: [],
       loadingInitialized: false,
       correct: false,
       pst_ticker: null,
@@ -431,7 +414,6 @@ export default {
               bundlerId: c.bundlerTxId,
               blockHeight: c.blockHeight,
               age: this.timeAgo(dayjs.unix(c.blockTimestamp)),
-              interactions: c.interactions,
             });
           }
         });
