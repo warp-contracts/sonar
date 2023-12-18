@@ -35,11 +35,6 @@ export default {
           warp: null,
           link: 'https://dre-3.warp.cc/status',
         },
-        dre4: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-4.warp.cc/status',
-        },
         dreU: {
           isActive: false,
           warp: null,
@@ -49,11 +44,6 @@ export default {
           isActive: false,
           warp: null,
           link: 'https://dre-warpy.warp.cc/status',
-        },
-        dreAftr: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-aftr.warp.cc/status',
         },
       },
       testnet: {
@@ -72,11 +62,6 @@ export default {
           warp: null,
           link: 'https://dre-3.warp.cc/status',
         },
-        dre4: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-4.warp.cc/status',
-        },
         dreU: {
           isActive: false,
           warp: null,
@@ -86,11 +71,6 @@ export default {
           isActive: false,
           warp: null,
           link: 'https://dre-warpy.warp.cc/status',
-        },
-        dreAftr: {
-          isActive: false,
-          warp: null,
-          link: 'https://dre-aftr.warp.cc/status',
         },
       },
       devnet: {
