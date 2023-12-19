@@ -191,7 +191,7 @@
           >
             State Evaluated
             <b-badge variant="light">
-              <div v-if="loadedValidity">
+              <div v-if="loadedState">
                 <div v-if="dre_status == 'evaluated'" class="flaticon-check" />
                 <div v-else class="flaticon-cross" />
               </div>
@@ -412,8 +412,8 @@
                   theme="json-theme"
                 ></json-viewer>
               </div>
-              <div v-else-if="!loadedValidity">Loading...</div>
-              <div v-else-if="loadedValidity && !currentState && !dre_evaluationError">
+              <div v-else-if="!loadedState">Loading...</div>
+              <div v-else-if="loadedState && !currentState && !dre_evaluationError">
                 <p class="text-break">
                   State is evaluated for contracts which are registered as safe (which do not use unsafeClient). If
                   contracts perform internal reads or internal writes on unsafe contracts, these interactions are
@@ -516,6 +516,7 @@ export default {
       initState: null,
       currentState: null,
       loadedValidity: true,
+      loadedState: true,
       loadedContract: null,
       validity: false,
       axiosSource: null,
@@ -658,8 +659,10 @@ export default {
       this.currentPage = pageNumber;
       if (this.selected == 'all') {
         this.getInteractions(this.currentPage);
+        await this.getDreValidityAndErrorMessages();
       } else {
         this.getInteractions(this.currentPage, this.selected);
+        await this.getDreValidityAndErrorMessages();
       }
     },
 
@@ -753,17 +756,43 @@ export default {
           }
         });
     },
-    async getDreState() {
+    async getDreValidityAndErrorMessages() {
       this.loadedValidity = false;
       const response = await fetch(
-        `${this.activeDre[this.network].link}/contract?id=${this.contractId}&validity=true&errorMessages=true`
+        `${this.activeDre[this.network].link}/contract?id=${this.contractId}&validity=true&errorMessages=true&page=${
+          this.currentPage
+        }&limit=15`
       );
-      if (response.status == 500) {
+
+      if (response.status != 200) {
         this.loadedValidity = true;
         return;
       }
-      if (response.status == 404) {
+      const data = await response.json();
+
+      if (data.validity && Object.keys(data.validity).length > 0) {
+        this.validity = data.validity;
+      } else {
+        this.validity = false;
+      }
+
+      this.errorMessages = data.errorMessages;
+
+      this.loadedValidity = true;
+    },
+    async getDreState() {
+      this.loadedState = false;
+      this.loadedValidity = false;
+      this.validity = false;
+      const response = await fetch(
+        `${this.activeDre[this.network].link}/contract?id=${this.contractId}&validity=true&errorMessages=true&page=${
+          this.currentPage || 1
+        }&limit=15`
+      );
+      if (response.status != 200) {
+        this.loadedState = true;
         this.loadedValidity = true;
+        return;
       }
       const data = await response.json();
       if (data.state === undefined) {
@@ -773,8 +802,6 @@ export default {
       }
       if (data.validity && Object.keys(data.validity).length > 0) {
         this.validity = data.validity;
-      } else {
-        this.validity = false;
       }
 
       this.dre_sortKey = data.sortKey;
@@ -790,6 +817,7 @@ export default {
         this.dreErrors = data.errors;
       }
       this.loadedValidity = true;
+      this.loadedState = true;
     },
 
     styleCategory(text, numberOfCategories, index) {
