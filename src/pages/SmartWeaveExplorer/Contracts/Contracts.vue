@@ -178,7 +178,7 @@
                       class="source-icon"
                     />
                   </div>
-                  <div v-else-if="data.item.source == 'warp'">
+                  <div v-else-if="data.item.source == 'warp-gw'">
                     <img
                       v-b-tooltip.hover
                       title="Warp"
@@ -567,14 +567,17 @@ export default {
         `${channel}`,
         ({ data }) => {
           let dataObj = JSON.parse(data);
+          const input = JSON.parse(JSON.parse(dataObj.interaction).tags.find(t => t.name == 'Input').value);
+          const sortKey = JSON.parse(dataObj.interaction).sortKey;
+          const sortKeySliced = sortKey.substring(sortKey.indexOf(',') + 1);
+          const syncTimestamp = sortKeySliced.substring(0, sortKeySliced.indexOf(','));
           const time = Date.now();
           this.interactions.unshift({
-            interactionId: dataObj.interaction.id,
+            interactionId: JSON.parse(dataObj.interaction).id,
             contractId: dataObj.contractTxId,
-            age: dataObj.syncTimestamp,
+            age: syncTimestamp,
             interactionCountdown: countdown(dataObj.syncTimestamp).toString(),
-            function: dataObj.functionName ? dataObj.functionName : 'N/A',
-            blockHeight: dataObj.interaction.block.height,
+            function: input.function ? input.function : 'N/A',
             source: dataObj.source,
           });
           this.interactions.pop();
